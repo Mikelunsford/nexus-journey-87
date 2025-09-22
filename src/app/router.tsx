@@ -14,6 +14,7 @@ const CustomersPage = React.lazy(() => import('@/pages/customers/CustomersPage')
 const CustomerLabelsPage = React.lazy(() => import('@/pages/customers/CustomerLabelsPage'));
 const UserLabelsPage = React.lazy(() => import('@/pages/admin/UserLabelsPage'));
 const OrgLabelsPage = React.lazy(() => import('@/pages/admin/OrgLabelsPage'));
+const BridgePanel = React.lazy(() => import('@/pages/dev/BridgePanel'));
 
 // Placeholder components for now
 const ProjectsPage = () => <div className="p-8">Projects Page - Coming Soon</div>;
@@ -30,7 +31,6 @@ const UsersPage = () => <div className="p-8">Users Page - Coming Soon</div>;
 const UsersInvitePage = () => <div className="p-8">Invite User - Coming Soon</div>;
 const OrganizationsPage = () => <div className="p-8">Organizations Page - Coming Soon</div>;
 const SettingsPage = () => <div className="p-8">Settings Page - Coming Soon</div>;
-const BridgePage = () => <div className="p-8">Bridge Panel - Coming Soon</div>;
 
 // Loading component
 const PageLoader = () => (
@@ -235,7 +235,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <BridgePage />,
+        element: (
+          <Suspense fallback={<PageLoader />}>
+            <BridgePanel />
+          </Suspense>
+        ),
       },
     ],
   },
