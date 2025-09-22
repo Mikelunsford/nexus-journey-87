@@ -15,20 +15,36 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
+import {
+  LayoutDashboard,
+  FolderOpen,
+  CheckSquare,
+  Users,
+  MessageCircle,
+  Package,
+  Truck,
+  FileText,
+  UserCheck,
+  Plane,
+  Calculator,
+  BarChart3,
+  Settings,
+  UserCog
+} from 'lucide-react';
 
 // Navigation items with role-based visibility
 const navigationItems = [
       {
         label: 'Main',
         items: [
-          { title: 'Dashboard', url: '/dashboard', icon: DashboardIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
-          { title: 'Projects', url: '/dashboard/projects', icon: ProjectsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
-          { title: 'Tasks', url: '/dashboard/tasks', icon: TasksIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production'] },
-          { title: 'Employees', url: '/dashboard/employees', icon: EmployeesIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
-          { title: 'Messages', url: '/dashboard/messages', icon: MessagesIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'] },
-      { title: 'Production', url: '/dashboard/production', icon: ProductionIcon, roles: ['admin', 'manager', 'developer', 'internal', 'production'] },
-      { title: 'Shipping', url: '/dashboard/shipping', icon: ShippingIcon, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
-      { title: 'Documents', url: '/dashboard/documents', icon: DocumentsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
+          { title: 'Dashboard', url: '/dashboard', icon: LayoutDashboard, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
+          { title: 'Projects', url: '/dashboard/projects', icon: FolderOpen, roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
+          { title: 'Tasks', url: '/dashboard/tasks', icon: CheckSquare, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production'] },
+          { title: 'Employees', url: '/dashboard/employees', icon: Users, roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Messages', url: '/dashboard/messages', icon: MessageCircle, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'] },
+      { title: 'Production', url: '/dashboard/production', icon: Package, roles: ['admin', 'manager', 'developer', 'internal', 'production'] },
+      { title: 'Shipping', url: '/dashboard/shipping', icon: Truck, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
+      { title: 'Documents', url: '/dashboard/documents', icon: FileText, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
     ],
   },
   {
@@ -37,7 +53,7 @@ const navigationItems = [
       { 
         title: 'Customers', 
         url: '/dashboard/customers', 
-        icon: CustomersIcon, 
+        icon: UserCheck, 
         roles: ['admin', 'manager', 'developer', 'internal', 'employee'],
         submenu: [
           { title: 'List', url: '/dashboard/customers', roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
@@ -45,8 +61,8 @@ const navigationItems = [
           { title: 'Labels', url: '/dashboard/customers/labels', roles: ['admin', 'manager', 'developer', 'internal'] },
         ]
       },
-      { title: 'Carriers', url: '/dashboard/carriers', icon: CarriersIcon, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
-      { title: 'Accounting', url: '/dashboard/accounting', icon: AccountingIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
+      { title: 'Carriers', url: '/dashboard/carriers', icon: Plane, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
+      { title: 'Accounting', url: '/dashboard/accounting', icon: Calculator, roles: ['admin', 'manager', 'developer', 'internal'] },
     ],
   },
   {
