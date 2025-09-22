@@ -1,13 +1,14 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { QuickActionsList, type QAItem } from '@/components/ui/QuickActionsList';
+import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 
 export default function CustomersPage() {
   const quickActions: QAItem[] = [
     {
       label: 'Add New Customer',
       to: '/dashboard/customers/new',
+      caption: 'Create customer record',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -15,8 +16,9 @@ export default function CustomersPage() {
       ),
     },
     {
-      label: 'Manage Customer Labels',
+      label: 'Customer Labels',
       to: '/dashboard/customers/labels',
+      caption: 'Manage customer tags',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
@@ -24,11 +26,22 @@ export default function CustomersPage() {
       ),
     },
     {
-      label: 'Import Customer Data',
+      label: 'Import Data',
       to: '/dashboard/settings/import',
+      caption: 'Bulk customer import',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+        </svg>
+      ),
+    },
+    {
+      label: 'Customer Reports',
+      to: '/dashboard/customers/reports',
+      caption: 'View customer analytics',
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
     },
@@ -44,18 +57,16 @@ export default function CustomersPage() {
   return (
     <div className="p-8 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-foreground">Customers</h1>
-        <p className="text-muted-foreground mt-2">
+        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Customers</h1>
+        <p className="t-dim mt-1">
           Manage your customer relationships and information.
         </p>
       </div>
 
       {/* Quick Actions */}
-      <div>
-        <h2 className="text-xl font-semibold text-foreground mb-4">Quick Actions</h2>
-        <div className="max-w-md">
-          <QuickActionsList items={quickActions} />
-        </div>
+      <div className="panel p-5">
+        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+        <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Customers Table */}

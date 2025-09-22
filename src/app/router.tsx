@@ -22,17 +22,19 @@ const AnalyticsPage = React.lazy(() => import('@/pages/AnalyticsPage'));
 const MessagesPage = React.lazy(() => import('@/pages/MessagesPage'));
 const SettingsPage = React.lazy(() => import('@/pages/SettingsPage'));
 
+// Additional pages
+const ProductionPage = React.lazy(() => import('@/pages/ProductionPage'));
+const ShippingPage = React.lazy(() => import('@/pages/ShippingPage'));
+const DocumentsPage = React.lazy(() => import('@/pages/DocumentsPage'));
+const CarriersPage = React.lazy(() => import('@/pages/CarriersPage'));
+const AccountingPage = React.lazy(() => import('@/pages/AccountingPage'));
+const UsersPage = React.lazy(() => import('@/pages/admin/UsersPage'));
+const OrganizationsPage = React.lazy(() => import('@/pages/admin/OrganizationsPage'));
+const CustomersNewPage = React.lazy(() => import('@/pages/customers/CustomersNewPage'));
+
 // Placeholder components for remaining pages
-const ProductionPage = () => <div className="p-8">Production Page - Coming Soon</div>;
-const ShippingPage = () => <div className="p-8">Shipping Page - Coming Soon</div>;
-const DocumentsPage = () => <div className="p-8">Documents Page - Coming Soon</div>;
-const CustomersNewPage = () => <div className="p-8">New Customer - Coming Soon</div>;
 const CustomerDetailPage = () => <div className="p-8">Customer Detail - Coming Soon</div>;
-const CarriersPage = () => <div className="p-8">Carriers Page - Coming Soon</div>;
-const AccountingPage = () => <div className="p-8">Accounting Page - Coming Soon</div>;
-const UsersPage = () => <div className="p-8">Users Page - Coming Soon</div>;
 const UsersInvitePage = () => <div className="p-8">Invite User - Coming Soon</div>;
-const OrganizationsPage = () => <div className="p-8">Organizations Page - Coming Soon</div>;
 
 // Loading component
 const PageLoader = () => (
