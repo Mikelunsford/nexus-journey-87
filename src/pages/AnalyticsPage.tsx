@@ -41,7 +41,7 @@ export default function AnalyticsPage() {
       change: '+12.3%',
       trend: 'up',
       icon: DollarSign,
-      color: 'text-green-600'
+      color: 't-primary'
     },
     {
       title: 'Active Customers',
@@ -49,7 +49,7 @@ export default function AnalyticsPage() {
       change: '+5.7%',
       trend: 'up',
       icon: Users,
-      color: 'text-blue-600'
+      color: 't-primary'
     },
     {
       title: 'Orders Processed',
@@ -57,7 +57,7 @@ export default function AnalyticsPage() {
       change: '-2.1%',
       trend: 'down',
       icon: Package,
-      color: 'text-orange-600'
+      color: 't-primary'
     },
     {
       title: 'Conversion Rate',
@@ -65,7 +65,7 @@ export default function AnalyticsPage() {
       change: '+0.8%',
       trend: 'up',
       icon: TrendingUp,
-      color: 'text-purple-600'
+      color: 't-primary'
     }
   ];
 
@@ -103,11 +103,11 @@ export default function AnalyticsPage() {
                   <div className="text-2xl font-bold">{kpi.value}</div>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     {kpi.trend === 'up' ? (
-                      <TrendingUp className="h-3 w-3 text-green-500" />
+                      <TrendingUp className="h-3 w-3 t-primary" />
                     ) : (
-                      <TrendingDown className="h-3 w-3 text-red-500" />
+                      <TrendingDown className="h-3 w-3 t-primary" />
                     )}
-                    <span className={kpi.trend === 'up' ? 'text-green-500' : 'text-red-500'}>
+                    <span className="t-primary">
                       {kpi.change}
                     </span>
                     <span>from last month</span>

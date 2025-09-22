@@ -109,7 +109,7 @@ export default function ProjectsPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Active</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-blue-600">8</div>
+              <div className="kpi-value">8</div>
             </CardContent>
           </Card>
           <Card>
@@ -117,7 +117,7 @@ export default function ProjectsPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">In Review</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-purple-600">2</div>
+              <div className="kpi-value">2</div>
             </CardContent>
           </Card>
           <Card>
@@ -125,7 +125,7 @@ export default function ProjectsPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">2</div>
+              <div className="kpi-value">2</div>
             </CardContent>
           </Card>
         </div>

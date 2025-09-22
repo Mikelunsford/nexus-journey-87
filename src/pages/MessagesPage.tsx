@@ -155,7 +155,7 @@ export default function MessagesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-yellow-600">12</div>
+              <div className="kpi-value">12</div>
             </CardContent>
           </Card>
           <Card>
@@ -166,7 +166,7 @@ export default function MessagesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">15</div>
+              <div className="kpi-value">15</div>
             </CardContent>
           </Card>
           <Card>
@@ -177,7 +177,7 @@ export default function MessagesPage() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-600">156</div>
+              <div className="kpi-value">156</div>
             </CardContent>
           </Card>
         </div>

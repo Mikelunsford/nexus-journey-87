@@ -64,15 +64,15 @@ export default function DocumentsPage() {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      'Proposals': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'Reports': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      'Documentation': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      'Proposals': 'panel text-primary',
+      'Reports': 'panel-muted text-primary',
+      'Documentation': 'panel text-primary',
     };
-    return colors[category] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    return colors[category] || 'panel-muted text-primary';
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="panel p-5 space-y-8">
       <div>
         <h1 className="t-primary text-2xl md:text-3xl font-semibold">Documents</h1>
         <p className="t-dim mt-1">

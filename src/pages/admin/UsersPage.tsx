@@ -90,11 +90,11 @@ export default function UsersPage() {
 
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
-      'Admin': 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200',
-      'Manager': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'User': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
+      'Admin': 'panel text-primary',
+      'Manager': 'panel-muted text-primary',
+      'User': 'panel text-primary',
     };
-    return colors[role] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    return colors[role] || 'panel-muted text-primary';
   };
 
   const getInitials = (name: string) => {
@@ -102,7 +102,7 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="panel p-5 space-y-8">
       <div>
         <h1 className="t-primary text-2xl md:text-3xl font-semibold">Users</h1>
         <p className="t-dim mt-1">

@@ -75,7 +75,7 @@ export default function ProductionPage() {
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="panel p-5 space-y-8">
       <div>
         <h1 className="t-primary text-2xl md:text-3xl font-semibold">Production</h1>
         <p className="t-dim mt-1">

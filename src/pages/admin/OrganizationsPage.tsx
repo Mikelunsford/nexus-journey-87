@@ -90,15 +90,15 @@ export default function OrganizationsPage() {
 
   const getTypeColor = (type: string) => {
     const colors: Record<string, string> = {
-      'Division': 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-      'Region': 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-      'Department': 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
+      'Division': 'panel text-primary',
+      'Region': 'panel-muted text-primary',
+      'Department': 'panel text-primary',
     };
-    return colors[type] || 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200';
+    return colors[type] || 'panel-muted text-primary';
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="panel p-5 space-y-8">
       <div>
         <h1 className="t-primary text-2xl md:text-3xl font-semibold">Organizations</h1>
         <p className="t-dim mt-1">
