@@ -89,6 +89,70 @@ const BillingPage = React.lazy(() => import('@/pages/settings/BillingPage'));
 const ReportsPage = React.lazy(() => import('@/pages/analytics/ReportsPage'));
 const AnalyticsDashboardPage = React.lazy(() => import('@/pages/analytics/DashboardPage'));
 const ExportPage = React.lazy(() => import('@/pages/analytics/ExportPage'));
+const AnalyticsSettingsPage = React.lazy(() => import('@/pages/analytics/Settings'));
+const SchedulePage = React.lazy(() => import('@/pages/analytics/Schedule'));
+
+// Projects pages
+const NewInternalQuotePage = React.lazy(() => import('@/pages/projects/NewInternalQuote'));
+const NewProjectPage = React.lazy(() => import('@/pages/projects/NewProject'));
+const ProjectsNewPage = React.lazy(() => import('@/pages/projects/New'));
+const TemplatesPage = React.lazy(() => import('@/pages/projects/Templates'));
+const ProjectsTeamPage = React.lazy(() => import('@/pages/projects/Team'));
+const ProjectsCalendarPage = React.lazy(() => import('@/pages/projects/Calendar'));
+
+// Messages pages
+const ComposePage = React.lazy(() => import('@/pages/messages/Compose'));
+const MessagesTeamPage = React.lazy(() => import('@/pages/messages/Team'));
+const AnnouncementsPage = React.lazy(() => import('@/pages/messages/Announcements'));
+const MessagesArchivePage = React.lazy(() => import('@/pages/messages/Archive'));
+
+// Settings pages (additional)
+const BackupPage = React.lazy(() => import('@/pages/settings/Backup'));
+const ThemesPage = React.lazy(() => import('@/pages/settings/Themes'));
+const ApiKeysPage = React.lazy(() => import('@/pages/settings/ApiKeys'));
+
+// Production pages (additional)
+const NewWOPage = React.lazy(() => import('@/pages/production/NewWO'));
+const CapacityPage = React.lazy(() => import('@/pages/production/Capacity'));
+const QualityPage = React.lazy(() => import('@/pages/production/Quality'));
+const MaintenancePage = React.lazy(() => import('@/pages/production/Maintenance'));
+
+// Shipping pages (additional)
+const NewShipmentPage = React.lazy(() => import('@/pages/shipping/NewShipment'));
+const TrackingPage = React.lazy(() => import('@/pages/shipping/Tracking'));
+const RoutesPage = React.lazy(() => import('@/pages/shipping/Routes'));
+
+// Documents pages (additional)
+const UploadPage = React.lazy(() => import('@/pages/documents/Upload'));
+const NewFolderPage = React.lazy(() => import('@/pages/documents/NewFolder'));
+const DocumentsSearchPage = React.lazy(() => import('@/pages/documents/Search'));
+const DocumentsArchivePage = React.lazy(() => import('@/pages/documents/Archive'));
+
+// Customers pages (additional)
+const CustomerReportsPage = React.lazy(() => import('@/pages/customers/Reports'));
+
+// Carriers pages (additional)
+const CarriersNewPage = React.lazy(() => import('@/pages/carriers/New'));
+const RatesPage = React.lazy(() => import('@/pages/carriers/Rates'));
+const CoveragePage = React.lazy(() => import('@/pages/carriers/Coverage'));
+const CarrierReportsPage = React.lazy(() => import('@/pages/carriers/Reports'));
+
+// Accounting pages (additional)
+const NewInvoicePage = React.lazy(() => import('@/pages/accounting/NewInvoice'));
+const NewPaymentPage = React.lazy(() => import('@/pages/accounting/NewPayment'));
+const AccountingReportsPage = React.lazy(() => import('@/pages/accounting/Reports'));
+const TaxPage = React.lazy(() => import('@/pages/accounting/Tax'));
+
+// Admin Users pages
+const UserRolesPage = React.lazy(() => import('@/pages/admin/users/Roles'));
+const UserReportsPage = React.lazy(() => import('@/pages/admin/users/Reports'));
+const DeactivatePage = React.lazy(() => import('@/pages/admin/users/Deactivate'));
+
+// Admin Organizations pages
+const OrganizationsNewPage = React.lazy(() => import('@/pages/admin/organizations/New'));
+const OrganizationSettingsPage = React.lazy(() => import('@/pages/admin/organizations/Settings'));
+const OrganizationAnalyticsPage = React.lazy(() => import('@/pages/admin/organizations/Analytics'));
+const OrganizationExportPage = React.lazy(() => import('@/pages/admin/organizations/Export'));
 
 // Note: Placeholder components have been replaced with proper stub pages
 
@@ -655,6 +719,108 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
+      // Projects routes
+      {
+        path: 'projects/new-internal',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewInternalQuotePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/new-project',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewProjectPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ProjectsNewPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/templates',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <TemplatesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/team',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ProjectsTeamPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/calendar',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ProjectsCalendarPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Messages routes
+      {
+        path: 'messages/compose',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ComposePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'messages/team',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <MessagesTeamPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'messages/announcements',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <AnnouncementsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'messages/archive',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <MessagesArchivePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
       // Analytics routes
       {
         path: 'analytics/reports',
@@ -662,6 +828,345 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <ReportsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'analytics/export',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ExportPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'analytics/settings',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <AnalyticsSettingsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'analytics/schedule',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <SchedulePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Settings routes (additional)
+      {
+        path: 'settings/backup',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <BackupPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'settings/themes',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ThemesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'settings/api',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ApiKeysPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Production routes (additional)
+      {
+        path: 'production/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewWOPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'production/capacity',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CapacityPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'production/quality',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <QualityPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'production/maintenance',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <MaintenancePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Shipping routes (additional)
+      {
+        path: 'shipping/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewShipmentPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipping/tracking',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <TrackingPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipping/routes',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <RoutesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Documents routes (additional)
+      {
+        path: 'documents/upload',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <UploadPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'documents/folders/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewFolderPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'documents/search',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <DocumentsSearchPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'documents/archive',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <DocumentsArchivePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Customers routes (additional)
+      {
+        path: 'customers/reports',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CustomerReportsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Carriers routes (additional)
+      {
+        path: 'carriers/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CarriersNewPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'carriers/rates',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <RatesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'carriers/coverage',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CoveragePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'carriers/reports',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CarrierReportsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Accounting routes (additional)
+      {
+        path: 'accounting/invoices/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewInvoicePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'accounting/payments/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <NewPaymentPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'accounting/reports',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <AccountingReportsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'accounting/tax',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <TaxPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Admin Users routes
+      {
+        path: 'admin/users/roles',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <UserRolesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/users/reports',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <UserReportsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/users/deactivate',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <DeactivatePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      // Admin Organizations routes
+      {
+        path: 'admin/organizations/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <OrganizationsNewPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/organizations/settings',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <OrganizationSettingsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/organizations/analytics',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <OrganizationAnalyticsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/organizations/export',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <OrganizationExportPage />
             </Suspense>
           </RoleGate>
         ),
