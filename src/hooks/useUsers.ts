@@ -25,7 +25,7 @@ export function useUsers() {
       setLoading(true);
       setError(null);
 
-      // Fetch profiles with their memberships
+      // Fetch profiles with their memberships using LEFT JOIN
       const { data, error: queryError } = await supabase
         .from('profiles')
         .select(`
@@ -34,14 +34,14 @@ export function useUsers() {
           email,
           avatar_url,
           created_at,
-          memberships!inner (
+          memberships (
             role_bucket,
             expires_at,
             deleted_at
           )
         `)
         .eq('org_id', profile.org_id)
-        .is('memberships.deleted_at', null);
+        .or('memberships.deleted_at.is.null,memberships.id.is.null');
 
       if (queryError) {
         console.error('Error fetching users:', queryError);
@@ -54,12 +54,13 @@ export function useUsers() {
         id: profile.id,
         name: profile.name || profile.email,
         email: profile.email,
-        role_bucket: profile.memberships[0]?.role_bucket || 'external',
+        role_bucket: profile.memberships?.[0]?.role_bucket || 'external',
         created_at: profile.created_at,
         avatar_url: profile.avatar_url,
         // Note: last_sign_in_at would need to come from auth metadata, not available in profiles
       })) || [];
 
+      console.log('Fetched users:', transformedUsers);
       setUsers(transformedUsers);
     } catch (err: any) {
       console.error('Error in useUsers:', err);
@@ -74,8 +75,10 @@ export function useUsers() {
 
     // Set up real-time subscription for user changes
     if (profile?.org_id) {
+      const channelName = `users-org-${profile.org_id}-${Date.now()}`;
+      
       const channel = supabase
-        .channel('user-profiles-changes')
+        .channel(channelName)
         .on(
           'postgres_changes',
           {
@@ -85,7 +88,7 @@ export function useUsers() {
             filter: `org_id=eq.${profile.org_id}`
           },
           (payload) => {
-            console.log('Profile change:', payload);
+            console.log('Profile change detected:', payload.eventType, payload);
             fetchUsers();
           }
         )
@@ -98,13 +101,22 @@ export function useUsers() {
             filter: `org_id=eq.${profile.org_id}`
           },
           (payload) => {
-            console.log('Membership change:', payload);
+            console.log('Membership change detected:', payload.eventType, payload);
             fetchUsers();
           }
         )
-        .subscribe();
+        .subscribe((status) => {
+          console.log('Real-time subscription status:', status);
+          if (status !== 'SUBSCRIBED') {
+            console.error('Failed to subscribe to real-time updates, status:', status);
+            if (status === 'CLOSED' || status === 'TIMED_OUT') {
+              setError('Failed to connect to real-time updates');
+            }
+          }
+        });
 
       return () => {
+        console.log('Cleaning up real-time subscription');
         supabase.removeChannel(channel);
       };
     }
