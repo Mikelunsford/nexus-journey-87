@@ -6,6 +6,7 @@ import { AppShell } from '@/components/layout/AppShell';
 
 // Lazy load pages
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
+const AcceptInvitationPage = React.lazy(() => import('@/pages/auth/AcceptInvitationPage'));
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
 const TasksPage = React.lazy(() => import('@/pages/TasksPage'));
 const EmployeesPage = React.lazy(() => import('@/pages/EmployeesPage'));
@@ -174,6 +175,22 @@ const router = createBrowserRouter([
     element: (
       <Suspense fallback={<PageLoader />}>
         <AuthPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/auth',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AuthPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: '/auth/accept-invitation',
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        <AcceptInvitationPage />
       </Suspense>
     ),
   },

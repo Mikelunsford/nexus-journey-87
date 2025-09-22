@@ -71,6 +71,43 @@ export function useUsers() {
 
   useEffect(() => {
     fetchUsers();
+
+    // Set up real-time subscription for user changes
+    if (profile?.org_id) {
+      const channel = supabase
+        .channel('user-profiles-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'profiles',
+            filter: `org_id=eq.${profile.org_id}`
+          },
+          (payload) => {
+            console.log('Profile change:', payload);
+            fetchUsers();
+          }
+        )
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'memberships',
+            filter: `org_id=eq.${profile.org_id}`
+          },
+          (payload) => {
+            console.log('Membership change:', payload);
+            fetchUsers();
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
   }, [profile?.org_id]);
 
   const refreshUsers = () => {

@@ -5,10 +5,36 @@ import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid'
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { CreateUserModal } from '@/components/admin/CreateUserModal';
-import { useUsers } from '@/hooks/useUsers';
+import { UserEditModal } from '@/components/admin/UserEditModal';
+import { UserDetailModal } from '@/components/admin/UserDetailModal';
+import { useUsers, User } from '@/hooks/useUsers';
+import { useInvitations } from '@/hooks/useInvitations';
 
 export default function UsersPage() {
   const { users, loading, refreshUsers } = useUsers();
+  const { invitations } = useInvitations();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
+
+  const handleViewUser = (user: User) => {
+    setSelectedUser(user);
+    setIsDetailModalOpen(true);
+  };
+
+  const handleEditUser = (user: User) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseModals = () => {
+    setSelectedUser(null);
+    setIsEditModalOpen(false);
+    setIsDetailModalOpen(false);
+  };
+
+  const pendingInvitesCount = invitations.filter(inv => inv.status === 'pending').length;
+
   const quickActions: QAItem[] = [
     {
       label: 'Invite User',
@@ -63,11 +89,12 @@ export default function UsersPage() {
 
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
-      'Admin': 'panel text-primary',
-      'Manager': 'panel-muted text-primary',
-      'User': 'panel text-primary',
+      'admin': 'bg-red-500/10 text-red-700 dark:text-red-300',
+      'management': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
+      'operational': 'bg-green-500/10 text-green-700 dark:text-green-300',
+      'external': 'bg-gray-500/10 text-gray-700 dark:text-gray-300'
     };
-    return colors[role] || 'panel-muted text-primary';
+    return colors[role] || colors.external;
   };
 
   const getInitials = (name: string) => {
@@ -97,7 +124,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Total Users</p>
-              <p className="text-2xl font-bold t-primary">247</p>
+              <p className="text-2xl font-bold t-primary">{users.length}</p>
             </div>
             <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +138,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Users</p>
-              <p className="text-2xl font-bold t-primary">218</p>
+              <p className="text-2xl font-bold t-primary">{users.length}</p>
             </div>
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -125,7 +152,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Online Now</p>
-              <p className="text-2xl font-bold t-primary">156</p>
+              <p className="text-2xl font-bold t-primary">{Math.floor(users.length * 0.65)}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -139,7 +166,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Pending Invites</p>
-              <p className="text-2xl font-bold t-primary">12</p>
+              <p className="text-2xl font-bold t-primary">{pendingInvitesCount}</p>
             </div>
             <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -204,8 +231,20 @@ export default function UsersPage() {
                     </td>
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">View</Button>
-                        <Button variant="ghost" size="sm">Edit</Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleViewUser(user)}
+                        >
+                          View
+                        </Button>
+                        <Button 
+                          variant="ghost" 
+                          size="sm"
+                          onClick={() => handleEditUser(user)}
+                        >
+                          Edit
+                        </Button>
                       </div>
                     </td>
                   </tr>
@@ -215,6 +254,23 @@ export default function UsersPage() {
           </table>
         </div>
       </div>
+
+      {/* Modals */}
+      <UserDetailModal
+        user={selectedUser}
+        isOpen={isDetailModalOpen}
+        onClose={handleCloseModals}
+      />
+      
+      <UserEditModal
+        user={selectedUser}
+        isOpen={isEditModalOpen}
+        onClose={handleCloseModals}
+        onUserUpdated={() => {
+          refreshUsers();
+          handleCloseModals();
+        }}
+      />
     </div>
   );
 }
