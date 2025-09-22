@@ -1,189 +1,185 @@
-import React, { useState } from 'react';
-import { Navigate } from 'react-router-dom';
-import { useAuth } from '@/state/useAuth';
-import { getDefaultRoute } from '@/lib/rbac';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { toast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import { PathCard } from '@/components/ui/PathCard';
 import team1Logo from '@/assets/team1-logo.png';
-import t1Logo from '@/assets/t1-logo.png';
-import { useFeatureFlag } from '@/hooks/useFeatureFlag';
-import type { Role } from '@/lib/types';
-
-const roleTiles: Array<{ role: Role; title: string; description: string }> = [
-  { role: 'admin', title: 'Admin Portal', description: 'Full system administration access' },
-  { role: 'manager', title: 'Manager Dashboard', description: 'Management and oversight tools' },
-  { role: 'developer', title: 'Developer Console', description: 'Development and technical tools' },
-  { role: 'internal', title: 'Internal Hub', description: 'Internal team collaboration' },
-  { role: 'employee', title: 'Employee Portal', description: 'General employee access' },
-  { role: 'production', title: 'Production Floor', description: 'Manufacturing and production' },
-  { role: 'shipping_receiving', title: 'Shipping & Receiving', description: 'Logistics and fulfillment' },
-  { role: 'customer', title: 'Customer Portal', description: 'Customer project access' },
-];
 
 export default function AuthPage() {
-  const { isAuthenticated, login, loginWithRole } = useAuth();
-  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
-  const [email, setEmail] = useState('admin@team1arkansashub.com');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showRoles, setShowRoles] = useState(false);
+  const { signIn, signUp, isAuthenticated, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
+  if (authLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
   }
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    
     try {
-      await login(email, password);
+      const { error } = await signIn(email, password);
+      if (!error) {
+        toast({
+          title: "Welcome back!",
+          description: "You have been signed in successfully.",
+        });
+      }
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error('Sign in error:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRoleLogin = async (role: Role) => {
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
+    
     try {
-      await loginWithRole(role);
-      // Navigation will happen automatically via redirect
+      const { error } = await signUp(email, password, { name });
+      if (!error) {
+        toast({
+          title: "Account created!",
+          description: "Please check your email to verify your account.",
+        });
+      }
     } catch (error) {
-      console.error('Role login failed:', error);
+      console.error('Sign up error:', error);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-navy via-brand-navy2 to-brand-navy relative overflow-hidden">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0" style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Ccircle cx='7' cy='7' r='1'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-        }} />
-      </div>
-
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted relative overflow-hidden">
       {/* Theme Toggle */}
       <div className="absolute top-4 right-4">
         <ThemeToggle />
       </div>
 
-      <div className="relative flex min-h-screen items-center justify-center p-4">
-        <div className="w-full max-w-md">
-          {/* Logo */}
-          <div className="text-center mb-8">
+      <div className="flex min-h-screen items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-6">
+          {/* Logo and Header */}
+          <div className="text-center">
             <img 
-              src={brandV1Enabled ? t1Logo : team1Logo} 
-              alt={brandV1Enabled ? "T1 Logo" : "Team1 Logo"} 
-              className={`h-16 mx-auto mb-4 ${brandV1Enabled ? 'logo-shadow' : ''}`}
+              src={team1Logo} 
+              alt="Team1 Logo" 
+              className="h-16 mx-auto mb-4"
             />
-            <h1 className="text-3xl font-bold text-white mb-2">Internal Dashboard</h1>
-            <p className="text-brand-paper/80">Team1 Arkansas Hub - Admin Portal</p>
+            <h1 className="text-3xl font-bold">Welcome</h1>
+            <p className="text-muted-foreground">Team1 Arkansas Hub</p>
           </div>
 
-          {/* Glass Card */}
-          <div className="bg-white/10 dark:bg-white/5 backdrop-blur-lg rounded-2xl p-8 shadow-glass border border-white/20">
-            {!showRoles ? (
-              <>
-                <h2 className="text-2xl font-semibold text-white mb-6 text-center">Admin Login</h2>
-                <p className="text-brand-paper/80 text-center mb-6">
-                  Access your internal management console
-                </p>
-
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
-                      placeholder="admin@team1arkansashub.com"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-white mb-2">
-                      Password
-                    </label>
-                    <input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-brand-blue focus:border-transparent"
-                      placeholder="Enter your password"
-                      required
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    loading={loading}
-                    variant="primary"
-                    size="lg"
-                  >
-                    Access Dashboard
-                  </Button>
-                </form>
-
-                <div className="mt-6 pt-6 border-t border-white/20">
-                  <p className="text-center text-brand-paper/80 text-sm mb-4">
-                    Need an account? Sign up
-                  </p>
-                  
-                  <div className="text-center">
-                    <Button
-                      variant="ghost"
-                      onClick={() => setShowRoles(true)}
-                      className="text-white hover:bg-white/10"
-                    >
-                      Developer Access Tiles
+          <Card>
+            <CardHeader>
+              <CardTitle>Authentication</CardTitle>
+              <CardDescription>
+                Sign in to your account or create a new one
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Tabs defaultValue="signin" className="w-full">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="signin">Sign In</TabsTrigger>
+                  <TabsTrigger value="signup">Sign Up</TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="signin">
+                  <form onSubmit={handleSignIn} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-email">Email</Label>
+                      <Input
+                        id="signin-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signin-password">Password</Label>
+                      <Input
+                        id="signin-password"
+                        type="password"
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Signing in...' : 'Sign In'}
                     </Button>
-                  </div>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-semibold text-white">Select Role</h2>
-                  <Button
-                    variant="ghost"
-                    onClick={() => setShowRoles(false)}
-                    className="text-white hover:bg-white/10"
-                  >
-                    ← Back
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-1 gap-3 max-h-96 overflow-y-auto">
-                  {roleTiles.map(({ role, title, description }) => (
-                    <button
-                      key={role}
-                      onClick={() => handleRoleLogin(role)}
-                      disabled={loading}
-                      className="p-4 bg-white/5 hover:bg-white/10 border border-white/20 rounded-lg text-left transition-all duration-200 hover:scale-105 disabled:opacity-50"
-                    >
-                      <h3 className="text-white font-medium">{title}</h3>
-                      <p className="text-brand-paper/80 text-sm mt-1">{description}</p>
-                    </button>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-
-          <div className="text-center mt-6">
-            <p className="text-brand-paper/60 text-sm">
-              Team1 Arkansas Hub © 2024
-            </p>
-          </div>
+                  </form>
+                </TabsContent>
+                
+                <TabsContent value="signup">
+                  <form onSubmit={handleSignUp} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-name">Name</Label>
+                      <Input
+                        id="signup-name"
+                        type="text"
+                        placeholder="Enter your full name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-email">Email</Label>
+                      <Input
+                        id="signup-email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="signup-password">Password</Label>
+                      <Input
+                        id="signup-password"
+                        type="password"
+                        placeholder="Create a password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full" disabled={loading}>
+                      {loading ? 'Creating account...' : 'Sign Up'}
+                    </Button>
+                  </form>
+                </TabsContent>
+              </Tabs>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
