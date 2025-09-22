@@ -2,6 +2,9 @@ import React from "react";
 import { ulid } from "@/lib/ids";
 import PageSection from "@/components/layout/PageSection";
 import { EventV1, EventType } from "@/lib/events";
+import { AppDataExporter } from "@/lib/export/appDataExporter";
+import { SchemaExporter } from "@/lib/export/schemaExporter";
+import { toast } from "sonner";
 
 const targetsList = ["toInternal", "toProduction", "toSnR", "toCustomer"] as const;
 type Target = typeof targetsList[number];
@@ -44,6 +47,28 @@ export default function BridgePanel() {
     } catch {}
   };
 
+  const handleExportAppData = async () => {
+    try {
+      toast.info("Exporting application data...");
+      await AppDataExporter.exportComprehensiveData();
+      toast.success("Application data exported successfully!");
+    } catch (error) {
+      console.error("Export failed:", error);
+      toast.error("Failed to export application data");
+    }
+  };
+
+  const handleExportSchema = async () => {
+    try {
+      toast.info("Exporting database schema...");
+      await SchemaExporter.exportDatabaseSchema();
+      toast.success("Database schema exported successfully!");
+    } catch (error) {
+      console.error("Schema export failed:", error);
+      toast.error("Failed to export database schema");
+    }
+  };
+
   return (
     <PageSection title="Bridge Panel" subtitle="Dev event feed and simulator.">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -81,7 +106,7 @@ export default function BridgePanel() {
                  </button>
                ))}
             </div>
-            <div className="mt-3 flex gap-2">
+            <div className="mt-3 flex flex-wrap gap-2">
               <button onClick={copyLast} className="qa-item px-3 py-2 text-sm">
                 Copy Last JSON
               </button>
@@ -95,6 +120,23 @@ export default function BridgePanel() {
               >
                 Clear
               </button>
+            </div>
+            <div className="mt-3">
+              <div className="text-xs t-dim mb-2">Export Tools</div>
+              <div className="flex flex-wrap gap-2">
+                <button 
+                  onClick={handleExportAppData} 
+                  className="qa-item px-3 py-2 text-sm"
+                >
+                  Export App Data
+                </button>
+                <button 
+                  onClick={handleExportSchema} 
+                  className="qa-item px-3 py-2 text-sm"
+                >
+                  Export DB Schema
+                </button>
+              </div>
             </div>
           </div>
           <div className="space-y-4 p-4 rounded-lg border">
