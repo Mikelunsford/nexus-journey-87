@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from '@/hooks/use-toast';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
-import team1Logo from '@/assets/team1-logo.png';
+import team1Logo from '@/assets/team1-new-logo.png';
 
 export default function AuthPage() {
   const [email, setEmail] = useState('');
