@@ -1,9 +1,11 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { useCustomers } from '@/hooks/useCustomers';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 
 export default function CustomersPage() {
+  const { customers, loading, error } = useCustomers();
   const quickActions: QAItem[] = [
     {
       label: 'Add New Customer',
@@ -47,12 +49,12 @@ export default function CustomersPage() {
     },
   ];
 
-  // Sample customer data
-  const customers = [
-    { id: 1, name: 'ACME Corporation', email: 'contact@acme.com', phone: '555-0123', status: 'Active' },
-    { id: 2, name: 'TechStart Inc', email: 'hello@techstart.com', phone: '555-0456', status: 'Active' },
-    { id: 3, name: 'Global Industries', email: 'info@global.com', phone: '555-0789', status: 'Inactive' },
-  ];
+  const activeCustomers = customers.filter(c => !c.deleted_at);
+  const newThisMonth = customers.filter(c => {
+    const createdDate = new Date(c.created_at);
+    const now = new Date();
+    return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+  });
 
   return (
     <div className="space-y-8">
@@ -74,7 +76,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Total Customers</p>
-              <p className="text-2xl font-bold t-primary">3</p>
+              <p className="text-2xl font-bold t-primary">{customers.length}</p>
             </div>
             <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,7 +90,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Customers</p>
-              <p className="text-2xl font-bold t-primary">2</p>
+              <p className="text-2xl font-bold t-primary">{activeCustomers.length}</p>
             </div>
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,7 +104,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">New This Month</p>
-              <p className="text-2xl font-bold t-primary">1</p>
+              <p className="text-2xl font-bold t-primary">{newThisMonth.length}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -130,43 +132,52 @@ export default function CustomersPage() {
       {/* Customers Table */}
       <div className="card-surface panel panel-body">
         <h3 className="text-lg font-semibold t-primary mb-4">All Customers</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b">
-                <th className="text-left p-4 font-semibold">Name</th>
-                <th className="text-left p-4 font-semibold">Email</th>
-                <th className="text-left p-4 font-semibold">Phone</th>
-                <th className="text-left p-4 font-semibold">Status</th>
-                <th className="text-left p-4 font-semibold">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {customers.map((customer) => (
-                <tr key={customer.id} className="border-b hover:bg-muted/50">
-                  <td className="p-4 font-medium">{customer.name}</td>
-                  <td className="p-4 text-muted-foreground">{customer.email}</td>
-                  <td className="p-4 text-muted-foreground">{customer.phone}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      customer.status === 'Active' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                        : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                    }`}>
-                      {customer.status}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">View</Button>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </div>
-                  </td>
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+            <p className="ml-2 text-muted-foreground">Loading customers...</p>
+          </div>
+        ) : error ? (
+          <div className="text-center py-8">
+            <p className="text-destructive">{error}</p>
+          </div>
+        ) : customers.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-muted-foreground">No customers found</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className="text-left p-4 font-semibold">Name</th>
+                  <th className="text-left p-4 font-semibold">Email</th>
+                  <th className="text-left p-4 font-semibold">Phone</th>
+                  <th className="text-left p-4 font-semibold">Created</th>
+                  <th className="text-left p-4 font-semibold">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {customers.map((customer) => (
+                  <tr key={customer.id} className="border-b hover:bg-muted/50">
+                    <td className="p-4 font-medium">{customer.name}</td>
+                    <td className="p-4 text-muted-foreground">{customer.email || 'N/A'}</td>
+                    <td className="p-4 text-muted-foreground">{customer.phone || 'N/A'}</td>
+                    <td className="p-4 text-muted-foreground">
+                      {new Date(customer.created_at).toLocaleDateString()}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <Button variant="ghost" size="sm">View</Button>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );

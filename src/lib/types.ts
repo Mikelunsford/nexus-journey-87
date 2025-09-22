@@ -1,4 +1,6 @@
 // Core Types for Team1 Nexus
+import type { RoleBucket } from './rbac/roleBuckets';
+
 export type ID = string;
 export type Role = 'admin' | 'manager' | 'developer' | 'internal' | 'employee' | 'production' | 'shipping_receiving' | 'customer';
 
@@ -7,6 +9,35 @@ export interface User {
   email: string;
   role: Role;
   name?: string;
+}
+
+// Database types aligned with Supabase schema
+export interface DbCustomer {
+  id: string;
+  org_id: string;
+  name: string;
+  email?: string;
+  phone?: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+export interface DbProject {
+  id: string;
+  org_id: string;
+  customer_id: string;
+  title: string;
+  description?: string;
+  status: 'draft' | 'quoted' | 'approved' | 'in_progress' | 'on_hold' | 'completed' | 'archived';
+  priority?: 'low' | 'medium' | 'high' | 'critical';
+  due_date?: string;
+  budget?: number;
+  progress: number;
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
 }
 
 export interface Customer {

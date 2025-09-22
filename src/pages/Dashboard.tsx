@@ -1,12 +1,16 @@
 import React from 'react';
-import { useAuth } from '@/state/useAuth';
+import { useAuth } from '@/components/auth/AuthProvider';
+import { useCustomers } from '@/hooks/useCustomers';
+import { useProjects } from '@/hooks/useProjects';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { profile } = useAuth();
+  const { customers } = useCustomers();
+  const { projects } = useProjects();
   const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   const quickActions: QAItem[] = [
@@ -53,7 +57,7 @@ export default function Dashboard() {
       {/* Welcome Header */}
       <div>
         <h1 className="text-2xl md:text-3xl font-bold t-primary">
-          Welcome back, {user?.name || 'User'}
+          Welcome back, {profile?.name || 'User'}
         </h1>
         <p className="t-dim mt-2">
           Here's what's happening with your projects today.
@@ -66,7 +70,7 @@ export default function Dashboard() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Projects</p>
-              <p className="text-2xl font-bold t-primary">24</p>
+              <p className="text-2xl font-bold t-primary">{projects.filter(p => ['in_progress', 'approved'].includes(p.status)).length}</p>
             </div>
             <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-blue/10' : 'bg-t1-blue/10'}`}>
               <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-blue' : 't1-blue'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">

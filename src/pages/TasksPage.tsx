@@ -8,7 +8,7 @@ import { FilterBar } from '@/components/ui/FilterBar';
 import { SavedViews, SavedView } from '@/components/ui/SavedViews';
 import { ColumnSelector, Column } from '@/components/ui/ColumnSelector';
 import { useUrlState } from '@/hooks/useUrlState';
-import { useAuth } from '@/state/useAuth';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { createMockData } from '@/lib/mock/seeds';
 import { getAllTasks, getTasksByUser, Task } from '@/lib/adapters/tasksAdapter';
 import { cn } from '@/lib/utils';
@@ -76,7 +76,7 @@ const defaultColumns: Column[] = [
 ];
 
 export default function TasksPage() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [state, updateState] = useUrlState(defaultState);
   const [columns, setColumns] = useState(defaultColumns);
 
@@ -97,8 +97,8 @@ export default function TasksPage() {
       id: 'my-tasks',
       name: 'My Tasks',
       description: 'Tasks assigned to me',
-      filters: { assignee: [user?.name || ''] },
-      count: allTasks.filter(t => t.assignee === user?.name).length
+      filters: { assignee: [profile?.name || user?.email || ''] },
+      count: allTasks.filter(t => t.assignee === (profile?.name || user?.email)).length
     },
     {
       id: 'high-priority',
@@ -125,7 +125,7 @@ export default function TasksPage() {
       filters: { status: ['in_progress'] },
       count: allTasks.filter(t => t.status === 'in_progress').length
     }
-  ], [allTasks, user]);
+  ], [allTasks, user, profile]);
 
   // Filter tasks based on current state
   const filteredTasks = useMemo(() => {

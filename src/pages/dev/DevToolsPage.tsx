@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '@/state/useAuth';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { getRoleBucket, hasPermissionLevel } from '@/lib/rbac/roleBuckets';
 import { canAccess } from '@/lib/rbac/permissions';
 import PageSection from '@/components/layout/PageSection';
@@ -16,7 +16,7 @@ import ApiTester from '@/components/dev/ApiTester';
 import SeedScenarios from '@/components/dev/SeedScenarios';
 
 export default function DevToolsPage() {
-  const { user } = useAuth();
+  const { user, effectiveRole } = useAuth();
   const [activeTab, setActiveTab] = useState('schema');
 
   // Check permissions
@@ -30,8 +30,7 @@ export default function DevToolsPage() {
     );
   }
 
-  const userBucket = getRoleBucket(user.role);
-  const hasAccess = canAccess(userBucket, '/dashboard/dev/tools');
+  const hasAccess = canAccess(effectiveRole, '/dashboard/dev/tools');
 
   if (!hasAccess) {
     return (
@@ -109,7 +108,7 @@ export default function DevToolsPage() {
                 </CardDescription>
               </div>
               <Badge variant="secondary">
-                {userBucket} access
+                {effectiveRole} access
               </Badge>
             </div>
           </CardHeader>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { useAuth } from '@/state/useAuth';
+import { useAuth } from '@/components/auth/AuthProvider';
 import { canView } from '@/lib/rbac';
 import { cn } from '@/lib/utils';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
@@ -218,7 +218,7 @@ function DevIcon() {
 }
 
 export function AppSidebar() {
-  const { user } = useAuth();
+  const { effectiveRole } = useAuth();
   const location = useLocation();
   const { state: sidebarState } = useSidebar();
   const isCollapsed = sidebarState === 'collapsed';
@@ -229,7 +229,7 @@ export function AppSidebar() {
       <SidebarContent>
         {navigationItems.map((section) => {
           const visibleItems = section.items.filter(item => 
-            user && item.roles.includes(user.role as any)
+            effectiveRole && canView(item.url, effectiveRole)
           );
 
           if (visibleItems.length === 0) return null;
