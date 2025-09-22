@@ -94,6 +94,15 @@ export interface CarrierAppt {
   ref?: string;
 }
 
+export interface Label {
+  id: ID;
+  scope: 'customer'|'user'|'org';
+  name: string;
+  color: string;
+  slug: string;
+  createdAt: string;
+}
+
 // Event System Types
 export type EventType = 'quote.submitted' | 'quote.sent' | 'production.qty_reported' | 'shipment.delivered' | 'labor.entry_created';
 

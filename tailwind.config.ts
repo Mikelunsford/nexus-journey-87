@@ -29,8 +29,8 @@ export default {
           1: '#F5F7FB',
           2: '#E9EEF8',
           dark0: '#0B1220',
-          dark1: '#111A2E',
-          dark2: '#1B2744',
+          dark1: '#0E1628',
+          dark2: '#13203B',
         },
         status: {
           ok: '#16A34A',
@@ -96,6 +96,14 @@ export default {
       },
       spacing: {
         '18': '4.5rem',
+      },
+      backdropBlur: {
+        xs: '4px',
+        md: '12px'
+      },
+      opacity: {
+        15: '0.15',
+        30: '0.30'
       },
       fontFamily: {
         ui: ['Inter', 'system-ui', 'sans-serif'],

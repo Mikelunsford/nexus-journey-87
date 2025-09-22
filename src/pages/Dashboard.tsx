@@ -1,52 +1,48 @@
 import React from 'react';
 import { useAuth } from '@/state/useAuth';
-import { PathCard } from '@/components/ui/PathCard';
+import { QuickActionsList, type QAItem } from '@/components/ui/QuickActionsList';
 import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
 
 export default function Dashboard() {
   const { user } = useAuth();
 
-  const pathCards = [
+  const quickActions: QAItem[] = [
     {
-      title: 'Add Quote to Customer',
-      description: 'Create a new quote for an existing customer',
+      label: 'Add Quote to Customer',
+      to: '/dashboard/projects/new-internal',
       icon: (
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      to: '/dashboard/projects/new-internal',
     },
     {
-      title: 'Create Project for Customer',
-      description: 'Start a new project from an approved quote',
+      label: 'Create Project for Customer',
+      to: '/dashboard/projects/new-project',
       icon: (
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-4H5m14 8H5" />
         </svg>
       ),
-      to: '/dashboard/projects/new-project',
     },
     {
-      title: 'Import CSV',
-      description: 'Import customer data or project information',
+      label: 'Import CSV',
+      to: '/dashboard/settings/import',
       icon: (
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
         </svg>
       ),
-      to: '/dashboard/settings/import',
     },
     {
-      title: 'Invite User',
-      description: 'Add a new team member to the system',
+      label: 'Invite User',
+      to: '/dashboard/admin/users/invite',
       icon: (
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" className="w-6 h-6">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
         </svg>
       ),
-      to: '/dashboard/admin/users/invite',
     },
   ];
 
@@ -121,21 +117,13 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Path Cards */}
+      {/* Quick Actions */}
       <div>
         <h2 className="text-xl font-semibold text-brand-ink dark:text-brand-paper mb-4">
           Quick Actions
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {pathCards.map((card) => (
-            <PathCard
-              key={card.title}
-              title={card.title}
-              description={card.description}
-              icon={card.icon}
-              to={card.to}
-            />
-          ))}
+        <div className="max-w-md">
+          <QuickActionsList items={quickActions} />
         </div>
       </div>
 

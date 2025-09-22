@@ -9,17 +9,25 @@ const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
 
+// Lazy load additional pages
+const CustomersPage = React.lazy(() => import('@/pages/customers/CustomersPage'));
+const CustomerLabelsPage = React.lazy(() => import('@/pages/customers/CustomerLabelsPage'));
+const UserLabelsPage = React.lazy(() => import('@/pages/admin/UserLabelsPage'));
+const OrgLabelsPage = React.lazy(() => import('@/pages/admin/OrgLabelsPage'));
+
 // Placeholder components for now
 const ProjectsPage = () => <div className="p-8">Projects Page - Coming Soon</div>;
 const MessagesPage = () => <div className="p-8">Messages Page - Coming Soon</div>;
 const ProductionPage = () => <div className="p-8">Production Page - Coming Soon</div>;
 const ShippingPage = () => <div className="p-8">Shipping Page - Coming Soon</div>;
 const DocumentsPage = () => <div className="p-8">Documents Page - Coming Soon</div>;
-const CustomersPage = () => <div className="p-8">Customers Page - Coming Soon</div>;
+const CustomersNewPage = () => <div className="p-8">New Customer - Coming Soon</div>;
+const CustomerDetailPage = () => <div className="p-8">Customer Detail - Coming Soon</div>;
 const CarriersPage = () => <div className="p-8">Carriers Page - Coming Soon</div>;
 const AccountingPage = () => <div className="p-8">Accounting Page - Coming Soon</div>;
 const AnalyticsPage = () => <div className="p-8">Analytics Page - Coming Soon</div>;
 const UsersPage = () => <div className="p-8">Users Page - Coming Soon</div>;
+const UsersInvitePage = () => <div className="p-8">Invite User - Coming Soon</div>;
 const OrganizationsPage = () => <div className="p-8">Organizations Page - Coming Soon</div>;
 const SettingsPage = () => <div className="p-8">Settings Page - Coming Soon</div>;
 const BridgePage = () => <div className="p-8">Bridge Panel - Coming Soon</div>;
@@ -105,7 +113,35 @@ const router = createBrowserRouter([
         path: 'customers',
         element: (
           <RoleGate>
-            <CustomersPage />
+            <Suspense fallback={<PageLoader />}>
+              <CustomersPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'customers/new',
+        element: (
+          <RoleGate>
+            <CustomersNewPage />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'customers/labels',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <CustomerLabelsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'customers/:id',
+        element: (
+          <RoleGate>
+            <CustomerDetailPage />
           </RoleGate>
         ),
       },
@@ -142,10 +178,38 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'admin/users/invite',
+        element: (
+          <RoleGate>
+            <UsersInvitePage />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/users/labels',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <UserLabelsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
         path: 'admin/organizations',
         element: (
           <RoleGate>
             <OrganizationsPage />
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'admin/organizations/labels',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <OrgLabelsPage />
+            </Suspense>
           </RoleGate>
         ),
       },

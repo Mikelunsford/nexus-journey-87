@@ -8,7 +8,8 @@ import type {
   WorkOrder, 
   Shipment, 
   CarrierAppt,
-  User 
+  User,
+  Label 
 } from '../types';
 
 export function createMockData() {
@@ -126,6 +127,17 @@ export function createMockData() {
     };
   });
 
+  // Create labels
+  const labels: Label[] = [
+    { id: ulid(), scope: 'customer', name: 'VIP', color: '#E02525', slug: 'vip', createdAt: now },
+    { id: ulid(), scope: 'customer', name: 'New Customer', color: '#2B8AF7', slug: 'new-customer', createdAt: now },
+    { id: ulid(), scope: 'customer', name: 'Large Volume', color: '#16A34A', slug: 'large-volume', createdAt: now },
+    { id: ulid(), scope: 'user', name: 'Team Lead', color: '#F59E0B', slug: 'team-lead', createdAt: now },
+    { id: ulid(), scope: 'user', name: 'Contractor', color: '#6B7280', slug: 'contractor', createdAt: now },
+    { id: ulid(), scope: 'org', name: 'Premium Tier', color: '#E02525', slug: 'premium-tier', createdAt: now },
+    { id: ulid(), scope: 'org', name: 'Partner', color: '#16A34A', slug: 'partner', createdAt: now },
+  ];
+
   return {
     version: 1,
     users,
@@ -137,5 +149,6 @@ export function createMockData() {
     workOrders,
     shipments,
     carrierAppts,
+    labels,
   };
 }

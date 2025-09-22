@@ -8,14 +8,16 @@ interface PathCardProps {
   icon: React.ReactNode;
   to: string;
   className?: string;
+  variant?: 'default' | 'glass';
 }
 
-export function PathCard({ title, description, icon, to, className }: PathCardProps) {
+export function PathCard({ title, description, icon, to, className, variant = 'default' }: PathCardProps) {
   return (
     <Link
       to={to}
       className={cn(
         "group block p-6 bg-white dark:bg-surface-dark-1 rounded-xl border border-surface-2 dark:border-surface-dark-2 shadow-soft hover:shadow-strong transition-all duration-200 hover:scale-105 hover:border-brand-blue/20",
+        variant === 'glass' && "dark:glass dark:shadow-none",
         className
       )}
     >

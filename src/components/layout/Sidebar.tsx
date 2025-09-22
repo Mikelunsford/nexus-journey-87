@@ -30,7 +30,17 @@ const navigationItems = [
   {
     label: 'Business',
     items: [
-      { title: 'Customers', url: '/dashboard/customers', icon: CustomersIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
+      { 
+        title: 'Customers', 
+        url: '/dashboard/customers', 
+        icon: CustomersIcon, 
+        roles: ['admin', 'manager', 'developer', 'internal', 'employee'],
+        submenu: [
+          { title: 'List', url: '/dashboard/customers', roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
+          { title: 'Add', url: '/dashboard/customers/new', roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Labels', url: '/dashboard/customers/labels', roles: ['admin', 'manager', 'developer', 'internal'] },
+        ]
+      },
       { title: 'Carriers', url: '/dashboard/carriers', icon: CarriersIcon, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
       { title: 'Accounting', url: '/dashboard/accounting', icon: AccountingIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
     ],
@@ -39,8 +49,27 @@ const navigationItems = [
     label: 'Management',
     items: [
       { title: 'Analytics', url: '/dashboard/analytics', icon: AnalyticsIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
-      { title: 'Users', url: '/dashboard/admin/users', icon: UsersIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
-      { title: 'Organizations', url: '/dashboard/admin/organizations', icon: OrgsIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
+      { 
+        title: 'Users', 
+        url: '/dashboard/admin/users', 
+        icon: UsersIcon, 
+        roles: ['admin', 'manager', 'developer', 'internal'],
+        submenu: [
+          { title: 'List', url: '/dashboard/admin/users', roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Invite', url: '/dashboard/admin/users/invite', roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Labels', url: '/dashboard/admin/users/labels', roles: ['admin', 'manager', 'developer', 'internal'] },
+        ]
+      },
+      { 
+        title: 'Organizations', 
+        url: '/dashboard/admin/organizations', 
+        icon: OrgsIcon, 
+        roles: ['admin', 'manager', 'developer', 'internal'],
+        submenu: [
+          { title: 'List', url: '/dashboard/admin/organizations', roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Labels', url: '/dashboard/admin/organizations/labels', roles: ['admin', 'manager', 'developer', 'internal'] },
+        ]
+      },
       { title: 'Settings', url: '/dashboard/settings', icon: SettingsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'] },
     ],
   },

@@ -10,12 +10,17 @@ export function canView(route: string, role: Role): boolean {
     '/dashboard/shipping': ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'],
     '/dashboard/documents': ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'],
     '/dashboard/customers': ['admin', 'manager', 'developer', 'internal', 'employee'],
+    '/dashboard/customers/new': ['admin', 'manager', 'developer', 'internal'],
+    '/dashboard/customers/labels': ['admin', 'manager', 'developer', 'internal'],
     '/dashboard/carriers': ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'],
     '/dashboard/accounting': ['admin', 'manager', 'developer', 'internal'],
     '/dashboard/analytics': ['admin', 'manager', 'developer', 'internal'],
     '/dashboard/settings': ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'],
     '/dashboard/admin/users': ['admin', 'manager', 'developer', 'internal'],
+    '/dashboard/admin/users/invite': ['admin', 'manager', 'developer', 'internal'],
+    '/dashboard/admin/users/labels': ['admin', 'manager', 'developer', 'internal'],
     '/dashboard/admin/organizations': ['admin', 'manager', 'developer', 'internal'],
+    '/dashboard/admin/organizations/labels': ['admin', 'manager', 'developer', 'internal'],
     '/dev/bridge': ['admin', 'manager', 'developer', 'internal'],
   };
 
@@ -34,6 +39,10 @@ export function can(action: string, resource: string, role: Role): boolean {
     'write:shipping': ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'],
     'read:users': ['admin', 'manager', 'developer', 'internal'],
     'write:users': ['admin', 'manager', 'developer', 'internal'],
+    'read:labels': ['admin', 'manager', 'developer', 'internal'],
+    'write:labels': ['admin', 'manager', 'developer', 'internal'],
+    'read:customers': ['admin', 'manager', 'developer', 'internal', 'employee'],
+    'write:customers': ['admin', 'manager', 'developer', 'internal'],
     'read:settings': ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'],
     'write:settings': ['admin', 'manager', 'developer', 'internal'],
   };
