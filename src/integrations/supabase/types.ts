@@ -1505,6 +1505,54 @@ export type Database = {
           },
         ]
       }
+      user_invitations: {
+        Row: {
+          created_at: string
+          department_id: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          name: string | null
+          org_id: string
+          role_bucket: Database["public"]["Enums"]["role_bucket_enum"]
+          status: string
+          token: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          department_id?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          name?: string | null
+          org_id: string
+          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
+          status?: string
+          token: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          department_id?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          name?: string | null
+          org_id?: string
+          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
+          status?: string
+          token?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       work_orders: {
         Row: {
           actual_hours: number | null
