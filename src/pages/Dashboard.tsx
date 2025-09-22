@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '@/state/useAuth';
-import { QuickActionsList, type QAItem } from '@/components/ui/QuickActionsList';
+import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
 
@@ -50,21 +50,21 @@ export default function Dashboard() {
     <div className="space-y-8">
       {/* Welcome Header */}
       <div>
-        <h1 className="text-2xl md:text-3xl font-bold text-text-light dark:text-text-onDark">
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">
           Welcome back, {user?.name || 'User'}
         </h1>
-        <p className="text-dim mt-2">
+        <p className="t-dim mt-2">
           Here's what's happening with your projects today.
         </p>
       </div>
 
       {/* KPIs Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
+        <div className="kpi-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-dim">Active Projects</p>
-              <p className="text-2xl font-bold text-text-light dark:text-text-onDark">24</p>
+              <p className="text-sm t-dim">Active Projects</p>
+              <p className="text-2xl font-bold t-primary">24</p>
             </div>
             <div className="w-12 h-12 bg-brand-blue/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -74,11 +74,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
+        <div className="kpi-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-dim">Pending Quotes</p>
-              <p className="text-2xl font-bold text-text-light dark:text-text-onDark">8</p>
+              <p className="text-sm t-dim">Pending Quotes</p>
+              <p className="text-2xl font-bold t-primary">8</p>
             </div>
             <div className="w-12 h-12 bg-brand-red/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,11 +88,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
+        <div className="kpi-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-dim">Active Shipments</p>
-              <p className="text-2xl font-bold text-text-light dark:text-text-onDark">12</p>
+              <p className="text-sm t-dim">Active Shipments</p>
+              <p className="text-2xl font-bold t-primary">12</p>
             </div>
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,11 +102,11 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
+        <div className="kpi-card">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-dim">Team Members</p>
-              <p className="text-2xl font-bold text-text-light dark:text-text-onDark">47</p>
+              <p className="text-sm t-dim">Team Members</p>
+              <p className="text-2xl font-bold t-primary">47</p>
             </div>
             <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,70 +119,74 @@ export default function Dashboard() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-semibold text-text-light dark:text-text-onDark mb-4">
+        <h2 className="text-xl font-semibold t-primary mb-4">
           Quick Actions
         </h2>
-        <div className="max-w-md">
-          <QuickActionsList items={quickActions} />
-        </div>
+        <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Performance Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card-surface p-5 rounded-xl">
-          <h3 className="text-lg font-semibold text-text-light dark:text-text-onDark mb-4">
+        <div className="panel p-5">
+          <h3 className="text-lg font-semibold t-primary mb-4">
             Performance Status
           </h3>
           <div className="space-y-4">
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-dim">Production Efficiency</span>
-                <span className="text-sm font-medium text-text-light dark:text-text-onDark">87%</span>
+                <span className="text-sm t-dim">Production Efficiency</span>
+                <span className="text-sm font-medium t-primary">87%</span>
               </div>
               <StatusBar tone="brand" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-dim">On-Time Delivery</span>
-                <span className="text-sm font-medium text-text-light dark:text-text-onDark">94%</span>
+                <span className="text-sm t-dim">On-Time Delivery</span>
+                <span className="text-sm font-medium t-primary">94%</span>
               </div>
               <StatusBar tone="brand" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-dim">Quality Score</span>
-                <span className="text-sm font-medium text-text-light dark:text-text-onDark">78%</span>
+                <span className="text-sm t-dim">Quality Score</span>
+                <span className="text-sm font-medium t-primary">78%</span>
               </div>
               <StatusBar tone="warn" />
             </div>
           </div>
         </div>
 
-        <div className="bg-surface-0 dark:bg-white/5 dark:border dark:border-white/12 dark:backdrop-blur-md p-5 rounded-xl">
-          <h3 className="text-lg font-semibold text-text-light dark:text-text-onDark mb-4">
+        <div className="panel p-5">
+          <h3 className="text-lg font-semibold t-primary mb-4">
             Top Priorities
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
-              <div>
-                <p className="font-medium text-text-light dark:text-text-onDark">Project Alpha</p>
-                <p className="text-sm text-dim">Customer: ACME Corp</p>
+            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium t-primary">Project Alpha</p>
+                  <p className="text-sm t-dim">Customer: ACME Corp</p>
+                </div>
+                <StatusPill tone="warn">Due Soon</StatusPill>
               </div>
-              <StatusPill tone="warn">Due Soon</StatusPill>
             </div>
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
-              <div>
-                <p className="font-medium text-text-light dark:text-text-onDark">Shipment #1234</p>
-                <p className="text-sm text-dim">Destination: Little Rock</p>
+            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium t-primary">Shipment #1234</p>
+                  <p className="text-sm t-dim">Destination: Little Rock</p>
+                </div>
+                <StatusPill tone="info">In Transit</StatusPill>
               </div>
-              <StatusPill tone="info">In Transit</StatusPill>
             </div>
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
-              <div>
-                <p className="font-medium text-text-light dark:text-text-onDark">Quality Review</p>
-                <p className="text-sm text-dim">Production Line 2</p>
+            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium t-primary">Quality Review</p>
+                  <p className="text-sm t-dim">Production Line 2</p>
+                </div>
+                <StatusPill tone="err">Action Required</StatusPill>
               </div>
-              <StatusPill tone="err">Action Required</StatusPill>
             </div>
           </div>
         </div>

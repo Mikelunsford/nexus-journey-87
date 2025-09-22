@@ -143,4 +143,18 @@
   .dark .header-surface { @apply bg-[#0B1424]/90 backdrop-blur-md border-b border-white/12; }
   .text-dim { @apply text-text-dim; }
   .dark .text-dim { @apply text-text-onDarkDim; }
+
+  /* App and panels */
+  .app-bg { @apply bg-neutral-light dark:bg-[#0B1220]; }
+  .panel  { @apply bg-white dark:bg-white/5 border border-black/5 dark:border-white/12 rounded-2xl shadow-soft; }
+  .panel-muted { @apply bg-neutral-light/60 dark:bg-white/[0.08] border-0 rounded-xl; }
+
+  /* Text tokens */
+  .t-primary { @apply text-[#0F172A] dark:text-[#E5E7EB]; }
+  .t-dim     { @apply text-[#475569] dark:text-[#A8B1C7]; }
+
+  /* KPI + status */
+  .kpi-card { @apply panel p-4; }
+  .status-track { @apply bg-neutral-light dark:bg-neutral-mid; }
+  .status-bar   { @apply bg-[#2B8AF7]; } /* Team1 blue */
 }
