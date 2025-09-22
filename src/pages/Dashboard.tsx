@@ -157,7 +157,7 @@ export default function Dashboard() {
                 <span className="text-sm t-dim">Quality Score</span>
                 <span className="text-sm font-medium t-primary">78%</span>
               </div>
-              <StatusBar tone="warn" />
+              <StatusBar tone="brand" />
             </div>
           </div>
         </div>
