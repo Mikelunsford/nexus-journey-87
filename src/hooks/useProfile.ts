@@ -43,7 +43,7 @@ export function useProfile() {
         setLoading(true);
         
         // Fetch profile
-        const { data: profileData, error: profileError } = await supabase
+        const { data: profileData, error: profileError } = await (supabase as any)
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -56,7 +56,7 @@ export function useProfile() {
         }
 
         // Fetch memberships
-        const { data: membershipsData, error: membershipsError } = await supabase
+        const { data: membershipsData, error: membershipsError } = await (supabase as any)
           .from('memberships')
           .select('*')
           .eq('user_id', user.id)
