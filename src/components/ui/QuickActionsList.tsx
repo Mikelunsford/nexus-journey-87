@@ -29,16 +29,17 @@ export function QuickActionsList({ items }: QuickActionsListProps) {
         <button
           key={index}
           onClick={() => handleItemClick(item)}
-          className="w-full flex items-center space-x-3 p-3 text-left rounded-lg border bg-card hover:bg-accent hover:text-accent-foreground transition-colors"
+          className="flex items-center justify-between rounded-xl px-4 py-3 bg-surface-0 dark:bg-white/5 dark:hover:bg-white/10 border border-black/5 dark:border-white/10 transition w-full text-left"
         >
-          {item.icon && (
-            <div className="flex-shrink-0 text-brand-blue">
-              {item.icon}
-            </div>
-          )}
-          <span className="text-sm font-medium">{item.label}</span>
-          <div className="flex-1" />
-          <svg className="w-4 h-4 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="flex items-center space-x-3">
+            {item.icon && (
+              <div className="flex-shrink-0 text-brand-blue">
+                {item.icon}
+              </div>
+            )}
+            <span className="text-sm font-medium text-text-light dark:text-text-onDark">{item.label}</span>
+          </div>
+          <svg className="w-4 h-4 text-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>

@@ -16,7 +16,7 @@ export function PathCard({ title, description, icon, to, className, variant = 'd
     <Link
       to={to}
       className={cn(
-        "group block p-6 bg-white dark:bg-surface-dark-1 rounded-xl border border-surface-2 dark:border-surface-dark-2 shadow-soft hover:shadow-strong transition-all duration-200 hover:scale-105 hover:border-brand-blue/20",
+        "group block p-6 card-surface rounded-2xl shadow-soft hover:shadow-strong transition-all duration-200 hover:scale-105 hover:border-brand-blue/20 dark:border-white/12",
         variant === 'glass' && "dark:glass dark:shadow-none",
         className
       )}

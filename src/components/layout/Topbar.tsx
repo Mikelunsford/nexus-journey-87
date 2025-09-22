@@ -18,10 +18,10 @@ export function Topbar() {
   const { user, logout, switchRole } = useAuth();
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 bg-white dark:bg-surface-dark-1 border-b border-surface-2 dark:border-surface-dark-2">
+    <header className="header-surface sticky top-0 z-40 h-16 flex items-center justify-between px-6">
       <div className="flex items-center space-x-4">
-        <SidebarTrigger />
-        <h1 className="text-xl font-semibold text-brand-ink dark:text-brand-paper">
+        <SidebarTrigger className="text-text-light dark:text-text-onDark/90 hover:text-text-light dark:hover:text-white" />
+        <h1 className="text-text-light dark:text-text-onDark text-[20px] font-semibold tracking-tight">
           Team1 Nexus
         </h1>
       </div>
@@ -31,19 +31,19 @@ export function Topbar() {
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="flex items-center space-x-2">
+            <Button variant="ghost" className="flex items-center space-x-2 text-text-light dark:text-text-onDark/90 hover:text-text-light dark:hover:text-white">
               <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white text-sm font-medium">
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
               </div>
               <div className="text-left">
-                <div className="text-sm font-medium text-brand-ink dark:text-brand-paper">
+                <div className="text-sm font-medium text-text-light dark:text-text-onDark">
                   {user?.name || 'User'}
                 </div>
-                <div className="text-xs text-brand-gray capitalize">
+                <div className="text-xs text-dim capitalize">
                   {user?.role?.replace('_', ' ')}
                 </div>
               </div>
-              <svg className="w-4 h-4 text-brand-gray" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </Button>

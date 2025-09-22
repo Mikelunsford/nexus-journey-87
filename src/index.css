@@ -132,4 +132,15 @@
   .glass-hover:hover {
     @apply bg-white/10 border-white/30;
   }
+
+  /* App surfaces */
+  html, body, #root { height: 100%; }
+  body { @apply bg-surface-1 text-text-light; }
+  :root .card-surface { @apply bg-surface-0; }
+  .dark body { @apply bg-surface-dark0 text-text-onDark; }
+  .dark .card-surface { @apply bg-white/5 border border-white/15 backdrop-blur-md; }
+  .header-surface { @apply bg-surface-0; }
+  .dark .header-surface { @apply bg-[#0B1424]/90 backdrop-blur-md border-b border-white/12; }
+  .text-dim { @apply text-text-dim; }
+  .dark .text-dim { @apply text-text-onDarkDim; }
 }

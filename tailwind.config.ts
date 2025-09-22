@@ -26,11 +26,17 @@ export default {
         },
         surface: {
           0: '#FFFFFF',
-          1: '#F5F7FB',
-          2: '#E9EEF8',
+          1: '#F2F5F9',
+          2: '#E7EDF6',
           dark0: '#0B1220',
           dark1: '#0E1628',
           dark2: '#13203B',
+        },
+        text: {
+          light: '#0F172A',
+          dim: '#475569',
+          onDark: '#E5E7EB',
+          onDarkDim: '#A8B1C7',
         },
         status: {
           ok: '#16A34A',
@@ -102,7 +108,9 @@ export default {
         md: '12px'
       },
       opacity: {
+        12: '0.12',
         15: '0.15',
+        18: '0.18',
         30: '0.30'
       },
       fontFamily: {

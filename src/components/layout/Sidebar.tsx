@@ -2,6 +2,7 @@ import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/state/useAuth';
 import { canView } from '@/lib/rbac';
+import { cn } from '@/lib/utils';
 import {
   Sidebar,
   SidebarContent,
@@ -204,7 +205,7 @@ export function AppSidebar() {
   const isCollapsed = sidebarState === 'collapsed';
 
   return (
-    <Sidebar collapsible="icon">
+    <Sidebar collapsible="icon" className="dark:bg-[#0C1527] dark:border-r dark:border-white/10">
       <SidebarContent>
         {navigationItems.map((section) => {
           const visibleItems = section.items.filter(item => 
@@ -226,7 +227,12 @@ export function AppSidebar() {
                         <SidebarMenuButton asChild isActive={isActive}>
                           <NavLink 
                             to={item.url}
-                            className="flex items-center space-x-3"
+                            className={cn(
+                              "flex items-center space-x-3",
+                              isActive 
+                                ? "bg-white/8 text-text-onDark dark:bg-white/8 dark:text-text-onDark bg-surface-2 text-text-light" 
+                                : "text-dim hover:text-text-light dark:hover:text-text-onDark"
+                            )}
                           >
                             <item.icon />
                             {!isCollapsed && <span>{item.title}</span>}
