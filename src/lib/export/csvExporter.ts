@@ -108,7 +108,7 @@ export class CSVExporter {
 
   static downloadCSV(options: CSVExportOptions): void {
     const csvContent = this.generateCSV(options);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob([csvContent], { type: 'text/plain;charset=utf-8;' });
     
     // Create download link
     const link = document.createElement('a');
@@ -130,7 +130,7 @@ export class CSVExporter {
     const csvContent = this.generateCSV(options);
     
     const formData = new FormData();
-    formData.append('file', new Blob([csvContent], { type: 'text/csv' }), options.filename);
+    formData.append('file', new Blob([csvContent], { type: 'text/plain' }), options.filename);
     formData.append('metadata', JSON.stringify(this.generateMetadata(options)));
     
     return fetch(endpoint, {
@@ -191,16 +191,16 @@ export class CSVExporter {
     // Remove or replace invalid filename characters
     let sanitized = filename.replace(/[<>:"/\\|?*]/g, '_');
     
-    // Add .csv extension if not present
-    if (!sanitized.toLowerCase().endsWith('.csv')) {
-      sanitized += '.csv';
+    // Add .txt extension if not present
+    if (!sanitized.toLowerCase().endsWith('.txt')) {
+      sanitized += '.txt';
     }
     
     // Add timestamp to make filename unique
     const timestamp = format(new Date(), 'yyyy-MM-dd_HHmmss');
-    const nameWithoutExt = sanitized.replace(/\.csv$/i, '');
+    const nameWithoutExt = sanitized.replace(/\.txt$/i, '');
     
-    return `${nameWithoutExt}_${timestamp}.csv`;
+    return `${nameWithoutExt}_${timestamp}.txt`;
   }
 
   // Predefined column formatters for common data types
