@@ -97,7 +97,9 @@ const router = createBrowserRouter([
         path: 'production',
         element: (
           <RoleGate>
-            <ProductionPage />
+            <Suspense fallback={<PageLoader />}>
+              <ProductionPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -105,7 +107,9 @@ const router = createBrowserRouter([
         path: 'shipping',
         element: (
           <RoleGate>
-            <ShippingPage />
+            <Suspense fallback={<PageLoader />}>
+              <ShippingPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -113,7 +117,9 @@ const router = createBrowserRouter([
         path: 'documents',
         element: (
           <RoleGate>
-            <DocumentsPage />
+            <Suspense fallback={<PageLoader />}>
+              <DocumentsPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -131,7 +137,9 @@ const router = createBrowserRouter([
         path: 'customers/new',
         element: (
           <RoleGate>
-            <CustomersNewPage />
+            <Suspense fallback={<PageLoader />}>
+              <CustomersNewPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -157,7 +165,9 @@ const router = createBrowserRouter([
         path: 'carriers',
         element: (
           <RoleGate>
-            <CarriersPage />
+            <Suspense fallback={<PageLoader />}>
+              <CarriersPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -165,7 +175,9 @@ const router = createBrowserRouter([
         path: 'accounting',
         element: (
           <RoleGate>
-            <AccountingPage />
+            <Suspense fallback={<PageLoader />}>
+              <AccountingPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -183,7 +195,9 @@ const router = createBrowserRouter([
         path: 'admin/users',
         element: (
           <RoleGate>
-            <UsersPage />
+            <Suspense fallback={<PageLoader />}>
+              <UsersPage />
+            </Suspense>
           </RoleGate>
         ),
       },
@@ -209,7 +223,9 @@ const router = createBrowserRouter([
         path: 'admin/organizations',
         element: (
           <RoleGate>
-            <OrganizationsPage />
+            <Suspense fallback={<PageLoader />}>
+              <OrganizationsPage />
+            </Suspense>
           </RoleGate>
         ),
       },
