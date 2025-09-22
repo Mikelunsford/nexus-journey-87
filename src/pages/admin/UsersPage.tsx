@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { CreateUserModal } from '@/components/admin/CreateUserModal';
+import { useUsers } from '@/hooks/useUsers';
 
 export default function UsersPage() {
+  const { users, loading, refreshUsers } = useUsers();
   const quickActions: QAItem[] = [
     {
       label: 'Invite User',
@@ -49,36 +52,6 @@ export default function UsersPage() {
     },
   ];
 
-  const users = [
-    { 
-      id: 'USR-001', 
-      name: 'John Smith', 
-      email: 'john.smith@company.com', 
-      role: 'Admin', 
-      status: 'Active', 
-      lastLogin: '2024-01-15 10:30',
-      avatar: ''
-    },
-    { 
-      id: 'USR-002', 
-      name: 'Sarah Johnson', 
-      email: 'sarah.johnson@company.com', 
-      role: 'Manager', 
-      status: 'Active', 
-      lastLogin: '2024-01-14 16:45',
-      avatar: ''
-    },
-    { 
-      id: 'USR-003', 
-      name: 'Mike Chen', 
-      email: 'mike.chen@company.com', 
-      role: 'User', 
-      status: 'Inactive', 
-      lastLogin: '2024-01-10 09:15',
-      avatar: ''
-    },
-  ];
-
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
       case 'Active': return 'default';
@@ -111,7 +84,10 @@ export default function UsersPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold t-primary">Quick Actions</h2>
+          <CreateUserModal onUserCreated={refreshUsers} />
+        </div>
         <QuickActionsGrid items={quickActions} />
       </div>
 
@@ -190,37 +166,51 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
-                <tr key={user.id} className="border-b hover:bg-muted/50">
-                  <td className="p-4">
-                    <div className="flex items-center space-x-3">
-                      <Avatar className="h-8 w-8">
-                        <AvatarImage src={user.avatar} alt={user.name} />
-                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                      </Avatar>
-                      <span className="font-medium">{user.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-muted-foreground">{user.email}</td>
-                  <td className="p-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                      {user.role}
-                    </span>
-                  </td>
-                  <td className="p-4">
-                    <Badge variant={getStatusVariant(user.status)}>
-                      {user.status}
-                    </Badge>
-                  </td>
-                  <td className="p-4 text-muted-foreground text-sm">{user.lastLogin}</td>
-                  <td className="p-4">
-                    <div className="flex items-center space-x-2">
-                      <Button variant="ghost" size="sm">View</Button>
-                      <Button variant="ghost" size="sm">Edit</Button>
-                    </div>
+              {loading ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                    Loading users...
                   </td>
                 </tr>
-              ))}
+              ) : users.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
+                    No users found
+                  </td>
+                </tr>
+              ) : (
+                users.map((user) => (
+                  <tr key={user.id} className="border-b hover:bg-muted/50">
+                    <td className="p-4">
+                      <div className="flex items-center space-x-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={user.avatar_url} alt={user.name} />
+                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium">{user.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-muted-foreground">{user.email}</td>
+                    <td className="p-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role_bucket)}`}>
+                        {user.role_bucket}
+                      </span>
+                    </td>
+                    <td className="p-4">
+                      <Badge variant="default">Active</Badge>
+                    </td>
+                    <td className="p-4 text-muted-foreground text-sm">
+                      {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : 'Never'}
+                    </td>
+                    <td className="p-4">
+                      <div className="flex items-center space-x-2">
+                        <Button variant="ghost" size="sm">View</Button>
+                        <Button variant="ghost" size="sm">Edit</Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
