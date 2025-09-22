@@ -53,11 +53,11 @@ export default function SettingsPage() {
         <p className="t-dim mt-2">Manage your account and application preferences</p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="card-surface panel panel-body">
-        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
-        <QuickActionsGrid items={quickActions} />
-      </div>
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
+          <QuickActionsGrid items={quickActions} />
+        </div>
 
       {/* Settings Tabs */}
       <div className="card-surface panel panel-body">

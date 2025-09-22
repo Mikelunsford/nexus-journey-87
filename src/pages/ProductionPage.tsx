@@ -83,11 +83,11 @@ export default function ProductionPage() {
         </p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="card-surface panel panel-body">
-        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
-        <QuickActionsGrid items={quickActions} />
-      </div>
+        {/* Quick Actions */}
+        <div>
+          <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
+          <QuickActionsGrid items={quickActions} />
+        </div>
 
       {/* Production KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
