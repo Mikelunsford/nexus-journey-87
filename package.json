@@ -18,7 +18,6 @@
     "docs:all": "npm run docs:prepare && npm run docs:routes && npm run docs:schema && npm run docs:rls && npm run docs:buildmeta && npm run docs:index"
   },
   "dependencies": {
-    /* ...keep all your dependencies here... */
   },
   "devDependencies": {
     "@eslint/js": "^9.32.0",
