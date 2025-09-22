@@ -1,8 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.4";
-import { Resend } from "npm:resend@2.0.0";
-
-const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -132,48 +129,15 @@ const handler = async (req: Request): Promise<Response> => {
     // Generate invitation URL
     const invitationUrl = `${req.headers.get('origin')}/auth/accept-invitation?token=${token}`;
 
-    // Send invitation email
-    console.log('Attempting to send email to:', email);
-    const emailResponse = await resend.emails.send({
-      from: "Team1 <noreply@resend.dev>",
-      to: [email],
-      subject: "You're invited to join Team1!",
-      html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h1 style="color: #333; text-align: center;">You're Invited!</h1>
-          <p>Hi ${name},</p>
-          <p>You've been invited to join our organization with the role of <strong>${role_bucket}</strong>.</p>
-          <div style="text-align: center; margin: 30px 0;">
-            <a href="${invitationUrl}" 
-               style="background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; display: inline-block;">
-              Accept Invitation
-            </a>
-          </div>
-          <p>This invitation will expire in 7 days. If you didn't expect this invitation, you can safely ignore this email.</p>
-          <hr style="margin: 30px 0; border: none; border-top: 1px solid #eee;">
-          <p style="color: #666; font-size: 14px;">Best regards,<br>The Team1 Team</p>
-        </div>
-      `,
-    });
-
-    if (emailResponse.error) {
-      console.error('Email sending error:', emailResponse.error);
-      console.error('Full Resend response:', emailResponse);
-      // Don't fail the invitation if email fails, but log detailed error
-      console.warn('Invitation created successfully but email failed to send');
-    } else {
-      console.log('Email sent successfully:', emailResponse);
-      console.log('Email ID:', emailResponse.data?.id);
-    }
-
     console.log('Invitation process completed successfully');
+    console.log('Generated invitation URL:', invitationUrl);
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         invitation_id: invitation.id,
-        message: 'Invitation sent successfully',
-        email_sent: !emailResponse.error
+        invitation_url: invitationUrl,
+        message: 'Invitation created successfully'
       }),
       {
         status: 200,

@@ -8,10 +8,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { toast } from '@/hooks/use-toast';
 import { useInvitations } from '@/hooks/useInvitations';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Mail, User, Shield } from 'lucide-react';
+import { ArrowLeft, Link2, User, Shield, Copy, Check } from 'lucide-react';
 import { RoleGate } from '@/app/guards/RoleGate';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface InviteFormData {
   email: string;
@@ -23,6 +24,8 @@ export default function UsersInvitePage() {
   const navigate = useNavigate();
   const { inviteUser, invitations, loading, cancelInvitation } = useInvitations();
   const [submitting, setSubmitting] = useState(false);
+  const [generatedUrl, setGeneratedUrl] = useState<string>('');
+  const [copiedStates, setCopiedStates] = useState<{ [key: string]: boolean }>({});
 
   const {
     register,
@@ -37,17 +40,16 @@ export default function UsersInvitePage() {
     try {
       const result = await inviteUser(data);
       
-      // Check if email was sent successfully
-      if (result?.email_sent === false) {
+      if (result?.invitation_url) {
+        setGeneratedUrl(result.invitation_url);
         toast({
-          title: "Invitation created",
-          description: `Invitation created for ${data.email}, but email delivery failed. Please check your email configuration.`,
-          variant: "destructive",
+          title: "Invitation created!",
+          description: `Invitation URL generated for ${data.email}. Share the link below to complete their registration.`,
         });
       } else {
         toast({
-          title: "Invitation sent",
-          description: `Invitation sent successfully to ${data.email}`,
+          title: "Invitation created",
+          description: `Invitation created for ${data.email}`,
         });
       }
       
@@ -55,7 +57,7 @@ export default function UsersInvitePage() {
     } catch (error: any) {
       console.error('Invitation error:', error);
       toast({
-        title: "Failed to send invitation",
+        title: "Failed to create invitation",
         description: error.message,
         variant: "destructive",
       });
@@ -90,6 +92,30 @@ export default function UsersInvitePage() {
     }
   };
 
+  const copyToClipboard = async (text: string, id: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedStates(prev => ({ ...prev, [id]: true }));
+      setTimeout(() => {
+        setCopiedStates(prev => ({ ...prev, [id]: false }));
+      }, 2000);
+      toast({
+        title: "Copied!",
+        description: "Invitation URL copied to clipboard",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to copy",
+        description: "Could not copy URL to clipboard",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const generateInvitationUrl = (token: string) => {
+    return `${window.location.origin}/auth/accept-invitation?token=${token}`;
+  };
+
   return (
     <RoleGate>
       <div className="space-y-6">
@@ -113,11 +139,11 @@ export default function UsersInvitePage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Mail className="h-5 w-5" />
-                Send Invitation
+                <Link2 className="h-5 w-5" />
+                Create Invitation
               </CardTitle>
               <CardDescription>
-                The user will receive an email with instructions to complete their registration
+                Generate an invitation URL that you can share with the user to complete their registration
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -172,9 +198,39 @@ export default function UsersInvitePage() {
                 </div>
 
                 <Button type="submit" disabled={submitting} className="w-full">
-                  {submitting ? 'Sending...' : 'Send Invitation'}
+                  {submitting ? 'Creating...' : 'Create Invitation'}
                 </Button>
               </form>
+
+              {generatedUrl && (
+                <div className="mt-6 p-4 border rounded-lg bg-muted/50">
+                  <Label className="text-sm font-medium">Invitation URL</Label>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Input
+                      value={generatedUrl}
+                      readOnly
+                      className="font-mono text-sm"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="icon"
+                      onClick={() => copyToClipboard(generatedUrl, 'generated')}
+                    >
+                      {copiedStates['generated'] ? (
+                        <Check className="h-4 w-4" />
+                      ) : (
+                        <Copy className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <Alert className="mt-3">
+                    <AlertDescription className="text-sm">
+                      Share this URL with the user via your preferred communication method (email, Slack, Teams, etc.)
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
             </CardContent>
           </Card>
 
@@ -197,29 +253,57 @@ export default function UsersInvitePage() {
                 <p className="text-muted-foreground text-center py-4">No pending invitations</p>
               ) : (
                 <div className="space-y-2">
-                  {invitations.slice(0, 5).map((invitation) => (
-                    <div key={invitation.id} className="flex items-center justify-between p-3 border rounded-lg">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium truncate">{invitation.name}</p>
-                          <Badge variant={getStatusVariant(invitation.status)}>
-                            {invitation.status}
-                          </Badge>
+                  {invitations.slice(0, 5).map((invitation) => {
+                    const invitationUrl = generateInvitationUrl(invitation.token || '');
+                    const copyId = `invitation-${invitation.id}`;
+                    
+                    return (
+                      <div key={invitation.id} className="p-3 border rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="font-medium truncate">{invitation.name}</p>
+                              <Badge variant={getStatusVariant(invitation.status)}>
+                                {invitation.status}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-muted-foreground truncate">{invitation.email}</p>
+                            <p className="text-xs text-muted-foreground">Role: {invitation.role_bucket}</p>
+                          </div>
+                          {invitation.status === 'pending' && (
+                            <Button 
+                              variant="ghost" 
+                              size="sm"
+                              onClick={() => handleCancelInvitation(invitation.id)}
+                            >
+                              Cancel
+                            </Button>
+                          )}
                         </div>
-                        <p className="text-sm text-muted-foreground truncate">{invitation.email}</p>
-                        <p className="text-xs text-muted-foreground">Role: {invitation.role_bucket}</p>
+                        {invitation.status === 'pending' && invitation.token && (
+                          <div className="flex items-center gap-2">
+                            <Input
+                              value={invitationUrl}
+                              readOnly
+                              className="font-mono text-xs"
+                            />
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="icon"
+                              onClick={() => copyToClipboard(invitationUrl, copyId)}
+                            >
+                              {copiedStates[copyId] ? (
+                                <Check className="h-3 w-3" />
+                              ) : (
+                                <Copy className="h-3 w-3" />
+                              )}
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      {invitation.status === 'pending' && (
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleCancelInvitation(invitation.id)}
-                        >
-                          Cancel
-                        </Button>
-                      )}
-                    </div>
-                  ))}
+                    );
+                  })}
                   {invitations.length > 5 && (
                     <p className="text-sm text-muted-foreground text-center pt-2">
                       And {invitations.length - 5} more...

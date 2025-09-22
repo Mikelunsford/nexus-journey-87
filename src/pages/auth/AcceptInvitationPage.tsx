@@ -171,18 +171,19 @@ export default function AcceptInvitationPage() {
           <div className="mx-auto w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
             <UserPlus className="h-6 w-6 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Complete Your Registration</CardTitle>
+          <CardTitle className="text-2xl font-bold">You have been invited to join the Team1 Dashboard!</CardTitle>
           <CardDescription>
-            You've been invited to join as a <strong>{invitation.role_bucket}</strong>
+            Complete your registration to join as a <strong>{invitation.role_bucket}</strong>
           </CardDescription>
         </CardHeader>
         
         <CardContent>
           <div className="mb-6">
-            <Alert>
-              <AlertCircle className="h-4 w-4" />
+            <Alert className="border-primary/20 bg-primary/5">
+              <UserPlus className="h-4 w-4 text-primary" />
               <AlertDescription>
-                Setting up account for <strong>{invitation.name}</strong> ({invitation.email})
+                <strong>Welcome {invitation.name}!</strong><br />
+                Setting up your account for {invitation.email}
               </AlertDescription>
             </Alert>
           </div>

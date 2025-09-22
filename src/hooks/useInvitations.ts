@@ -11,6 +11,7 @@ export interface UserInvitation {
   expires_at: string;
   invited_by: string;
   created_at: string;
+  token?: string;
 }
 
 export function useInvitations() {
@@ -28,7 +29,7 @@ export function useInvitations() {
 
       const { data, error: queryError } = await supabase
         .from('user_invitations')
-        .select('*')
+        .select('*, token')
         .eq('org_id', profile.org_id)
         .order('created_at', { ascending: false });
 
