@@ -15,18 +15,25 @@ export interface BundleOptions {
 
 export class BundleExporter {
   static async createBundle(options: BundleOptions): Promise<void> {
+    console.log("🔄 Creating bundle:", options.bundleName);
+    console.log("📁 Files to include:", options.files.length);
+    
     const zip = new JSZip();
     
     // Add README.md first
+    console.log("📝 Adding README.md...");
     zip.file('README.md', options.readme);
     
     // Add all files
+    console.log("📦 Adding files to zip...");
     for (const file of options.files) {
+      console.log(`  ➕ Adding: ${file.name} (${file.content.length} chars)`);
       zip.file(file.name, file.content);
     }
     
     // Add metadata if requested
     if (options.includeMetadata) {
+      console.log("📋 Adding metadata...");
       const metadata = {
         generatedAt: new Date().toISOString(),
         bundleName: options.bundleName,
@@ -38,17 +45,49 @@ export class BundleExporter {
     }
     
     // Generate and download zip
+    console.log("🔄 Generating zip blob...");
     const content = await zip.generateAsync({ type: 'blob' });
+    console.log("✅ Zip generated, size:", content.size, "bytes");
+    
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
     const filename = `${options.bundleName}_${timestamp}.zip`;
+    console.log("📥 Starting download:", filename);
     
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(content);
-    link.download = filename;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
+    // Try multiple download methods for better compatibility
+    try {
+      // Method 1: Standard download
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(content);
+      link.download = filename;
+      link.style.display = 'none';
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup after a delay to ensure download starts
+      setTimeout(() => {
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+        console.log("✅ Download cleanup completed");
+      }, 1000);
+      
+      console.log("✅ Download initiated successfully");
+    } catch (error) {
+      console.error("❌ Standard download failed, trying fallback:", error);
+      
+      // Fallback method: Force download using window.open
+      try {
+        const url = URL.createObjectURL(content);
+        const newWindow = window.open(url, '_blank');
+        if (newWindow) {
+          newWindow.document.title = filename;
+        }
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+        console.log("✅ Fallback download method used");
+      } catch (fallbackError) {
+        console.error("❌ All download methods failed:", fallbackError);
+        throw new Error(`Download failed: ${fallbackError}`);
+      }
+    }
   }
   
   static sanitizeContent(content: string): string {

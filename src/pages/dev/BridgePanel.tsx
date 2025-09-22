@@ -48,37 +48,52 @@ export default function BridgePanel() {
   };
 
   const handleExportAppData = async () => {
+    console.log("🔄 Starting app data export...");
     try {
       toast.info("Generating comprehensive app bundle...");
+      console.log("📦 Loading AppBundleExporter...");
       const { AppBundleExporter } = await import('@/lib/export/appBundleExporter');
+      console.log("✅ AppBundleExporter loaded, starting export...");
       await AppBundleExporter.exportAppBundle();
+      console.log("✅ App bundle export completed!");
       toast.success("App bundle exported successfully!");
     } catch (error) {
-      console.error("App bundle export failed:", error);
+      console.error("❌ App bundle export failed:", error);
+      console.error("Error details:", error instanceof Error ? error.message : error);
       toast.error("Failed to export app bundle");
     }
   };
 
   const handleExportSchema = async () => {
+    console.log("🔄 Starting schema export...");
     try {
       toast.info("Generating comprehensive database bundle...");
+      console.log("📦 Loading DbBundleExporter...");
       const { DbBundleExporter } = await import('@/lib/export/dbBundleExporter');
+      console.log("✅ DbBundleExporter loaded, starting export...");
       await DbBundleExporter.exportDbBundle();
+      console.log("✅ Database bundle export completed!");
       toast.success("Database bundle exported successfully!");
     } catch (error) {
-      console.error("Database bundle export failed:", error);
+      console.error("❌ Database bundle export failed:", error);
+      console.error("Error details:", error instanceof Error ? error.message : error);
       toast.error("Failed to export database bundle");
     }
   };
 
   const handleExportGitHub = async () => {
+    console.log("🔄 Starting GitHub export...");
     try {
       toast.info("Generating GitHub repository bundle...");
+      console.log("📦 Loading GitHubBundleExporter...");
       const { GitHubBundleExporter } = await import('@/lib/export/githubBundleExporter');
+      console.log("✅ GitHubBundleExporter loaded, starting export...");
       await GitHubBundleExporter.exportGitHubBundle();
+      console.log("✅ GitHub bundle export completed!");
       toast.success("GitHub bundle exported successfully!");
     } catch (error) {
-      console.error("GitHub bundle export failed:", error);
+      console.error("❌ GitHub bundle export failed:", error);
+      console.error("Error details:", error instanceof Error ? error.message : error);
       toast.error("Failed to export GitHub bundle");
     }
   };
