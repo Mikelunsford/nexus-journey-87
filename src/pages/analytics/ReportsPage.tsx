@@ -18,8 +18,22 @@ export default function ReportsPage() {
   // Mock data for demonstration
   const mockData = {
     projects: [
-      { id: '1', status: 'completed' as const, updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() },
-      { id: '2', status: 'completed' as const, updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() },
+      { 
+        id: '1', 
+        customerId: 'cust-1',
+        title: 'Sample Project Alpha',
+        status: 'completed' as const, 
+        createdAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString() 
+      },
+      { 
+        id: '2', 
+        customerId: 'cust-2',
+        title: 'Sample Project Beta',
+        status: 'completed' as const, 
+        createdAt: new Date(Date.now() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+        updatedAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString() 
+      },
     ],
     workOrders: [
       { id: '1', status: 'done' as const, createdAt: new Date().toISOString(), projectId: '1' },
