@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { PathCard } from '@/components/ui/PathCard';
 import team1Logo from '@/assets/team1-logo.png';
+import t1Logo from '@/assets/t1-logo.png';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import type { Role } from '@/lib/types';
 
 const roleTiles: Array<{ role: Role; title: string; description: string }> = [
@@ -21,6 +23,7 @@ const roleTiles: Array<{ role: Role; title: string; description: string }> = [
 
 export default function AuthPage() {
   const { isAuthenticated, login, loginWithRole } = useAuth();
+  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
   const [email, setEmail] = useState('admin@team1arkansashub.com');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -73,9 +76,9 @@ export default function AuthPage() {
           {/* Logo */}
           <div className="text-center mb-8">
             <img 
-              src={team1Logo} 
-              alt="Team1 Logo" 
-              className="h-16 mx-auto mb-4"
+              src={brandV1Enabled ? t1Logo : team1Logo} 
+              alt={brandV1Enabled ? "T1 Logo" : "Team1 Logo"} 
+              className={`h-16 mx-auto mb-4 ${brandV1Enabled ? 'logo-shadow' : ''}`}
             />
             <h1 className="text-3xl font-bold text-white mb-2">Internal Dashboard</h1>
             <p className="text-brand-paper/80">Team1 Arkansas Hub - Admin Portal</p>

@@ -217,3 +217,42 @@
 .status-ok    { @apply bg-green-600; }
 .status-warn  { @apply bg-amber-500; }
 .status-err   { background: var(--t1-red); }
+.status-brand { background: linear-gradient(90deg, hsl(var(--t1-blue)) 0%, hsl(var(--brand-blue-light)) 100%); }
+
+/* Logo enhancement utilities */
+.logo-shadow {
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3)) drop-shadow(0 2px 4px rgba(255, 255, 255, 0.2));
+}
+
+/* Team1 accent utilities */
+.accent-primary {
+  @apply bg-brand-blue text-white;
+}
+
+.accent-secondary {
+  @apply bg-brand-red text-white;
+}
+
+.accent-success {
+  @apply bg-green-600 dark:bg-green-500 text-white;
+}
+
+.t1-blue {
+  color: hsl(var(--t1-blue));
+}
+
+.t1-red {
+  color: hsl(var(--t1-red));
+}
+
+.bg-t1-blue {
+  background-color: hsl(var(--t1-blue));
+}
+
+.bg-t1-red {
+  background-color: hsl(var(--t1-red));
+}
+
+.bg-t1-bg-d {
+  background-color: hsl(var(--t1-bg-d));
+}

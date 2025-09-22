@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '@/state/useAuth';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { 
   DropdownMenu,
@@ -16,6 +17,7 @@ const roles: Role[] = ['admin', 'manager', 'developer', 'internal', 'employee', 
 
 export function Topbar() {
   const { user, logout, switchRole } = useAuth();
+  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   return (
     <header className="header-surface sticky top-0 z-40 h-16 flex items-center justify-between px-6">
@@ -32,7 +34,7 @@ export function Topbar() {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="flex items-center space-x-2 text-text-light dark:text-text-onDark/90 hover:text-text-light dark:hover:text-white">
-              <div className="w-8 h-8 bg-brand-red rounded-full flex items-center justify-center text-white text-sm font-medium">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium ${brandV1Enabled ? 'bg-t1-red' : 'bg-brand-red'}`}>
                 {user?.name?.charAt(0) || user?.email?.charAt(0) || 'U'}
               </div>
               <div className="text-left">
@@ -65,7 +67,11 @@ export function Topbar() {
                     key={role}
                     onClick={() => switchRole(role)}
                     className={`text-xs cursor-pointer ${
-                      user?.role === role ? 'bg-brand-blue/10 text-brand-blue' : ''
+                      user?.role === role 
+                        ? brandV1Enabled 
+                          ? 'bg-t1-blue/10 text-t1-blue' 
+                          : 'bg-brand-blue/10 text-brand-blue'
+                        : ''
                     }`}
                   >
                     {role.replace('_', ' ')}

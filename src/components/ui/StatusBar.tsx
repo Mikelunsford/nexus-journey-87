@@ -12,6 +12,7 @@ export function StatusBar({ tone, className }: StatusBarProps) {
       <div
         className={cn(
           'status-fill transition-all duration-200',
+          tone === 'brand' && 'status-brand',
           tone === 'ok' && 'status-ok',
           tone === 'warn' && 'status-warn', 
           tone === 'err' && 'status-err'

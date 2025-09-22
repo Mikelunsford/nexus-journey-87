@@ -3,9 +3,11 @@ import { useAuth } from '@/state/useAuth';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   const quickActions: QAItem[] = [
     {
@@ -66,8 +68,8 @@ export default function Dashboard() {
               <p className="text-sm t-dim">Active Projects</p>
               <p className="text-2xl font-bold t-primary">24</p>
             </div>
-            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-blue/10' : 'bg-t1-blue/10'}`}>
+              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-blue' : 't1-blue'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-4H5m14 8H5" />
               </svg>
             </div>
@@ -80,8 +82,8 @@ export default function Dashboard() {
               <p className="text-sm t-dim">Pending Quotes</p>
               <p className="text-2xl font-bold t-primary">8</p>
             </div>
-            <div className="w-12 h-12 bg-t1-red/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6" style={{color: 'var(--t1-red)'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-red/10' : 'bg-t1-red/10'}`}>
+              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-red' : 'text-t1-red'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
@@ -94,8 +96,8 @@ export default function Dashboard() {
               <p className="text-sm t-dim">Active Shipments</p>
               <p className="text-2xl font-bold t-primary">12</p>
             </div>
-            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-green-600/10 dark:bg-green-500/10' : 'bg-green-500/10'}`}>
+              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-green-600 dark:text-green-500' : 'text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
               </svg>
             </div>
@@ -108,8 +110,8 @@ export default function Dashboard() {
               <p className="text-sm t-dim">Team Members</p>
               <p className="text-2xl font-bold t-primary">47</p>
             </div>
-            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-purple-600/10 dark:bg-purple-500/10' : 'bg-purple-500/10'}`}>
+              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-purple-600 dark:text-purple-500' : 'text-purple-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
               </svg>
             </div>

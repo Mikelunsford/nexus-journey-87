@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export type QAItem = {
   label: string;
@@ -14,6 +15,7 @@ interface QuickActionsListProps {
 
 export function QuickActionsList({ items }: QuickActionsListProps) {
   const navigate = useNavigate();
+  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   const handleItemClick = (item: QAItem) => {
     if (item.onClick) {
@@ -33,7 +35,7 @@ export function QuickActionsList({ items }: QuickActionsListProps) {
         >
           <div className="flex items-center space-x-3">
             {item.icon && (
-              <div className="flex-shrink-0 text-brand-blue">
+              <div className={`flex-shrink-0 ${brandV1Enabled ? 'text-brand-blue' : 'text-brand-blue'}`}>
                 {item.icon}
               </div>
             )}

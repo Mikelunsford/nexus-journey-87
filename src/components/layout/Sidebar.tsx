@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { useAuth } from '@/state/useAuth';
 import { canView } from '@/lib/rbac';
 import { cn } from '@/lib/utils';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import {
   Sidebar,
   SidebarContent,
@@ -203,9 +204,10 @@ export function AppSidebar() {
   const location = useLocation();
   const { state: sidebarState } = useSidebar();
   const isCollapsed = sidebarState === 'collapsed';
+  const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   return (
-    <Sidebar collapsible="icon" className="dark:bg-[#0C1527] dark:border-r dark:border-white/10">
+    <Sidebar collapsible="icon" className={brandV1Enabled ? "bg-app-surface dark:bg-t1-bg-d dark:border-r dark:border-white/10" : "dark:bg-[#0C1527] dark:border-r dark:border-white/10"}>
       <SidebarContent>
         {navigationItems.map((section) => {
           const visibleItems = section.items.filter(item => 
@@ -230,8 +232,12 @@ export function AppSidebar() {
                             className={cn(
                               "flex items-center space-x-3",
                               isActive 
-                                ? "bg-surface-2 text-text-light dark:bg-white/8 dark:text-text-onDark" 
-                                : "text-dim hover:text-text-light dark:hover:text-text-onDark"
+                                ? brandV1Enabled 
+                                  ? "bg-brand-blue/10 text-brand-blue dark:bg-brand-blue/20 dark:text-brand-blue" 
+                                  : "bg-surface-2 text-text-light dark:bg-white/8 dark:text-text-onDark"
+                                : brandV1Enabled
+                                  ? "text-dim hover:text-brand-blue/80 dark:hover:text-brand-blue/80"
+                                  : "text-dim hover:text-text-light dark:hover:text-text-onDark"
                             )}
                           >
                             <item.icon />
