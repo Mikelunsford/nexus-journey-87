@@ -172,7 +172,7 @@ export default function OrganizationsPage() {
       </div>
 
       {/* Organizations Table */}
-      <div className="card-surface panel panel-body">
+      <div>
         <h3 className="text-lg font-semibold t-primary mb-4">All Organizations</h3>
         <Card>
         <CardHeader>

@@ -146,7 +146,7 @@ export default function CarriersPage() {
       </div>
 
       {/* Carriers Table */}
-      <div className="card-surface panel panel-body">
+      <div>
         <h3 className="text-lg font-semibold t-primary mb-4">Carrier Partners</h3>
         <Card>
         <CardHeader>

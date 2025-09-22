@@ -147,7 +147,7 @@ export default function ProjectsPage() {
         </div>
       </div>
 
-      <div className="card-surface panel panel-body space-y-6">
+      <div className="space-y-6">
 
         {/* Projects List */}
         <div className="space-y-4">
