@@ -5,14 +5,14 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium font-ui ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium font-ui ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/50 dark:focus-visible:ring-brand-blue/50 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        primary: "bg-brand-red text-white hover:bg-brand-red-dark shadow-md hover:shadow-lg active:scale-95",
-        secondary: "bg-brand-navy text-white hover:bg-brand-navy2 shadow-md hover:shadow-lg active:scale-95",
-        ghost: "hover:bg-surface-1 dark:hover:bg-surface-dark-1 text-brand-ink dark:text-brand-paper",
-        danger: "bg-status-err text-white hover:bg-red-700 shadow-md hover:shadow-lg active:scale-95",
+        primary: "bg-brand-red text-white hover:bg-[#B31D1D] shadow-md hover:shadow-lg active:scale-95",
+        secondary: "bg-brand-navy text-white hover:bg-brand-navy/90 shadow-md hover:shadow-lg active:scale-95",
+        ghost: "text-brand-blue hover:bg-brand-blue/10",
+        danger: "bg-brand-red text-white hover:bg-[#B31D1D] shadow-md hover:shadow-lg active:scale-95",
         outline: "border border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white",
         link: "text-brand-blue underline-offset-4 hover:underline",
       },

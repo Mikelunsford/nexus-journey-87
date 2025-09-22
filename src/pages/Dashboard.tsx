@@ -59,8 +59,8 @@ export default function Dashboard() {
       </div>
 
       {/* KPIs Section */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="card-surface p-4 rounded-xl">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-dim">Active Projects</p>
@@ -74,7 +74,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface p-4 rounded-xl">
+        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-dim">Pending Quotes</p>
@@ -88,7 +88,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface p-4 rounded-xl">
+        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-dim">Active Shipments</p>
@@ -102,7 +102,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface p-4 rounded-xl">
+        <div className="card-surface rounded-xl p-4 border dark:border-white/10">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-dim">Team Members</p>
@@ -139,14 +139,14 @@ export default function Dashboard() {
                 <span className="text-sm text-dim">Production Efficiency</span>
                 <span className="text-sm font-medium text-text-light dark:text-text-onDark">87%</span>
               </div>
-              <StatusBar tone="ok" />
+              <StatusBar tone="brand" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-dim">On-Time Delivery</span>
                 <span className="text-sm font-medium text-text-light dark:text-text-onDark">94%</span>
               </div>
-              <StatusBar tone="ok" />
+              <StatusBar tone="brand" />
             </div>
             <div>
               <div className="flex justify-between items-center mb-2">
@@ -158,26 +158,26 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="card-surface p-5 rounded-xl">
+        <div className="bg-surface-0 dark:bg-white/5 dark:border dark:border-white/12 dark:backdrop-blur-md p-5 rounded-xl">
           <h3 className="text-lg font-semibold text-text-light dark:text-text-onDark mb-4">
             Top Priorities
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-surface-dark-2 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
               <div>
                 <p className="font-medium text-text-light dark:text-text-onDark">Project Alpha</p>
                 <p className="text-sm text-dim">Customer: ACME Corp</p>
               </div>
               <StatusPill tone="warn">Due Soon</StatusPill>
             </div>
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-surface-dark-2 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
               <div>
                 <p className="font-medium text-text-light dark:text-text-onDark">Shipment #1234</p>
                 <p className="text-sm text-dim">Destination: Little Rock</p>
               </div>
               <StatusPill tone="info">In Transit</StatusPill>
             </div>
-            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-surface-dark-2 rounded-lg">
+            <div className="flex items-center justify-between p-3 bg-surface-1 dark:bg-white/4 dark:hover:bg-white/8 transition rounded-lg">
               <div>
                 <p className="font-medium text-text-light dark:text-text-onDark">Quality Review</p>
                 <p className="text-sm text-dim">Production Line 2</p>

@@ -24,6 +24,11 @@ export default {
           ink: '#0F172A',
           paper: '#F8FAFC',
         },
+        neutral: {
+          dark: '#0E1628',
+          mid: '#1A2747',
+          light: '#F2F5F9',
+        },
         surface: {
           0: '#FFFFFF',
           1: '#F2F5F9',

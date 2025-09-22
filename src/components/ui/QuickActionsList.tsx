@@ -29,7 +29,7 @@ export function QuickActionsList({ items }: QuickActionsListProps) {
         <button
           key={index}
           onClick={() => handleItemClick(item)}
-          className="flex items-center justify-between rounded-xl px-4 py-3 bg-surface-0 dark:bg-white/5 dark:hover:bg-white/10 border border-black/5 dark:border-white/10 transition w-full text-left"
+          className="flex items-center justify-between rounded-xl px-4 py-2.5 bg-surface-0 dark:bg-white/5 dark:hover:bg-white/10 border border-black/5 dark:border-white/10 transition w-full text-left"
         >
           <div className="flex items-center space-x-3">
             {item.icon && (
