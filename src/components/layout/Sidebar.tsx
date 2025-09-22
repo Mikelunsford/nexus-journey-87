@@ -230,7 +230,7 @@ export function AppSidebar() {
                             className={cn(
                               "flex items-center space-x-3",
                               isActive 
-                                ? "bg-white/8 text-text-onDark dark:bg-white/8 dark:text-text-onDark bg-surface-2 text-text-light" 
+                                ? "bg-surface-2 text-text-light dark:bg-white/8 dark:text-text-onDark" 
                                 : "text-dim hover:text-text-light dark:hover:text-text-onDark"
                             )}
                           >
