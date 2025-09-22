@@ -102,126 +102,129 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="panel p-5 space-y-8">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Users</h1>
-        <p className="t-dim mt-1">
-          Manage user accounts, roles, and permissions for your organization.
-        </p>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Users</h1>
+        <p className="t-dim mt-2">Manage user accounts, roles, and permissions for your organization.</p>
       </div>
 
       {/* Quick Actions */}
-      <div className="panel p-5">
-        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+      <div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* User KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">247</div>
-            <div className="kpi-label">Total Users</div>
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">218</div>
-            <div className="kpi-label">Active Users</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Total Users</p>
+              <p className="text-2xl font-bold t-primary">247</p>
+            </div>
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">156</div>
-            <div className="kpi-label">Online Now</div>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Active Users</p>
+              <p className="text-2xl font-bold t-primary">218</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-            </svg>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Online Now</p>
+              <p className="text-2xl font-bold t-primary">156</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <div className="kpi-value">12</div>
-            <div className="kpi-label">Pending Invites</div>
+        </div>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Pending Invites</p>
+              <p className="text-2xl font-bold t-primary">12</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Users Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>All Users</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-semibold">User</th>
-                  <th className="text-left p-4 font-semibold">Email</th>
-                  <th className="text-left p-4 font-semibold">Role</th>
-                  <th className="text-left p-4 font-semibold">Status</th>
-                  <th className="text-left p-4 font-semibold">Last Login</th>
-                  <th className="text-left p-4 font-semibold">Actions</th>
+      <div className="card-surface panel panel-body">
+        <h3 className="text-lg font-semibold t-primary mb-4">All Users</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-4 font-semibold">User</th>
+                <th className="text-left p-4 font-semibold">Email</th>
+                <th className="text-left p-4 font-semibold">Role</th>
+                <th className="text-left p-4 font-semibold">Status</th>
+                <th className="text-left p-4 font-semibold">Last Login</th>
+                <th className="text-left p-4 font-semibold">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map((user) => (
+                <tr key={user.id} className="border-b hover:bg-muted/50">
+                  <td className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{user.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-muted-foreground">{user.email}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <Badge variant={getStatusVariant(user.status)}>
+                      {user.status}
+                    </Badge>
+                  </td>
+                  <td className="p-4 text-muted-foreground text-sm">{user.lastLogin}</td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Button variant="ghost" size="sm">View</Button>
+                      <Button variant="ghost" size="sm">Edit</Button>
+                    </div>
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} className="border-b hover:bg-muted/50">
-                    <td className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user.avatar} alt={user.name} />
-                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{user.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-4 text-muted-foreground">{user.email}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
-                        {user.role}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <Badge variant={getStatusVariant(user.status)}>
-                        {user.status}
-                      </Badge>
-                    </td>
-                    <td className="p-4 text-muted-foreground text-sm">{user.lastLogin}</td>
-                    <td className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">View</Button>
-                        <Button variant="ghost" size="sm">Edit</Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

@@ -98,74 +98,83 @@ export default function OrganizationsPage() {
   };
 
   return (
-    <div className="panel p-5 space-y-8">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Organizations</h1>
-        <p className="t-dim mt-1">
-          Manage organizational units, divisions, and administrative structures.
-        </p>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Organizations</h1>
+        <p className="t-dim mt-2">Manage organizational units, divisions, and administrative structures.</p>
       </div>
 
       {/* Quick Actions */}
-      <div className="panel p-5">
-        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+      <div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Organization KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">24</div>
-            <div className="kpi-label">Total Organizations</div>
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">1,247</div>
-            <div className="kpi-label">Total Employees</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Total Organizations</p>
+              <p className="text-2xl font-bold t-primary">24</p>
+            </div>
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">18</div>
-            <div className="kpi-label">Locations</div>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Total Employees</p>
+              <p className="text-2xl font-bold t-primary">1,247</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Locations</p>
+              <p className="text-2xl font-bold t-primary">18</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <div className="kpi-value">21</div>
-            <div className="kpi-label">Active Units</div>
+        </div>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Active Units</p>
+              <p className="text-2xl font-bold t-primary">21</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Organizations Table */}
-      <Card>
+      <div className="card-surface panel panel-body">
+        <h3 className="text-lg font-semibold t-primary mb-4">All Organizations</h3>
+        <Card>
         <CardHeader>
           <CardTitle>All Organizations</CardTitle>
         </CardHeader>
@@ -217,7 +226,8 @@ export default function OrganizationsPage() {
             </table>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 }

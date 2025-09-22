@@ -65,78 +65,82 @@ export default function ShippingPage() {
   };
 
   return (
-    <div className="panel p-5 space-y-8">
+    <div className="space-y-8">
+      {/* Page Header */}
       <div>
-        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Shipping</h1>
-        <p className="t-dim mt-1">
-          Manage shipments, track deliveries, and optimize logistics operations.
-        </p>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Shipping</h1>
+        <p className="t-dim mt-2">Manage shipments, track deliveries, and optimize logistics operations.</p>
       </div>
 
       {/* Quick Actions */}
-      <div className="panel p-5">
-        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+      <div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Shipping KPIs */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">156</div>
-            <div className="kpi-label">Active Shipments</div>
-          </div>
-        </div>
-
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">94.2%</div>
-            <div className="kpi-label">On-Time Delivery</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Active Shipments</p>
+              <p className="text-2xl font-bold t-primary">156</p>
+            </div>
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-          </div>
-          <div>
-            <div className="kpi-value">2.1</div>
-            <div className="kpi-label">Avg Transit Days</div>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">On-Time Delivery</p>
+              <p className="text-2xl font-bold t-primary">94.2%</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
-            </svg>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Avg Transit Days</p>
+              <p className="text-2xl font-bold t-primary">2.1</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
           </div>
-          <div>
-            <div className="kpi-value">$8,450</div>
-            <div className="kpi-label">Monthly Costs</div>
+        </div>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Monthly Costs</p>
+              <p className="text-2xl font-bold t-primary">$8,450</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Recent Shipments */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Shipments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
+      <div className="card-surface panel panel-body">
+        <h3 className="text-lg font-semibold t-primary mb-4">Recent Shipments</h3>
+        <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b">
@@ -173,8 +177,7 @@ export default function ShippingPage() {
               </tbody>
             </table>
           </div>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
 }

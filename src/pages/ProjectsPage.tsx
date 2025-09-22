@@ -1,5 +1,4 @@
 import React from 'react';
-import PageSection from '@/components/layout/PageSection';
 import QuickActionsGrid, { QAItem } from '@/components/ui/QuickActionsGrid';
 import { StatusPill } from '@/components/ui/StatusPill';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -84,51 +83,71 @@ export default function ProjectsPage() {
   };
 
   return (
-    <PageSection
-      title="Projects"
-      subtitle="Manage and track your projects"
-      actions={
-        <div className="flex gap-3">
-          <QuickActionsGrid items={quickActions} />
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Projects</h1>
+        <p className="t-dim mt-2">Manage and track your projects</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
+        <QuickActionsGrid items={quickActions} />
+      </div>
+
+      {/* Project KPIs */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Total Projects</p>
+              <p className="text-2xl font-bold t-primary">12</p>
+            </div>
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <Folder className="w-6 h-6 t1-blue" />
+            </div>
+          </div>
         </div>
-      }
-    >
-      <div className="space-y-6">
-        {/* Project Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total Projects</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">12</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Active</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">8</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">In Review</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">2</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Completed</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">2</div>
-            </CardContent>
-          </Card>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Active</p>
+              <p className="text-2xl font-bold t-primary">8</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <Clock className="w-6 h-6 text-green-500" />
+            </div>
+          </div>
         </div>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">In Review</p>
+              <p className="text-2xl font-bold t-primary">2</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <Users className="w-6 h-6 text-yellow-500" />
+            </div>
+          </div>
+        </div>
+
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Completed</p>
+              <p className="text-2xl font-bold t-primary">2</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <Calendar className="w-6 h-6 text-purple-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card-surface panel panel-body space-y-6">
 
         {/* Projects List */}
         <div className="space-y-4">
@@ -187,6 +206,6 @@ export default function ProjectsPage() {
           </div>
         </div>
       </div>
-    </PageSection>
+    </div>
   );
 }

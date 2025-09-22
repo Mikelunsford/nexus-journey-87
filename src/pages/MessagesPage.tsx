@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PageSection from '@/components/layout/PageSection';
 import QuickActionsGrid, { QAItem } from '@/components/ui/QuickActionsGrid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -124,63 +123,68 @@ export default function MessagesPage() {
   };
 
   return (
-    <PageSection
-      title="Messages"
-      subtitle="Internal communication and messaging"
-      actions={
-        <div className="flex gap-3">
-          <QuickActionsGrid items={quickActions} />
+    <div className="space-y-8">
+      {/* Page Header */}
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Messages</h1>
+        <p className="t-dim mt-2">Internal communication and messaging</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
+        <QuickActionsGrid items={quickActions} />
+      </div>
+
+      {/* Message Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Unread</p>
+              <p className="text-2xl font-bold t-primary">8</p>
+            </div>
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <Inbox className="w-6 h-6 t1-blue" />
+            </div>
+          </div>
         </div>
-      }
-    >
-      <div className="space-y-6">
-        {/* Message Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Inbox className="w-4 h-4" />
-                Unread
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-600">8</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Star className="w-4 h-4" />
-                Starred
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">12</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Send className="w-4 h-4" />
-                Sent Today
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">15</div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground flex items-center gap-2">
-                <Archive className="w-4 h-4" />
-                Archived
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="kpi-value">156</div>
-            </CardContent>
-          </Card>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Starred</p>
+              <p className="text-2xl font-bold t-primary">12</p>
+            </div>
+            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <Star className="w-6 h-6 text-yellow-500" />
+            </div>
+          </div>
         </div>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Sent Today</p>
+              <p className="text-2xl font-bold t-primary">15</p>
+            </div>
+            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
+              <Send className="w-6 h-6 text-green-500" />
+            </div>
+          </div>
+        </div>
+        <div className="kpi">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm t-dim">Archived</p>
+              <p className="text-2xl font-bold t-primary">156</p>
+            </div>
+            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
+              <Archive className="w-6 h-6 text-purple-500" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="card-surface panel panel-body space-y-6">
 
         {/* Search */}
         <div className="relative">
@@ -317,6 +321,6 @@ export default function MessagesPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </PageSection>
+    </div>
   );
 }
