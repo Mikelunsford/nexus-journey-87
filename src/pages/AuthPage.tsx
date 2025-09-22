@@ -87,7 +87,7 @@ export default function AuthPage() {
             <img 
               src={team1Logo} 
               alt="Team1 Logo" 
-              className="h-16 mx-auto mb-4"
+              className="h-32 mx-auto mb-4"
             />
             <h1 className="text-3xl font-bold">Welcome</h1>
             <p className="text-muted-foreground">Team1 Arkansas Hub</p>
