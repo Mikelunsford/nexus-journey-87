@@ -1,123 +1,166 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trash2, RefreshCw, Database, HardDrive, Globe, AlertCircle, CheckCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Trash2, RefreshCw, Search, Database, HardDrive, Globe, AlertTriangle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-interface CacheItem {
+interface StorageItem {
   key: string;
+  value: string;
   size: number;
-  type: 'localStorage' | 'sessionStorage' | 'queryCache' | 'browserCache';
-  lastAccessed: string;
-  expiresAt?: string;
+  type: 'string' | 'object' | 'array' | 'number' | 'boolean';
+}
+
+interface CacheStats {
+  localStorage: {
+    items: number;
+    size: number;
+    itemsList: StorageItem[];
+  };
+  sessionStorage: {
+    items: number;
+    size: number;
+    itemsList: StorageItem[];
+  };
+  indexedDB: {
+    databases: number;
+    estimatedSize: number;
+  };
+  cacheAPI: {
+    caches: number;
+    estimatedSize: number;
+  };
 }
 
 export default function CacheControl() {
-  const [cacheItems, setCacheItems] = useState<CacheItem[]>([]);
-  const [storageUsage, setStorageUsage] = useState({
-    localStorage: 0,
-    sessionStorage: 0,
-    indexedDB: 0,
-    total: 0
+  const [stats, setStats] = useState<CacheStats>({
+    localStorage: { items: 0, size: 0, itemsList: [] },
+    sessionStorage: { items: 0, size: 0, itemsList: [] },
+    indexedDB: { databases: 0, estimatedSize: 0 },
+    cacheAPI: { caches: 0, estimatedSize: 0 }
   });
-  const [clearingType, setClearingType] = useState<string | null>(null);
+  
+  const [clearingStates, setClearingStates] = useState({
+    localStorage: false,
+    sessionStorage: false,
+    indexedDB: false,
+    cacheAPI: false
+  });
+  
+  const [searchTerm, setSearchTerm] = useState('');
   const { toast } = useToast();
 
+  const getStorageSize = (storage: Storage): number => {
+    let size = 0;
+    for (let key in storage) {
+      if (storage.hasOwnProperty(key)) {
+        size += storage[key].length + key.length;
+      }
+    }
+    return size;
+  };
+
+  const getStorageItems = (storage: Storage): StorageItem[] => {
+    const items: StorageItem[] = [];
+    for (let i = 0; i < storage.length; i++) {
+      const key = storage.key(i);
+      if (key) {
+        const value = storage.getItem(key) || '';
+        const size = key.length + value.length;
+        
+        let type: StorageItem['type'] = 'string';
+        try {
+          const parsed = JSON.parse(value);
+          if (Array.isArray(parsed)) type = 'array';
+          else if (typeof parsed === 'object' && parsed !== null) type = 'object';
+          else if (typeof parsed === 'number') type = 'number';
+          else if (typeof parsed === 'boolean') type = 'boolean';
+        } catch {
+          type = 'string';
+        }
+        
+        items.push({ key, value, size, type });
+      }
+    }
+    return items.sort((a, b) => b.size - a.size);
+  };
+
+  const calculateStats = async (): Promise<CacheStats> => {
+    // LocalStorage
+    const localItems = getStorageItems(localStorage);
+    const localSize = getStorageSize(localStorage);
+    
+    // SessionStorage
+    const sessionItems = getStorageItems(sessionStorage);
+    const sessionSize = getStorageSize(sessionStorage);
+    
+    // IndexedDB (simplified)
+    let indexedDBSize = 0;
+    let indexedDBCount = 0;
+    
+    if ('indexedDB' in window) {
+      try {
+        // This is a simplified estimation
+        if (navigator.storage && navigator.storage.estimate) {
+          const estimate = await navigator.storage.estimate();
+          indexedDBSize = estimate.usage || 0;
+        }
+        indexedDBCount = 1; // Simplified - would need more complex logic to count actual DBs
+      } catch (error) {
+        console.log('IndexedDB info not available:', error);
+      }
+    }
+    
+    // Cache API
+    let cacheCount = 0;
+    let cacheSize = 0;
+    
+    if ('caches' in window) {
+      try {
+        const cacheNames = await caches.keys();
+        cacheCount = cacheNames.length;
+        // Cache size estimation would require iterating through all caches
+        cacheSize = cacheCount * 1024; // Rough estimate
+      } catch (error) {
+        console.log('Cache API info not available:', error);
+      }
+    }
+    
+    return {
+      localStorage: {
+        items: localItems.length,
+        size: localSize,
+        itemsList: localItems
+      },
+      sessionStorage: {
+        items: sessionItems.length,
+        size: sessionSize,
+        itemsList: sessionItems
+      },
+      indexedDB: {
+        databases: indexedDBCount,
+        estimatedSize: indexedDBSize
+      },
+      cacheAPI: {
+        caches: cacheCount,
+        estimatedSize: cacheSize
+      }
+    };
+  };
+
+  const refreshStats = async () => {
+    const newStats = await calculateStats();
+    setStats(newStats);
+  };
+
   useEffect(() => {
-    loadCacheData();
-    calculateStorageUsage();
+    refreshStats();
   }, []);
-
-  const loadCacheData = () => {
-    const items: CacheItem[] = [];
-
-    // Load localStorage items
-    for (let i = 0; i < localStorage.length; i++) {
-      const key = localStorage.key(i);
-      if (key) {
-        const value = localStorage.getItem(key);
-        items.push({
-          key,
-          size: value ? new Blob([value]).size : 0,
-          type: 'localStorage',
-          lastAccessed: new Date().toISOString(),
-          expiresAt: key.includes('expiry') ? new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() : undefined
-        });
-      }
-    }
-
-    // Load sessionStorage items
-    for (let i = 0; i < sessionStorage.length; i++) {
-      const key = sessionStorage.key(i);
-      if (key) {
-        const value = sessionStorage.getItem(key);
-        items.push({
-          key,
-          size: value ? new Blob([value]).size : 0,
-          type: 'sessionStorage',
-          lastAccessed: new Date().toISOString()
-        });
-      }
-    }
-
-    // Mock query cache items
-    const mockQueryCache = [
-      { key: 'projects-list', size: 2048, lastAccessed: new Date(Date.now() - 1000 * 60 * 5).toISOString() },
-      { key: 'user-profile', size: 512, lastAccessed: new Date(Date.now() - 1000 * 60 * 2).toISOString() },
-      { key: 'customers-data', size: 4096, lastAccessed: new Date(Date.now() - 1000 * 60 * 10).toISOString() }
-    ];
-
-    mockQueryCache.forEach(item => {
-      items.push({
-        ...item,
-        type: 'queryCache'
-      });
-    });
-
-    setCacheItems(items);
-  };
-
-  const calculateStorageUsage = async () => {
-    try {
-      // Calculate localStorage usage
-      let localStorageSize = 0;
-      for (let key in localStorage) {
-        if (localStorage.hasOwnProperty(key)) {
-          localStorageSize += localStorage[key].length + key.length;
-        }
-      }
-
-      // Calculate sessionStorage usage
-      let sessionStorageSize = 0;
-      for (let key in sessionStorage) {
-        if (sessionStorage.hasOwnProperty(key)) {
-          sessionStorageSize += sessionStorage[key].length + key.length;
-        }
-      }
-
-      // Estimate IndexedDB usage (if available)
-      let indexedDBSize = 0;
-      if ('storage' in navigator && 'estimate' in navigator.storage) {
-        const estimate = await navigator.storage.estimate();
-        indexedDBSize = estimate.usage || 0;
-      }
-
-      const total = localStorageSize + sessionStorageSize + indexedDBSize;
-
-      setStorageUsage({
-        localStorage: localStorageSize,
-        sessionStorage: sessionStorageSize,
-        indexedDB: indexedDBSize,
-        total
-      });
-    } catch (error) {
-      console.error('Error calculating storage usage:', error);
-    }
-  };
 
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return '0 B';
@@ -127,290 +170,369 @@ export default function CacheControl() {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
-  const clearCache = async (type: string) => {
-    setClearingType(type);
-    
+  const clearLocalStorage = async () => {
+    setClearingStates(prev => ({ ...prev, localStorage: true }));
     try {
-      switch (type) {
-        case 'localStorage':
-          localStorage.clear();
-          toast({
-            title: 'Local Storage Cleared',
-            description: 'All localStorage data has been removed.'
-          });
-          break;
-        
-        case 'sessionStorage':
-          sessionStorage.clear();
-          toast({
-            title: 'Session Storage Cleared',
-            description: 'All sessionStorage data has been removed.'
-          });
-          break;
-        
-        case 'queryCache':
-          // In a real app, this would clear React Query cache
-          toast({
-            title: 'Query Cache Cleared',
-            description: 'All cached query data has been invalidated.'
-          });
-          break;
-        
-        case 'browserCache':
-          // This is just informational - browser cache cannot be cleared via JS
-          toast({
-            title: 'Browser Cache',
-            description: 'Browser cache cannot be cleared programmatically. Please use browser settings.',
-            variant: 'destructive'
-          });
-          break;
-        
-        case 'all':
-          localStorage.clear();
-          sessionStorage.clear();
-          toast({
-            title: 'All Cache Cleared',
-            description: 'All application cache data has been cleared.'
-          });
-          break;
-      }
-
-      // Reload cache data
-      setTimeout(() => {
-        loadCacheData();
-        calculateStorageUsage();
-        setClearingType(null);
-      }, 500);
+      localStorage.clear();
+      await refreshStats();
+      toast({
+        title: 'Local Storage Cleared',
+        description: 'All local storage data has been removed.'
+      });
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to clear cache. Please try again.',
-        variant: 'destructive'
+        description: 'Failed to clear local storage.',
       });
-      setClearingType(null);
     }
+    setClearingStates(prev => ({ ...prev, localStorage: false }));
   };
 
-  const clearSpecificItem = (key: string, type: CacheItem['type']) => {
-    switch (type) {
-      case 'localStorage':
+  const clearSessionStorage = async () => {
+    setClearingStates(prev => ({ ...prev, sessionStorage: true }));
+    try {
+      sessionStorage.clear();
+      await refreshStats();
+      toast({
+        title: 'Session Storage Cleared',
+        description: 'All session storage data has been removed.'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to clear session storage.',
+      });
+    }
+    setClearingStates(prev => ({ ...prev, sessionStorage: false }));
+  };
+
+  const clearIndexedDB = async () => {
+    setClearingStates(prev => ({ ...prev, indexedDB: true }));
+    try {
+      if ('indexedDB' in window) {
+        // This is a simplified approach - in a real app you'd want to enumerate and delete specific databases
+        const databases = await indexedDB.databases?.() || [];
+        for (const db of databases) {
+          if (db.name) {
+            indexedDB.deleteDatabase(db.name);
+          }
+        }
+      }
+      await refreshStats();
+      toast({
+        title: 'IndexedDB Cleared',
+        description: 'IndexedDB data has been cleared.'
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to clear IndexedDB.',
+      });
+    }
+    setClearingStates(prev => ({ ...prev, indexedDB: false }));
+  };
+
+  const clearAllCaches = async () => {
+    await Promise.all([
+      clearLocalStorage(),
+      clearSessionStorage(),
+      clearIndexedDB()
+    ]);
+  };
+
+  const removeItem = async (storageType: 'localStorage' | 'sessionStorage', key: string) => {
+    try {
+      if (storageType === 'localStorage') {
         localStorage.removeItem(key);
-        break;
-      case 'sessionStorage':
+      } else {
         sessionStorage.removeItem(key);
-        break;
+      }
+      await refreshStats();
+      toast({
+        title: 'Item Removed',
+        description: `Removed ${key} from ${storageType}.`
+      });
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `Failed to remove ${key}.`,
+      });
     }
-    
-    loadCacheData();
-    calculateStorageUsage();
-    
-    toast({
-      title: 'Item Removed',
-      description: `Cache item "${key}" has been removed.`
-    });
   };
 
-  const groupedItems = cacheItems.reduce((acc, item) => {
-    if (!acc[item.type]) {
-      acc[item.type] = [];
-    }
-    acc[item.type].push(item);
-    return acc;
-  }, {} as Record<string, CacheItem[]>);
+  const filteredLocalItems = stats.localStorage.itemsList.filter(item =>
+    item.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.value.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const cacheTypes = {
-    localStorage: { label: 'Local Storage', icon: HardDrive, description: 'Persistent browser storage' },
-    sessionStorage: { label: 'Session Storage', icon: Database, description: 'Session-scoped storage' },
-    queryCache: { label: 'Query Cache', icon: RefreshCw, description: 'API response cache' },
-    browserCache: { label: 'Browser Cache', icon: Globe, description: 'Browser HTTP cache' }
-  };
+  const filteredSessionItems = stats.sessionStorage.itemsList.filter(item =>
+    item.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.value.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
-    <div className="space-y-6">
-      {/* Storage Usage Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <HardDrive className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-            <div className="text-2xl font-bold">{formatBytes(storageUsage.localStorage)}</div>
-            <div className="text-sm text-muted-foreground">Local Storage</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Database className="h-8 w-8 mx-auto mb-2 text-green-500" />
-            <div className="text-2xl font-bold">{formatBytes(storageUsage.sessionStorage)}</div>
-            <div className="text-sm text-muted-foreground">Session Storage</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Globe className="h-8 w-8 mx-auto mb-2 text-purple-500" />
-            <div className="text-2xl font-bold">{formatBytes(storageUsage.indexedDB)}</div>
-            <div className="text-sm text-muted-foreground">IndexedDB</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <RefreshCw className="h-8 w-8 mx-auto mb-2 text-orange-500" />
-            <div className="text-2xl font-bold">{formatBytes(storageUsage.total)}</div>
-            <div className="text-sm text-muted-foreground">Total Usage</div>
-          </CardContent>
-        </Card>
+    <div className="space-y-4">
+      {/* Controls */}
+      <div className="flex items-center gap-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search storage items..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+
+        <Button size="sm" onClick={refreshStats}>
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh
+        </Button>
       </div>
 
       {/* Quick Actions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Cache Management</CardTitle>
-          <CardDescription>
-            Clear different types of application cache data
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4">
             <Button
-              variant="outline"
-              onClick={() => clearCache('localStorage')}
-              disabled={clearingType === 'localStorage'}
+              className="bg-red-600 text-white hover:bg-red-700 w-full"
+              onClick={clearLocalStorage}
+              disabled={clearingStates.localStorage}
             >
-              {clearingType === 'localStorage' ? (
+              {clearingStates.localStorage ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
               Clear Local Storage
             </Button>
-            
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
             <Button
-              variant="outline"
-              onClick={() => clearCache('sessionStorage')}
-              disabled={clearingType === 'sessionStorage'}
+              className="bg-red-600 text-white hover:bg-red-700 w-full"
+              onClick={clearSessionStorage}
+              disabled={clearingStates.sessionStorage}
             >
-              {clearingType === 'sessionStorage' ? (
+              {clearingStates.sessionStorage ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
               Clear Session Storage
             </Button>
-            
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
             <Button
-              variant="outline"
-              onClick={() => clearCache('queryCache')}
-              disabled={clearingType === 'queryCache'}
+              className="bg-red-600 text-white hover:bg-red-700 w-full"
+              onClick={clearIndexedDB}
+              disabled={clearingStates.indexedDB}
             >
-              {clearingType === 'queryCache' ? (
+              {clearingStates.indexedDB ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Database className="h-4 w-4 mr-2" />
               )}
-              Clear Query Cache
+              Clear IndexedDB
             </Button>
-            
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
             <Button
-              variant="danger"
-              onClick={() => clearCache('all')}
-              disabled={clearingType === 'all'}
+              className="bg-red-600 text-white hover:bg-red-700 w-full"
+              onClick={clearAllCaches}
+              disabled={Object.values(clearingStates).some(Boolean)}
             >
-              {clearingType === 'all' ? (
+              {Object.values(clearingStates).some(Boolean) ? (
                 <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Trash2 className="h-4 w-4 mr-2" />
               )}
               Clear All
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Cache Items Detail */}
+      {/* Storage Overview */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Card>
+          <CardContent className="p-4 text-center">
+            <HardDrive className="h-8 w-8 mx-auto mb-2 text-blue-500" />
+            <div className="text-2xl font-bold">{stats.localStorage.items}</div>
+            <div className="text-sm text-muted-foreground">Local Storage Items</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatBytes(stats.localStorage.size)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Globe className="h-8 w-8 mx-auto mb-2 text-green-500" />
+            <div className="text-2xl font-bold">{stats.sessionStorage.items}</div>
+            <div className="text-sm text-muted-foreground">Session Storage Items</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatBytes(stats.sessionStorage.size)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 text-center">
+            <Database className="h-8 w-8 mx-auto mb-2 text-purple-500" />
+            <div className="text-2xl font-bold">{stats.indexedDB.databases}</div>
+            <div className="text-sm text-muted-foreground">IndexedDB</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatBytes(stats.indexedDB.estimatedSize)}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4 text-center">
+            <HardDrive className="h-8 w-8 mx-auto mb-2 text-orange-500" />
+            <div className="text-2xl font-bold">{stats.cacheAPI.caches}</div>
+            <div className="text-sm text-muted-foreground">Cache API</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {formatBytes(stats.cacheAPI.estimatedSize)}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Detailed Storage View */}
       <Card>
         <CardHeader>
-          <CardTitle>Cache Items</CardTitle>
+          <CardTitle className="text-lg flex items-center gap-2">
+            <HardDrive className="h-5 w-5" />
+            Storage Details
+          </CardTitle>
           <CardDescription>
-            Detailed view of cached data with individual item management
+            Inspect and manage individual storage items
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="localStorage">
-            <TabsList className="grid grid-cols-4 w-full">
-              {Object.entries(cacheTypes).map(([key, type]) => (
-                <TabsTrigger key={key} value={key} className="flex items-center gap-2">
-                  <type.icon className="h-4 w-4" />
-                  <span className="hidden sm:inline">{type.label}</span>
-                </TabsTrigger>
-              ))}
+            <TabsList>
+              <TabsTrigger value="localStorage" className="flex items-center gap-2">
+                <HardDrive className="h-4 w-4" />
+                Local Storage
+                <Badge className="bg-blue-100 text-blue-800">{stats.localStorage.items} items</Badge>
+              </TabsTrigger>
+              <TabsTrigger value="sessionStorage" className="flex items-center gap-2">
+                <Globe className="h-4 w-4" />
+                Session Storage
+                <Badge className="bg-green-100 text-green-800">{stats.sessionStorage.items} items</Badge>
+              </TabsTrigger>
             </TabsList>
 
-            {Object.entries(cacheTypes).map(([key, type]) => (
-              <TabsContent key={key} value={key} className="mt-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-muted-foreground">{type.description}</p>
-                    <Badge variant="outline">
-                      {groupedItems[key]?.length || 0} items
-                    </Badge>
-                  </div>
-
-                  {key === 'browserCache' ? (
-                    <Alert>
-                      <AlertCircle className="h-4 w-4" />
-                      <AlertDescription>
-                        Browser cache cannot be managed programmatically. 
-                        Use your browser's developer tools or settings to clear the HTTP cache.
-                      </AlertDescription>
-                    </Alert>
-                  ) : (
-                    <ScrollArea className="h-64">
-                      <div className="space-y-2">
-                        {groupedItems[key]?.map((item) => (
-                          <div
-                            key={item.key}
-                            className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50"
-                          >
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <code className="text-sm font-mono truncate">{item.key}</code>
-                                <Badge variant="secondary" className="text-xs">
-                                  {formatBytes(item.size)}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                                <span>Last accessed: {new Date(item.lastAccessed).toLocaleTimeString()}</span>
-                                {item.expiresAt && (
-                                  <>
-                                    <span>•</span>
-                                    <span>Expires: {new Date(item.expiresAt).toLocaleString()}</span>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                            {key !== 'queryCache' && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => clearSpecificItem(item.key, item.type)}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                              </Button>
-                            )}
-                          </div>
-                        )) || (
-                          <div className="text-center text-muted-foreground py-8">
-                            <CheckCircle className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                            <p>No {type.label.toLowerCase()} items found</p>
-                          </div>
-                        )}
-                      </div>
-                    </ScrollArea>
-                  )}
+            <TabsContent value="localStorage" className="mt-4">
+              {filteredLocalItems.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {stats.localStorage.items === 0 ? 'No items in local storage' : 'No items match your search'}
                 </div>
-              </TabsContent>
-            ))}
+              ) : (
+                <ScrollArea className="h-96">
+                  <div className="space-y-2">
+                    {filteredLocalItems.map((item, index) => (
+                      <Card key={index} className="p-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                                {item.key}
+                              </code>
+                              <Badge className="bg-purple-100 text-purple-800 text-xs">
+                                {item.type}
+                              </Badge>
+                              <Badge className="text-xs">
+                                {formatBytes(item.size)}
+                              </Badge>
+                              {item.size > 1024 && (
+                                <Badge className="text-xs text-yellow-600">
+                                  Large Item
+                                </Badge>
+                              )}
+                            </div>
+                            <div className="text-sm text-muted-foreground font-mono bg-muted p-2 rounded max-h-20 overflow-auto">
+                              {item.value.substring(0, 200)}
+                              {item.value.length > 200 && '...'}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => removeItem('localStorage', item.key)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </TabsContent>
+
+            <TabsContent value="sessionStorage" className="mt-4">
+              {filteredSessionItems.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  {stats.sessionStorage.items === 0 ? 'No items in session storage' : 'No items match your search'}
+                </div>
+              ) : (
+                <ScrollArea className="h-96">
+                  <div className="space-y-2">
+                    {filteredSessionItems.map((item, index) => (
+                      <Card key={index} className="p-3">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-2">
+                              <code className="text-sm font-mono bg-muted px-2 py-1 rounded">
+                                {item.key}
+                              </code>
+                              <Badge className="bg-purple-100 text-purple-800 text-xs">
+                                {item.type}
+                              </Badge>
+                              <Badge className="text-xs">
+                                {formatBytes(item.size)}
+                              </Badge>
+                            </div>
+                            <div className="text-sm text-muted-foreground font-mono bg-muted p-2 rounded max-h-20 overflow-auto">
+                              {item.value.substring(0, 200)}
+                              {item.value.length > 200 && '...'}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => removeItem('sessionStorage', item.key)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </TabsContent>
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Warning */}
+      <Alert>
+        <AlertTriangle className="h-4 w-4" />
+        <AlertDescription>
+          Clearing storage will log you out and reset application preferences. This action cannot be undone.
+        </AlertDescription>
+      </Alert>
     </div>
   );
 }

@@ -155,10 +155,9 @@ export default function EnvViewer() {
         </div>
 
         <Button
-          variant="outline"
           size="sm"
           onClick={() => setShowSensitive(!showSensitive)}
-          className={showSensitive ? 'bg-yellow-100' : ''}
+          className={showSensitive ? 'bg-yellow-100 text-yellow-800 hover:bg-yellow-200' : ''}
         >
           {showSensitive ? <EyeOff className="h-4 w-4 mr-2" /> : <Eye className="h-4 w-4 mr-2" />}
           {showSensitive ? 'Hide' : 'Show'} Sensitive
@@ -177,11 +176,11 @@ export default function EnvViewer() {
 
       {/* Stats */}
       <div className="flex flex-wrap gap-2">
-        <Badge variant="outline">{stats.total} total variables</Badge>
-        <Badge variant="outline" className="text-red-600">
+        <Badge>{stats.total} total variables</Badge>
+        <Badge className="text-red-600">
           {stats.sensitive} sensitive
         </Badge>
-        <Badge variant="outline" className="text-green-600">
+        <Badge className="text-green-600">
           {stats.public} public
         </Badge>
       </div>
@@ -222,12 +221,11 @@ export default function EnvViewer() {
                               </code>
                               <Badge 
                                 className={categories[envVar.category].color}
-                                variant="secondary"
                               >
                                 {categories[envVar.category].label}
                               </Badge>
                               {envVar.sensitive && (
-                                <Badge variant="destructive" className="text-xs">
+                                <Badge className="text-xs bg-red-100 text-red-800">
                                   <Shield className="h-3 w-3 mr-1" />
                                   Sensitive
                                 </Badge>
@@ -245,7 +243,6 @@ export default function EnvViewer() {
                             </div>
                           </div>
                           <Button
-                            variant="ghost"
                             size="sm"
                             onClick={() => copyToClipboard(envVar.value, envVar.key)}
                             disabled={envVar.sensitive && !showSensitive}
