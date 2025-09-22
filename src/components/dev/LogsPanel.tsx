@@ -115,7 +115,7 @@ export default function LogsPanel() {
     }
   };
 
-  const getLevelBadgeVariant = (level: LogEntry['level']) => {
+  const getLevelBadgeVariant = (level: LogEntry['level']): "default" | "secondary" | "destructive" | "outline" => {
     switch (level) {
       case 'error':
         return 'destructive';
