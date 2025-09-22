@@ -81,23 +81,23 @@ export default function AccountingPage() {
   };
 
   return (
-    <div className="p-8 space-y-8">
+    <div className="space-y-8">
       <div>
-        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Accounting</h1>
-        <p className="t-dim mt-1">
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Accounting</h1>
+        <p className="t-dim mt-2">
           Manage invoices, payments, and financial reporting for your business.
         </p>
       </div>
 
       {/* Quick Actions */}
-      <div className="panel p-5">
-        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+      <div className="card-surface panel panel-body">
+        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Financial KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -109,7 +109,7 @@ export default function AccountingPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
@@ -121,7 +121,7 @@ export default function AccountingPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -133,7 +133,7 @@ export default function AccountingPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />

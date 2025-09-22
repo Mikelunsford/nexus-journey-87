@@ -1,5 +1,4 @@
 import React from 'react';
-import PageSection from '@/components/layout/PageSection';
 import QuickActionsGrid, { QAItem } from '@/components/ui/QuickActionsGrid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -77,15 +76,17 @@ export default function AnalyticsPage() {
   ];
 
   return (
-    <PageSection
-      title="Analytics"
-      subtitle="Business insights and performance metrics"
-      actions={
-        <div className="flex gap-3">
-          <QuickActionsGrid items={quickActions} />
-        </div>
-      }
-    >
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Analytics</h1>
+        <p className="t-dim mt-2">Gain insights from your business data with comprehensive analytics and reporting</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="card-surface panel panel-body">
+        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
+        <QuickActionsGrid items={quickActions} />
+      </div>
       <div className="space-y-6">
         {/* KPI Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -206,6 +207,6 @@ export default function AnalyticsPage() {
           </CardContent>
         </Card>
       </div>
-    </PageSection>
+    </div>
   );
 }

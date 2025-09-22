@@ -75,23 +75,23 @@ export default function ProductionPage() {
   };
 
   return (
-    <div className="panel p-5 space-y-8">
+    <div className="space-y-8">
       <div>
-        <h1 className="t-primary text-2xl md:text-3xl font-semibold">Production</h1>
-        <p className="t-dim mt-1">
-          Manage manufacturing operations and track production metrics.
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Production</h1>
+        <p className="t-dim mt-2">
+          Manage work orders, track production progress, and maintain quality control.
         </p>
       </div>
 
       {/* Quick Actions */}
-      <div className="panel p-5">
-        <h2 className="t-primary text-xl font-semibold mb-4">Quick Actions</h2>
+      <div className="card-surface panel panel-body">
+        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
       {/* Production KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
@@ -103,7 +103,7 @@ export default function ProductionPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -115,7 +115,7 @@ export default function ProductionPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -127,7 +127,7 @@ export default function ProductionPage() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="kpi-icon">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />

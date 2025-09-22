@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PageSection from '@/components/layout/PageSection';
 import QuickActionsGrid, { QAItem } from '@/components/ui/QuickActionsGrid';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -48,16 +47,20 @@ export default function SettingsPage() {
   ];
 
   return (
-    <PageSection
-      title="Settings"
-      subtitle="Manage your account and application preferences"
-      actions={
-        <div className="flex gap-3">
-          <QuickActionsGrid items={quickActions} />
-        </div>
-      }
-    >
-      <div className="space-y-6">
+    <div className="space-y-8">
+      <div>
+        <h1 className="text-2xl md:text-3xl font-bold t-primary">Settings</h1>
+        <p className="t-dim mt-2">Manage your account and application preferences</p>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="card-surface panel panel-body">
+        <h2 className="text-xl font-semibold t-primary mb-6">Quick Actions</h2>
+        <QuickActionsGrid items={quickActions} />
+      </div>
+
+      {/* Settings Tabs */}
+      <div className="card-surface panel panel-body">
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile" className="flex items-center gap-2">
@@ -394,6 +397,6 @@ export default function SettingsPage() {
           </TabsContent>
         </Tabs>
       </div>
-    </PageSection>
+    </div>
   );
 }
