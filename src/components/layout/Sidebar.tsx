@@ -18,12 +18,14 @@ import {
 
 // Navigation items with role-based visibility
 const navigationItems = [
-  {
-    label: 'Main',
-    items: [
-      { title: 'Dashboard', url: '/dashboard', icon: DashboardIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
-      { title: 'Projects', url: '/dashboard/projects', icon: ProjectsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
-      { title: 'Messages', url: '/dashboard/messages', icon: MessagesIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'] },
+      {
+        label: 'Main',
+        items: [
+          { title: 'Dashboard', url: '/dashboard', icon: DashboardIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },
+          { title: 'Projects', url: '/dashboard/projects', icon: ProjectsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee'] },
+          { title: 'Tasks', url: '/dashboard/tasks', icon: TasksIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production'] },
+          { title: 'Employees', url: '/dashboard/employees', icon: EmployeesIcon, roles: ['admin', 'manager', 'developer', 'internal'] },
+          { title: 'Messages', url: '/dashboard/messages', icon: MessagesIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'customer'] },
       { title: 'Production', url: '/dashboard/production', icon: ProductionIcon, roles: ['admin', 'manager', 'developer', 'internal', 'production'] },
       { title: 'Shipping', url: '/dashboard/shipping', icon: ShippingIcon, roles: ['admin', 'manager', 'developer', 'internal', 'shipping_receiving'] },
       { title: 'Documents', url: '/dashboard/documents', icon: DocumentsIcon, roles: ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'] },

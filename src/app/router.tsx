@@ -7,6 +7,8 @@ import { AppShell } from '@/components/layout/AppShell';
 // Lazy load pages
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+const TasksPage = React.lazy(() => import('@/pages/TasksPage'));
+const EmployeesPage = React.lazy(() => import('@/pages/EmployeesPage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
 
 // Lazy load additional pages
@@ -199,6 +201,26 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <ProjectsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'tasks',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <TasksPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'employees',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <EmployeesPage />
             </Suspense>
           </RoleGate>
         ),

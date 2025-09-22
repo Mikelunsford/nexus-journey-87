@@ -5,6 +5,8 @@ export function canView(route: string, role: Role): boolean {
   const permissions: Record<string, Role[]> = {
     '/dashboard': ['admin', 'manager', 'developer', 'internal', 'employee', 'production', 'shipping_receiving', 'customer'],
     '/dashboard/projects': ['admin', 'manager', 'developer', 'internal', 'employee'],
+    '/dashboard/tasks': ['admin', 'manager', 'developer', 'internal', 'employee', 'production'],
+    '/dashboard/employees': ['admin', 'manager', 'developer', 'internal'],
     '/dashboard/projects/new-internal': ['admin', 'manager', 'developer', 'internal', 'employee'],
     '/dashboard/projects/new-project': ['admin', 'manager', 'developer', 'internal', 'employee'],
     '/dashboard/projects/new': ['admin', 'manager', 'developer', 'internal', 'employee'],

@@ -17,13 +17,16 @@ export function createMockData() {
   
   // Create users
   const users: User[] = [
-    { id: ulid(), email: 'admin@team1.com', role: 'admin', name: 'Admin User' },
-    { id: ulid(), email: 'manager@team1.com', role: 'manager', name: 'Manager User' },
-    { id: ulid(), email: 'developer@team1.com', role: 'developer', name: 'Developer User' },
-    { id: ulid(), email: 'internal@team1.com', role: 'internal', name: 'Internal User' },
-    { id: ulid(), email: 'employee@team1.com', role: 'employee', name: 'Employee User' },
-    { id: ulid(), email: 'production@team1.com', role: 'production', name: 'Production User' },
-    { id: ulid(), email: 'shipping@team1.com', role: 'shipping_receiving', name: 'Shipping User' },
+    { id: ulid(), email: 'admin@team1.com', role: 'admin', name: 'Sarah Johnson' },
+    { id: ulid(), email: 'manager@team1.com', role: 'manager', name: 'Mike Chen' },
+    { id: ulid(), email: 'developer@team1.com', role: 'developer', name: 'Alex Rodriguez' },
+    { id: ulid(), email: 'developer2@team1.com', role: 'developer', name: 'Emma Wilson' },
+    { id: ulid(), email: 'internal@team1.com', role: 'internal', name: 'David Kim' },
+    { id: ulid(), email: 'employee@team1.com', role: 'employee', name: 'Lisa Brown' },
+    { id: ulid(), email: 'employee2@team1.com', role: 'employee', name: 'John Smith' },
+    { id: ulid(), email: 'production@team1.com', role: 'production', name: 'Carlos Martinez' },
+    { id: ulid(), email: 'production2@team1.com', role: 'production', name: 'Maria Garcia' },
+    { id: ulid(), email: 'shipping@team1.com', role: 'shipping_receiving', name: 'Tom Anderson' },
     { id: ulid(), email: 'customer@acme.com', role: 'customer', name: 'Customer User' },
   ];
 
@@ -93,7 +96,7 @@ export function createMockData() {
   }));
 
   // Create work orders
-  const workOrders: WorkOrder[] = Array.from({ length: 10 }, (_, i) => ({
+  const workOrders: WorkOrder[] = Array.from({ length: 25 }, (_, i) => ({
     id: ulid(),
     projectId: projects[Math.floor(Math.random() * projects.length)].id,
     status: ['queued', 'wip', 'paused', 'done'][Math.floor(Math.random() * 4)] as any,
