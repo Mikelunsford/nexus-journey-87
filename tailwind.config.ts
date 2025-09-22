@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 export default {
-  darkMode: ["class"],
+  darkMode: 'class',
   content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   prefix: "",
   theme: {
@@ -14,6 +14,30 @@ export default {
     },
     extend: {
       colors: {
+        brand: {
+          navy: '#0B1936',
+          navy2: '#12224D',
+          red: '#E02525',
+          redDark: '#B31D1D',
+          blue: '#2B8AF7',
+          gray: '#6B7280',
+          ink: '#0F172A',
+          paper: '#F8FAFC',
+        },
+        surface: {
+          0: '#FFFFFF',
+          1: '#F5F7FB',
+          2: '#E9EEF8',
+          dark0: '#0B1220',
+          dark1: '#111A2E',
+          dark2: '#1B2744',
+        },
+        status: {
+          ok: '#16A34A',
+          warn: '#F59E0B',
+          info: '#0284C7',
+          err: '#DC2626',
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -62,6 +86,19 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: '0.75rem',
+        '2xl': '1rem',
+        pill: '9999px'
+      },
+      boxShadow: {
+        soft: '0 8px 24px rgba(2, 6, 23, 0.08)',
+        strong: '0 16px 48px rgba(2, 6, 23, 0.16)'
+      },
+      spacing: {
+        '18': '4.5rem',
+      },
+      fontFamily: {
+        ui: ['Inter', 'system-ui', 'sans-serif'],
       },
       keyframes: {
         "accordion-down": {
