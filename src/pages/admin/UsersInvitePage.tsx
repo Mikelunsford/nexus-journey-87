@@ -35,13 +35,25 @@ export default function UsersInvitePage() {
   const onSubmit = async (data: InviteFormData) => {
     setSubmitting(true);
     try {
-      await inviteUser(data);
-      toast({
-        title: "Invitation sent",
-        description: `Invitation sent successfully to ${data.email}`,
-      });
+      const result = await inviteUser(data);
+      
+      // Check if email was sent successfully
+      if (result?.email_sent === false) {
+        toast({
+          title: "Invitation created",
+          description: `Invitation created for ${data.email}, but email delivery failed. Please check your email configuration.`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Invitation sent",
+          description: `Invitation sent successfully to ${data.email}`,
+        });
+      }
+      
       reset();
     } catch (error: any) {
+      console.error('Invitation error:', error);
       toast({
         title: "Failed to send invitation",
         description: error.message,

@@ -133,6 +133,7 @@ const handler = async (req: Request): Promise<Response> => {
     const invitationUrl = `${req.headers.get('origin')}/auth/accept-invitation?token=${token}`;
 
     // Send invitation email
+    console.log('Attempting to send email to:', email);
     const emailResponse = await resend.emails.send({
       from: "Team1 <noreply@resend.dev>",
       to: [email],
@@ -157,16 +158,22 @@ const handler = async (req: Request): Promise<Response> => {
 
     if (emailResponse.error) {
       console.error('Email sending error:', emailResponse.error);
-      // Don't fail the invitation if email fails, just log it
+      console.error('Full Resend response:', emailResponse);
+      // Don't fail the invitation if email fails, but log detailed error
+      console.warn('Invitation created successfully but email failed to send');
+    } else {
+      console.log('Email sent successfully:', emailResponse);
+      console.log('Email ID:', emailResponse.data?.id);
     }
 
-    console.log('Invitation email sent successfully');
+    console.log('Invitation process completed successfully');
 
     return new Response(
       JSON.stringify({ 
         success: true, 
         invitation_id: invitation.id,
-        message: 'Invitation sent successfully' 
+        message: 'Invitation sent successfully',
+        email_sent: !emailResponse.error
       }),
       {
         status: 200,

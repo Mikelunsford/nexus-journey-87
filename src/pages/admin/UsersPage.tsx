@@ -11,7 +11,7 @@ import { useUsers, User } from '@/hooks/useUsers';
 import { useInvitations } from '@/hooks/useInvitations';
 
 export default function UsersPage() {
-  const { users, loading, refreshUsers } = useUsers();
+  const { users, loading, error, refreshUsers } = useUsers();
   const { invitations } = useInvitations();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -195,14 +195,31 @@ export default function UsersPage() {
             <tbody>
               {loading ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    Loading users...
+                  <td colSpan={6} className="p-8 text-center">
+                    <div className="flex items-center justify-center space-x-2">
+                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
+                      <span className="text-muted-foreground">Loading users...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={6} className="p-8 text-center">
+                    <div className="space-y-3">
+                      <p className="text-destructive">Error loading users: {error}</p>
+                      <Button variant="outline" size="sm" onClick={refreshUsers}>
+                        Try Again
+                      </Button>
+                    </div>
                   </td>
                 </tr>
               ) : users.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="p-8 text-center text-muted-foreground">
-                    No users found
+                  <td colSpan={6} className="p-8 text-center">
+                    <div className="space-y-3">
+                      <p className="text-muted-foreground">No users found in your organization</p>
+                      <p className="text-sm text-muted-foreground">Invite users to get started</p>
+                    </div>
                   </td>
                 </tr>
               ) : (
