@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { ChevronRightIcon } from "./icons";
 
 export type QAItem = { 
   label: string; 
@@ -30,9 +31,7 @@ function QuickActionsGrid({ items }: { items: QAItem[] }) {
               {it.caption && <div className="t-dim text-xs">{it.caption}</div>}
             </div>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" className="t-dim">
-            <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" strokeWidth="2"/>
-          </svg>
+          <ChevronRightIcon />
         </Link>
       ))}
     </div>

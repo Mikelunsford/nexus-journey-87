@@ -1233,6 +1233,26 @@ const router = createBrowserRouter([
   },
 ]);
 
+// Extract all route paths for development route checking
+if (process.env.NODE_ENV === 'development') {
+  const extractPaths = (routes: any[], basePath = ''): string[] => {
+    let paths: string[] = [];
+    routes.forEach(route => {
+      const currentPath = basePath + (route.path === '*' ? '' : route.path || '');
+      if (currentPath && route.path !== '*') {
+        paths.push(currentPath === '/' ? '/' : currentPath.replace(/\/$/, ''));
+      }
+      if (route.children) {
+        paths.push(...extractPaths(route.children, currentPath === '/' ? '' : currentPath));
+      }
+    });
+    return paths;
+  };
+  
+  const allRoutePaths = extractPaths(router.routes);
+  (window as any).__APP_ROUTES__ = allRoutePaths;
+}
+
 export function AppRouter() {
   return <RouterProvider router={router} />;
 }
