@@ -158,3 +158,62 @@
   .status-track { @apply bg-neutral-light dark:bg-neutral-mid; }
   .status-bar   { @apply bg-[#2B8AF7]; } /* Team1 blue */
 }
+
+/* Team1 Nexus Theme Contract v1.1.6 */
+:root{
+  --t1-bg: #F2F5F9;          /* light page */
+  --t1-card: #FFFFFF;        /* light card */
+  --t1-ink: #0F172A;         /* light text */
+  --t1-dim: #475569;         /* light secondary text */
+
+  --t1-blue: #2B8AF7;        /* brand blue */
+  --t1-red:  #E02525;        /* brand red */
+  --t1-navy: #0B1936;        /* brand navy */
+
+  --t1-bg-d:   #0B1220;      /* dark page */
+  --t1-card-d: rgba(255,255,255,0.06);  /* dark glass */
+  --t1-card-b: rgba(255,255,255,0.12);  /* dark glass border */
+  --t1-ink-d:  #E5E7EB;      /* dark text */
+  --t1-dim-d:  #A8B1C7;      /* dark secondary text */
+}
+
+/* Semantic utility layer */
+/* surfaces */
+.app-surface   { background: var(--t1-bg); }
+.dark .app-surface { background: var(--t1-bg-d); }
+
+.card-surface  { background: var(--t1-card); }
+.dark .card-surface { background: var(--t1-card-d); backdrop-filter: blur(12px); border: 1px solid var(--t1-card-b); }
+
+.panel         { @apply rounded-2xl shadow-soft; }
+.panel-body    { @apply p-5; }
+
+/* text */
+.t-primary { color: var(--t1-ink); }
+.t-dim     { color: var(--t1-dim); }
+.dark .t-primary { color: var(--t1-ink-d); }
+.dark .t-dim     { color: var(--t1-dim-d); }
+
+/* brand */
+.t1-blue  { color: var(--t1-blue); }
+.bg-t1-blue { background: var(--t1-blue); }
+.bg-t1-red  { background: var(--t1-red); }
+.bg-t1-navy { background: var(--t1-navy); }
+
+/* components */
+.kpi     { @apply card-surface panel p-4; }
+.qa-item { @apply rounded-xl px-4 py-3 transition; background: color-mix(in oklab, var(--t1-card) 85%, transparent); }
+.dark .qa-item { background: color-mix(in oklab, var(--t1-card-d) 100%, transparent); }
+.qa-item:hover { @apply ring-1; }
+.dark .qa-item:hover { border-color: var(--t1-card-b); }
+
+.prio-row { @apply rounded-xl px-4 py-3; background: color-mix(in oklab, var(--t1-card) 90%, transparent); }
+.dark .prio-row { background: color-mix(in oklab, var(--t1-card-d) 100%, transparent); }
+
+/* status bar */
+.status-track { @apply h-4 rounded-pill; background: color-mix(in oklab, var(--t1-blue) 12%, var(--t1-bg)); }
+.dark .status-track { background: color-mix(in oklab, var(--t1-blue) 18%, var(--t1-bg-d)); }
+.status-fill  { @apply h-4 rounded-pill; background: var(--t1-blue); }
+.status-ok    { @apply bg-green-600; }
+.status-warn  { @apply bg-amber-500; }
+.status-err   { background: var(--t1-red); }

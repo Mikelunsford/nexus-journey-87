@@ -49,7 +49,7 @@ export default function BridgePanel() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: controls + outgoing */}
         <div className="space-y-4">
-          <div className="panel p-4">
+          <div className="card-surface panel panel-body">
             <div className="t-dim mb-2">Targets</div>
             <div className="flex flex-wrap gap-2">
               {targetsList.map(t => {
@@ -61,8 +61,8 @@ export default function BridgePanel() {
                       setTargets(s => active ? s.filter(x => x !== t) : [...s, t])
                     }
                     className={active
-                      ? "px-3 py-1 rounded-pill bg-brand-blue/20 text-brand-blue"
-                      : "px-3 py-1 rounded-pill panel-muted"}
+                      ? "px-3 py-1 rounded-pill bg-t1-blue/20 t1-blue"
+                      : "px-3 py-1 rounded-pill qa-item"}
                   >
                     {t}
                   </button>
@@ -75,14 +75,14 @@ export default function BridgePanel() {
                  <button 
                    key={t} 
                    onClick={() => emit(t)} 
-                   className="panel-muted px-3 py-2 text-sm hover:dark:bg-white/12"
+                   className="qa-item px-3 py-2 text-sm"
                  >
                    {t}
                  </button>
                ))}
             </div>
             <div className="mt-3 flex gap-2">
-              <button onClick={copyLast} className="panel-muted px-3 py-2 text-sm">
+              <button onClick={copyLast} className="qa-item px-3 py-2 text-sm">
                 Copy Last JSON
               </button>
               <button 
@@ -91,13 +91,13 @@ export default function BridgePanel() {
                   setIncoming([]); 
                   dedupe.current.clear(); 
                 }} 
-                className="panel-muted px-3 py-2 text-sm"
+                className="qa-item px-3 py-2 text-sm"
               >
                 Clear
               </button>
             </div>
           </div>
-          <div className="panel p-4">
+          <div className="card-surface panel panel-body">
             <div className="font-medium mb-2">Outgoing Feed</div>
             <pre className="max-h-64 overflow-auto text-xs t-dim">
               {JSON.stringify(outgoing, null, 2)}
@@ -106,12 +106,12 @@ export default function BridgePanel() {
         </div>
         {/* Right: incoming */}
         <div className="space-y-4">
-          <div className="panel p-4">
+          <div className="card-surface panel panel-body">
             <div className="font-medium mb-2">Simulate Receive</div>
-            <textarea className="w-full h-32 panel-muted p-3" id="rx"></textarea>
+            <textarea className="w-full h-32 qa-item p-3" id="rx"></textarea>
             <div className="mt-2">
               <button 
-                className="panel-muted px-3 py-2 text-sm" 
+                className="qa-item px-3 py-2 text-sm" 
                 onClick={() => {
                   const el = document.getElementById("rx") as HTMLTextAreaElement;
                   simulateReceive(el.value);
@@ -122,7 +122,7 @@ export default function BridgePanel() {
               </button>
             </div>
           </div>
-          <div className="panel p-4">
+          <div className="card-surface panel panel-body">
             <div className="font-medium mb-2">Incoming Feed</div>
             <pre className="max-h-64 overflow-auto text-xs t-dim">
               {JSON.stringify(incoming, null, 2)}

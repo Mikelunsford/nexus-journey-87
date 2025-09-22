@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { ChevronRightIcon } from "./icons";
 
 export type QAItem = { 
   label: string; 
@@ -12,17 +11,15 @@ export type QAItem = {
 };
 
 function QuickActionsGrid({ items }: { items: QAItem[] }) {
+  const many = items.length >= 4; // 4+ → 2×2; else 1,1,1…
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <div className={cn("gap-3 grid", many ? "grid-cols-1 sm:grid-cols-2" : "grid-cols-1")}>
       {items.map((it, i) => (
         <Link 
           key={i} 
           to={it.to} 
           onClick={it.onClick}
-          className={cn(
-            "panel-muted px-4 py-3 flex items-center justify-between",
-            "hover:dark:bg-white/12 transition"
-          )}
+          className={cn("qa-item flex items-center justify-between")}
         >
           <div className="flex items-center gap-3">
             {it.icon}
@@ -31,7 +28,9 @@ function QuickActionsGrid({ items }: { items: QAItem[] }) {
               {it.caption && <div className="t-dim text-xs">{it.caption}</div>}
             </div>
           </div>
-          <ChevronRightIcon />
+          <svg width="16" height="16" viewBox="0 0 24 24" className="t-dim">
+            <path d="M9 18l6-6-6-6" fill="none" stroke="currentColor" strokeWidth="2"/>
+          </svg>
         </Link>
       ))}
     </div>

@@ -60,35 +60,35 @@ export default function Dashboard() {
 
       {/* KPIs Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Projects</p>
               <p className="text-2xl font-bold t-primary">24</p>
             </div>
-            <div className="w-12 h-12 bg-brand-blue/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-brand-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-4H5m14 8H5" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Pending Quotes</p>
               <p className="text-2xl font-bold t-primary">8</p>
             </div>
-            <div className="w-12 h-12 bg-brand-red/10 rounded-lg flex items-center justify-center">
-              <svg className="w-6 h-6 text-brand-red" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-12 h-12 bg-t1-red/10 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6" style={{color: 'var(--t1-red)'}} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Shipments</p>
@@ -102,7 +102,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="kpi-card">
+        <div className="kpi">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Team Members</p>
@@ -127,7 +127,7 @@ export default function Dashboard() {
 
       {/* Performance Status */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="panel p-5">
+        <div className="card-surface panel panel-body">
           <h3 className="text-lg font-semibold t-primary mb-4">
             Performance Status
           </h3>
@@ -156,12 +156,12 @@ export default function Dashboard() {
           </div>
         </div>
 
-        <div className="panel p-5">
+        <div className="card-surface panel panel-body">
           <h3 className="text-lg font-semibold t-primary mb-4">
             Top Priorities
           </h3>
           <div className="space-y-3">
-            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+            <div className="prio-row">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium t-primary">Project Alpha</p>
@@ -170,7 +170,7 @@ export default function Dashboard() {
                 <StatusPill tone="warn">Due Soon</StatusPill>
               </div>
             </div>
-            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+            <div className="prio-row">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium t-primary">Shipment #1234</p>
@@ -179,7 +179,7 @@ export default function Dashboard() {
                 <StatusPill tone="info">In Transit</StatusPill>
               </div>
             </div>
-            <div className="panel-muted px-4 py-3 hover:dark:bg-white/12 transition">
+            <div className="prio-row">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium t-primary">Quality Review</p>

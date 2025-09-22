@@ -11,11 +11,11 @@ export default function PageSection({ title, subtitle, actions, children }: Page
   return (
     <section className="space-y-6">
       <header>
-        <h1 className="text-2xl md:text-3xl font-semibold text-text-light dark:text-text-onDark">{title}</h1>
-        {subtitle && <p className="text-dim mt-1">{subtitle}</p>}
+        <h1 className="t-primary text-2xl md:text-3xl font-semibold">{title}</h1>
+        {subtitle && <p className="t-dim mt-1">{subtitle}</p>}
       </header>
       {actions}
-      <div className="card-surface rounded-2xl shadow-soft p-5">{children}</div>
+      <div className="card-surface panel panel-body">{children}</div>
     </section>
   );
 }

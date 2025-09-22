@@ -7,19 +7,14 @@ interface StatusBarProps {
 }
 
 export function StatusBar({ tone, className }: StatusBarProps) {
-  const colorClasses = {
-    brand: 'status-bar',
-    ok: 'bg-green-600',
-    warn: 'bg-amber-500',
-    err: 'bg-brand-red',
-  };
-
   return (
-    <div className={cn('status-track h-4 rounded-pill w-full overflow-hidden', className)}>
+    <div className={cn('status-track w-full', className)}>
       <div
         className={cn(
-          'h-4 rounded-pill transition-all duration-200',
-          colorClasses[tone]
+          'status-fill transition-all duration-200',
+          tone === 'ok' && 'status-ok',
+          tone === 'warn' && 'status-warn', 
+          tone === 'err' && 'status-err'
         )}
         style={{ width: '100%' }}
         role="status"

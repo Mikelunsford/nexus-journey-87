@@ -28,7 +28,7 @@ if (process.env.NODE_ENV === 'development') {
 export function AppShell() {
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-surface-1 dark:bg-surface-dark0">
+      <div className="app-surface min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           <Topbar />
