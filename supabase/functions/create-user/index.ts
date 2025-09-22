@@ -22,6 +22,18 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
+    // Get the current user from auth headers
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: 'Authorization header required' }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
+
     const supabaseServiceRole = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -32,6 +44,31 @@ const handler = async (req: Request): Promise<Response> => {
         }
       }
     );
+
+    // Also create a client with the user's token to get their info
+    const supabaseUser = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        global: {
+          headers: {
+            Authorization: authHeader,
+          },
+        },
+      }
+    );
+
+    // Get current user info
+    const { data: { user: currentUser }, error: currentUserError } = await supabaseUser.auth.getUser();
+    if (currentUserError || !currentUser) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid authentication token' }),
+        {
+          status: 401,
+          headers: { "Content-Type": "application/json", ...corsHeaders },
+        }
+      );
+    }
 
     const { email, password, name, role_bucket, org_id, department_id }: CreateUserRequest = await req.json();
 
@@ -80,30 +117,29 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('User created in auth:', userId);
 
-    // Create profile
-    const { error: profileError } = await supabaseServiceRole
-      .from('profiles')
-      .insert({
-        id: userId,
-        email,
-        name,
-        org_id
-      });
+    // Wait a moment for the trigger to create the profile
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    if (profileError) {
-      console.error('Profile creation error:', profileError);
-      // Try to clean up the auth user if profile creation fails
+    // Verify profile was created by trigger
+    const { data: profile, error: profileCheckError } = await supabaseServiceRole
+      .from('profiles')
+      .select('id, org_id')
+      .eq('id', userId)
+      .single();
+
+    if (profileCheckError || !profile) {
+      console.error('Profile not found after creation:', profileCheckError);
       await supabaseServiceRole.auth.admin.deleteUser(userId);
       return new Response(
-        JSON.stringify({ error: `Failed to create profile: ${profileError.message}` }),
+        JSON.stringify({ error: 'Profile creation failed via trigger' }),
         {
-          status: 400,
+          status: 500,
           headers: { "Content-Type": "application/json", ...corsHeaders },
         }
       );
     }
 
-    console.log('Profile created');
+    console.log('Profile verified:', profile);
 
     // Create membership with role
     const { error: membershipError } = await supabaseServiceRole
@@ -113,8 +149,8 @@ const handler = async (req: Request): Promise<Response> => {
         org_id,
         department_id,
         role_bucket,
-        assigned_by: userId, // For now, self-assigned
-        created_by: userId
+        assigned_by: currentUser.id, // Current admin user assigning the role
+        created_by: currentUser.id   // Current admin user creating the membership
       });
 
     if (membershipError) {
