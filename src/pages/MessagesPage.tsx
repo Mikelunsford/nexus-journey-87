@@ -184,7 +184,7 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      <div className="card-surface panel panel-body space-y-6">
+      <div className="space-y-6">
 
         {/* Search */}
         <div className="relative">
