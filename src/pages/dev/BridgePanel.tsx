@@ -49,7 +49,7 @@ export default function BridgePanel() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Left: controls + outgoing */}
         <div className="space-y-4">
-          <div className="card-surface panel panel-body">
+          <div className="space-y-4 p-4 rounded-lg border">
             <div className="t-dim mb-2">Targets</div>
             <div className="flex flex-wrap gap-2">
               {targetsList.map(t => {
@@ -97,7 +97,7 @@ export default function BridgePanel() {
               </button>
             </div>
           </div>
-          <div className="card-surface panel panel-body">
+          <div className="space-y-4 p-4 rounded-lg border">
             <div className="font-medium mb-2">Outgoing Feed</div>
             <pre className="max-h-64 overflow-auto text-xs t-dim">
               {JSON.stringify(outgoing, null, 2)}
@@ -106,7 +106,7 @@ export default function BridgePanel() {
         </div>
         {/* Right: incoming */}
         <div className="space-y-4">
-          <div className="card-surface panel panel-body">
+          <div className="space-y-4 p-4 rounded-lg border">
             <div className="font-medium mb-2">Simulate Receive</div>
             <textarea className="w-full h-32 qa-item p-3" id="rx"></textarea>
             <div className="mt-2">
@@ -122,7 +122,7 @@ export default function BridgePanel() {
               </button>
             </div>
           </div>
-          <div className="card-surface panel panel-body">
+          <div className="space-y-4 p-4 rounded-lg border">
             <div className="font-medium mb-2">Incoming Feed</div>
             <pre className="max-h-64 overflow-auto text-xs t-dim">
               {JSON.stringify(incoming, null, 2)}

@@ -60,7 +60,7 @@ export default function SettingsPage() {
         </div>
 
       {/* Settings Tabs */}
-      <div className="card-surface panel panel-body">
+      <div>
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="profile" className="flex items-center gap-2">
