@@ -84,3 +84,18 @@
     "vite": "^5.4.19"
   }
 }
+{
+  "scripts": {
+    "docs:prepare": "rimraf docs && mkdir -p docs/data",
+    "docs:routes": "node scripts/export-routes.mjs > docs/data/routes.json",
+    "docs:schema": "node scripts/export-schema.mjs > docs/data/schema.sql",
+    "docs:rls": "node scripts/export-rls.mjs > docs/data/rls.json",
+    "docs:buildmeta": "node scripts/export-buildmeta.mjs > docs/data/build.json",
+    "docs:index": "node scripts/write-index.mjs",
+    "docs:all": "npm run docs:prepare && npm run docs:routes && npm run docs:schema && npm run docs:rls && npm run docs:buildmeta && npm run docs:index"
+  },
+  "devDependencies": {
+    "pg": "^8.12.0",
+    "rimraf": "^6.0.0"
+  }
+}
