@@ -49,23 +49,37 @@ export default function BridgePanel() {
 
   const handleExportAppData = async () => {
     try {
-      toast.info("Exporting application data...");
-      await AppDataExporter.exportComprehensiveData();
-      toast.success("Application data exported successfully!");
+      toast.info("Generating comprehensive app bundle...");
+      const { AppBundleExporter } = await import('@/lib/export/appBundleExporter');
+      await AppBundleExporter.exportAppBundle();
+      toast.success("App bundle exported successfully!");
     } catch (error) {
-      console.error("Export failed:", error);
-      toast.error("Failed to export application data");
+      console.error("App bundle export failed:", error);
+      toast.error("Failed to export app bundle");
     }
   };
 
   const handleExportSchema = async () => {
     try {
-      toast.info("Exporting database schema...");
-      await SchemaExporter.exportDatabaseSchema();
-      toast.success("Database schema exported successfully!");
+      toast.info("Generating comprehensive database bundle...");
+      const { DbBundleExporter } = await import('@/lib/export/dbBundleExporter');
+      await DbBundleExporter.exportDbBundle();
+      toast.success("Database bundle exported successfully!");
     } catch (error) {
-      console.error("Schema export failed:", error);
-      toast.error("Failed to export database schema");
+      console.error("Database bundle export failed:", error);
+      toast.error("Failed to export database bundle");
+    }
+  };
+
+  const handleExportGitHub = async () => {
+    try {
+      toast.info("Generating GitHub repository bundle...");
+      const { GitHubBundleExporter } = await import('@/lib/export/githubBundleExporter');
+      await GitHubBundleExporter.exportGitHubBundle();
+      toast.success("GitHub bundle exported successfully!");
+    } catch (error) {
+      console.error("GitHub bundle export failed:", error);
+      toast.error("Failed to export GitHub bundle");
     }
   };
 
@@ -135,6 +149,12 @@ export default function BridgePanel() {
                   className="qa-item px-3 py-2 text-sm"
                 >
                   Export DB Schema
+                </button>
+                <button 
+                  onClick={handleExportGitHub} 
+                  className="qa-item px-3 py-2 text-sm"
+                >
+                  Export GitHub Bundle
                 </button>
               </div>
             </div>
