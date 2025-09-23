@@ -10,7 +10,6 @@ import { FilterBar } from '@/components/ui/FilterBar';
 import { SavedViews, SavedView } from '@/components/ui/SavedViews';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
 import { useUrlState } from '@/hooks/useUrlState';
-import { createMockData } from '@/lib/mock/seeds';
 import { 
   transformUsersToEmployees, 
   getRoleColor, 
@@ -40,11 +39,8 @@ const defaultState: EmployeesState = {
 export default function EmployeesPage() {
   const [state, updateState] = useUrlState(defaultState);
 
-  // Mock data
-  const mockData = useMemo(() => createMockData(), []);
-  const employees = useMemo(() => 
-    transformUsersToEmployees(mockData.users)
-  , [mockData]);
+  // TODO: Replace with real employee data
+  const employees: Employee[] = [];
 
   // Get unique values for filters
   const uniqueDepartments = useMemo(() => 

@@ -9,7 +9,6 @@ import { SavedViews, SavedView } from '@/components/ui/SavedViews';
 import { ColumnSelector, Column } from '@/components/ui/ColumnSelector';
 import { useUrlState } from '@/hooks/useUrlState';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { createMockData } from '@/lib/mock/seeds';
 import { getAllTasks, getTasksByUser, Task } from '@/lib/adapters/tasksAdapter';
 import { cn } from '@/lib/utils';
 
@@ -80,11 +79,8 @@ export default function TasksPage() {
   const [state, updateState] = useUrlState(defaultState);
   const [columns, setColumns] = useState(defaultColumns);
 
-  // Mock data
-  const mockData = useMemo(() => createMockData(), []);
-  const allTasks = useMemo(() => 
-    user ? getTasksByUser(mockData.workOrders, mockData.projects, mockData.users, user) : []
-  , [mockData, user]);
+  // TODO: Replace with real task data
+  const allTasks: Task[] = [];
 
   // Get unique values for filters
   const uniqueAssignees = useMemo(() => 
