@@ -318,6 +318,7 @@ export type Database = {
           entity_id: string
           entity_type: string
           id: string
+          is_test: boolean | null
           metadata: Json | null
           mime_type: string
           name: string
@@ -342,6 +343,7 @@ export type Database = {
           entity_id: string
           entity_type: string
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           mime_type: string
           name: string
@@ -366,6 +368,7 @@ export type Database = {
           entity_id?: string
           entity_type?: string
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           mime_type?: string
           name?: string
@@ -659,6 +662,7 @@ export type Database = {
           department_id: string | null
           from_email: string
           id: string
+          is_test: boolean | null
           org_id: string
           owner_id: string | null
           project_id: string | null
@@ -684,6 +688,7 @@ export type Database = {
           department_id?: string | null
           from_email: string
           id?: string
+          is_test?: boolean | null
           org_id: string
           owner_id?: string | null
           project_id?: string | null
@@ -709,6 +714,7 @@ export type Database = {
           department_id?: string | null
           from_email?: string
           id?: string
+          is_test?: boolean | null
           org_id?: string
           owner_id?: string | null
           project_id?: string | null
@@ -999,6 +1005,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1022,6 +1029,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1045,6 +1053,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null
@@ -1119,6 +1128,7 @@ export type Database = {
           department_id: string | null
           expires_at: string | null
           id: string
+          is_test: boolean | null
           line_items: Json | null
           notes: string | null
           org_id: string
@@ -1138,6 +1148,7 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
+          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id: string
@@ -1157,6 +1168,7 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
+          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id?: string
@@ -1223,6 +1235,7 @@ export type Database = {
           delivered_at: string | null
           department_id: string | null
           id: string
+          is_test: boolean | null
           items: Json | null
           metadata: Json | null
           org_id: string
@@ -1244,6 +1257,7 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
+          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id: string
@@ -1265,6 +1279,7 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
+          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id?: string
@@ -1566,6 +1581,7 @@ export type Database = {
           due_date: string | null
           estimated_hours: number | null
           id: string
+          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1590,6 +1606,7 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1614,6 +1631,7 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null

@@ -8,6 +8,11 @@ import { AppShell } from '@/components/layout/AppShell';
 const AuthPage = React.lazy(() => import('@/pages/AuthPage'));
 const AcceptInvitationPage = React.lazy(() => import('@/pages/auth/AcceptInvitationPage'));
 const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
+
+// Dashboard sub-pages
+const QuotesPage = React.lazy(() => import('@/pages/dashboard/QuotesPage'));
+const ShipmentsPage = React.lazy(() => import('@/pages/dashboard/ShipmentsPage'));
+const TeamPage = React.lazy(() => import('@/pages/dashboard/TeamPage'));
 const TasksPage = React.lazy(() => import('@/pages/TasksPage'));
 const EmployeesPage = React.lazy(() => import('@/pages/EmployeesPage'));
 const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
@@ -208,6 +213,36 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <Dashboard />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'quotes',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <QuotesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipments',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ShipmentsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'team',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <TeamPage />
             </Suspense>
           </RoleGate>
         ),

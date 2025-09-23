@@ -1,10 +1,12 @@
 export interface FeatureFlags {
   'ui.brand_v1': boolean;
+  'ui.enable_test_seeds': boolean;
 }
 
 // Default feature flag values
 const defaultFlags: FeatureFlags = {
   'ui.brand_v1': true, // Enable by default for development
+  'ui.enable_test_seeds': true, // Enable test data generation for development
 };
 
 // Get feature flag from localStorage or use default

@@ -6,10 +6,19 @@ import { useShipments } from '@/hooks/useShipments';
 import { useWorkOrders } from '@/hooks/useWorkOrders';
 import { useUsers } from '@/hooks/useUsers';
 import React from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
+import { TestButton } from "@/components/ui/TestButton";
 import { StatusPill } from '@/components/ui/StatusPill';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { type RoleBucket } from '@/lib/rbac/roleBuckets';
+import { 
+  Building2, Plus, FileText, Users, Package, 
+  TrendingUp, Clock, AlertTriangle, Truck, ExternalLink 
+} from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -109,78 +118,130 @@ export default function Dashboard() {
         </p>
       </div>
 
-      {/* KPIs Section */}
+      {/* KPIs Section - Now Clickable Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Active Projects</p>
-              <p className="text-2xl font-bold t-primary">
-                {isLoading ? '...' : activeProjects}
-              </p>
-            </div>
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-blue/10' : 'bg-t1-blue/10'}`}>
-              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-blue' : 't1-blue'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14-4H5m14 8H5" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        {/* Active Projects Card */}
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Link to="/dashboard/projects?status=active">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
+              <Building2 className={`h-4 w-4 ${brandV1Enabled ? 'text-brand-blue' : 'text-t1-blue'}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoading ? '...' : activeProjects}</div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  View all projects
+                  <ExternalLink className="inline ml-1 h-3 w-3" />
+                </p>
+                <div className="flex gap-1">
+                  <TestButton type="project" size="sm" />
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/dashboard/projects/new">
+                      <Plus className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
 
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Pending Quotes</p>
-              <p className="text-2xl font-bold t-primary">
-                {isLoading ? '...' : pendingQuotes}
-              </p>
-            </div>
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-red/10' : 'bg-t1-red/10'}`}>
-              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-red' : 'text-t1-red'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        {/* Pending Quotes Card */}
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Link to="/dashboard/quotes?status=pending">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Pending Quotes</CardTitle>
+              <FileText className={`h-4 w-4 ${brandV1Enabled ? 'text-brand-red' : 'text-t1-red'}`} />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoading ? '...' : pendingQuotes}</div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  View all quotes
+                  <ExternalLink className="inline ml-1 h-3 w-3" />
+                </p>
+                <div className="flex gap-1">
+                  <TestButton type="quote" size="sm" />
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/dashboard/quotes/new">
+                      <Plus className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
 
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Active Shipments</p>
-              <p className="text-2xl font-bold t-primary">
-                {isLoading ? '...' : activeShipments}
-              </p>
-            </div>
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-green-600/10 dark:bg-green-500/10' : 'bg-green-500/10'}`}>
-              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-green-600 dark:text-green-500' : 'text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        {/* Active Shipments Card */}
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Link to="/dashboard/shipments?status=active">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Active Shipments</CardTitle>
+              <Truck className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoading ? '...' : activeShipments}</div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  View all shipments
+                  <ExternalLink className="inline ml-1 h-3 w-3" />
+                </p>
+                <div className="flex gap-1">
+                  <TestButton type="shipment" size="sm" />
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/dashboard/shipments/new">
+                      <Plus className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
 
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Team Members</p>
-              <p className="text-2xl font-bold t-primary">
-                {isLoading ? '...' : teamMembers}
-              </p>
-            </div>
-            <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-purple-600/10 dark:bg-purple-500/10' : 'bg-purple-500/10'}`}>
-              <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-purple-600 dark:text-purple-500' : 'text-purple-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
+        {/* Team Members Card */}
+        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
+          <Link to="/dashboard/team">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Team Members</CardTitle>
+              <Users className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{isLoading ? '...' : teamMembers}</div>
+              <div className="flex items-center justify-between mt-2">
+                <p className="text-xs text-muted-foreground">
+                  Manage team
+                  <ExternalLink className="inline ml-1 h-3 w-3" />
+                </p>
+                <div className="flex gap-1">
+                  <Button size="sm" variant="outline">
+                    <span className="text-xs">Test Invite</span>
+                  </Button>
+                  <Button size="sm" variant="ghost" asChild>
+                    <Link to="/dashboard/team/invite">
+                      <Plus className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Link>
+        </Card>
       </div>
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-xl font-semibold t-primary mb-4">
-          Quick Actions
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold t-primary">
+            Quick Actions
+          </h2>
+          <div className="flex gap-2">
+            <TestButton type="message" variant="outline" size="sm" />
+            <TestButton type="document" variant="outline" size="sm" />
+          </div>
+        </div>
         <QuickActionsGrid items={quickActions} />
       </div>
 
