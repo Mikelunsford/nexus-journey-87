@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from 'react-router-dom';
 import { useCustomers } from '@/hooks/useCustomers';
 import { toast } from '@/hooks/use-toast';
+import { UserSelect } from '@/components/ui/UserSelect';
 
 export default function CustomersNewPage() {
   const navigate = useNavigate();
@@ -30,9 +31,10 @@ export default function CustomersNewPage() {
     notes: '',
     marketingEmails: false,
     newsletter: false,
+    ownerId: undefined as string | undefined,
   });
 
-  const handleInputChange = (field: string, value: string | boolean) => {
+  const handleInputChange = (field: string, value: string | boolean | undefined) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
@@ -62,6 +64,7 @@ export default function CustomersNewPage() {
         email: formData.email,
         phone: formData.phone || null,
         address: fullAddress || null,
+        owner_id: formData.ownerId || null,
         settings: {
           contactName: formData.contactName,
           industry: formData.industry,
@@ -271,12 +274,21 @@ export default function CustomersNewPage() {
           </CardContent>
         </Card>
 
-        {/* Additional Information */}
+        {/* Assignment & Additional Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
+            <CardTitle>Assignment & Additional Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="owner">Account Owner</Label>
+              <UserSelect
+                value={formData.ownerId}
+                onValueChange={(value) => handleInputChange('ownerId', value)}
+                placeholder="Select account owner"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
               <Textarea

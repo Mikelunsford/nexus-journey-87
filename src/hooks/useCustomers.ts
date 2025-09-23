@@ -133,6 +133,38 @@ export function useCustomers() {
     }
   };
 
+  const updateCustomerOwner = async (customerId: string, ownerId: string | null) => {
+    try {
+      const { data, error: updateError } = await supabase
+        .from('customers')
+        .update({ owner_id: ownerId })
+        .eq('id', customerId)
+        .select()
+        .single();
+
+      if (updateError) throw updateError;
+
+      setCustomers(prev => prev.map(customer => 
+        customer.id === customerId ? data : customer
+      ));
+
+      toast({
+        title: 'Success',
+        description: 'Customer owner updated successfully',
+      });
+
+      return data;
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to update customer owner';
+      toast({
+        title: 'Error',
+        description: errorMessage,
+        variant: 'destructive',
+      });
+      throw err;
+    }
+  };
+
   const deleteCustomer = async (id: string) => {
     try {
       const { error: deleteError } = await supabase
@@ -164,6 +196,7 @@ export function useCustomers() {
     error,
     createCustomer,
     updateCustomer,
+    updateCustomerOwner,
     deleteCustomer,
     refetch: fetchCustomers,
   };
