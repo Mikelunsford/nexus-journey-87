@@ -15,7 +15,7 @@ export default function Dashboard() {
 
   const quickActions: QAItem[] = [
     {
-      label: 'Add Quote to Customer',
+      label: 'Submit New Quote to Team1',
       to: '/dashboard/projects/new-internal',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -24,7 +24,7 @@ export default function Dashboard() {
       ),
     },
     {
-      label: 'Create Project for Customer',
+      label: 'Add Project Information',
       to: '/dashboard/projects/new-project',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
