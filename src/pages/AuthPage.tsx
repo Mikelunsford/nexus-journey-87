@@ -80,7 +80,7 @@ export default function AuthPage() {
         <ThemeToggle />
       </div>
 
-      <div className="flex min-h-screen items-center justify-center p-4">
+      <div className="flex min-h-screen items-center justify-center p-4 bg-text-dim">
         <div className="w-full max-w-md space-y-6">
           {/* Logo and Header */}
           <div className="text-center">
