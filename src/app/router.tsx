@@ -13,6 +13,8 @@ const NotFoundPage = React.lazy(() => import('@/pages/NotFoundPage'));
 
 // Lazy load additional pages
 const CustomersPage = React.lazy(() => import('@/pages/customers/CustomersPage'));
+const QuotesPage = React.lazy(() => import('@/pages/QuotesPage'));
+const ShipmentsPage = React.lazy(() => import('@/pages/ShipmentsPage'));
 const CustomerLabelsPage = React.lazy(() => import('@/pages/customers/CustomerLabelsPage'));
 const UserLabelsPage = React.lazy(() => import('@/pages/admin/UserLabelsPage'));
 const OrgLabelsPage = React.lazy(() => import('@/pages/admin/OrgLabelsPage'));
@@ -271,6 +273,26 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <CustomersPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'quotes',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <QuotesPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipments',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ShipmentsPage />
             </Suspense>
           </RoleGate>
         ),
