@@ -11,7 +11,11 @@ const Dashboard = React.lazy(() => import('@/pages/Dashboard'));
 
 // Dashboard sub-pages
 const QuotesPage = React.lazy(() => import('@/pages/dashboard/QuotesPage'));
+const QuoteNewPage = React.lazy(() => import('@/pages/dashboard/QuoteNewPage'));
+const QuoteDetailPage = React.lazy(() => import('@/pages/dashboard/QuoteDetailPage'));
 const ShipmentsPage = React.lazy(() => import('@/pages/dashboard/ShipmentsPage'));
+const ShipmentNewPage = React.lazy(() => import('@/pages/dashboard/ShipmentNewPage'));
+const ShipmentDetailPage = React.lazy(() => import('@/pages/dashboard/ShipmentDetailPage'));
 const TeamPage = React.lazy(() => import('@/pages/dashboard/TeamPage'));
 const TasksPage = React.lazy(() => import('@/pages/TasksPage'));
 const EmployeesPage = React.lazy(() => import('@/pages/EmployeesPage'));
@@ -62,8 +66,6 @@ const QualityReportPage = React.lazy(() => import('@/pages/production/QualityRep
 const MaintenanceSchedulePage = React.lazy(() => import('@/pages/production/MaintenanceSchedulePage'));
 
 // Shipping stub pages
-const ShipmentDetailPage = React.lazy(() => import('@/pages/shipping/ShipmentDetailPage'));
-const ShipmentNewPage = React.lazy(() => import('@/pages/shipping/ShipmentNewPage'));
 const RouteManagementPage = React.lazy(() => import('@/pages/shipping/RouteManagementPage'));
 const CarrierRatesPage = React.lazy(() => import('@/pages/shipping/CarrierRatesPage'));
 
@@ -228,11 +230,51 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'quotes/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <QuoteNewPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'quotes/:id',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <QuoteDetailPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
         path: 'shipments',
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <ShipmentsPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipments/new',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ShipmentNewPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'shipments/:id',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ShipmentDetailPage />
             </Suspense>
           </RoleGate>
         ),
