@@ -4,13 +4,12 @@ import { useProjects } from '@/hooks/useProjects';
 import { useQuotes } from '@/hooks/useQuotes';
 import { useShipments } from '@/hooks/useShipments';
 import { useWorkOrders } from '@/hooks/useWorkOrders';
-import { usePerformanceMetrics } from '@/hooks/usePerformanceMetrics';
 import { useUsers } from '@/hooks/useUsers';
 import React from 'react';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
-import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
+import { type RoleBucket } from '@/lib/rbac/roleBuckets';
 
 export default function Dashboard() {
   const { user, profile } = useAuth();
@@ -20,14 +19,27 @@ export default function Dashboard() {
   const { shipments, loading: shipmentsLoading } = useShipments();
   const { workOrders, loading: workOrdersLoading } = useWorkOrders();
   const { users, loading: usersLoading } = useUsers();
-  const { metrics, loading: metricsLoading } = usePerformanceMetrics();
   const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
 
   // Calculate real-time KPIs
   const activeProjects = projects.filter(p => ['in_progress', 'approved'].includes(p.status)).length;
   const pendingQuotes = quotes.filter(q => q.status === 'sent' || q.status === 'draft').length;
   const activeShipments = shipments.filter(s => s.status === 'in_transit').length;
-  const teamMembers = users.length;
+  
+  // Calculate team members based on user role
+  const userRoleBucket = profile?.role_bucket as RoleBucket;
+  const teamMembers = (() => {
+    if (userRoleBucket === 'external') {
+      // External users (customers) should only see themselves
+      return 1;
+    } else if (userRoleBucket === 'admin') {
+      // Admins see all users
+      return users.length;
+    } else {
+      // Internal users (management, operational) see internal staff only
+      return users.filter(u => u.role_bucket !== 'external').length;
+    }
+  })();
 
   // Get top priorities from real data
   const urgentProjects = projects
@@ -172,93 +184,56 @@ export default function Dashboard() {
         <QuickActionsGrid items={quickActions} />
       </div>
 
-      {/* Performance Status */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="card-surface panel panel-body">
-          <h3 className="text-lg font-semibold t-primary mb-4">
-            Performance Status
-          </h3>
-          <div className="space-y-4">
-            {metricsLoading ? (
-              <div className="t-dim">Loading metrics...</div>
-            ) : (
-              <>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm t-dim">Production Efficiency</span>
-                    <span className="text-sm font-medium t-primary">{metrics.productionEfficiency}%</span>
-                  </div>
-                  <StatusBar tone="brand" />
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm t-dim">On-Time Delivery</span>
-                    <span className="text-sm font-medium t-primary">{metrics.onTimeDelivery}%</span>
-                  </div>
-                  <StatusBar tone="brand" />
-                </div>
-                <div>
-                  <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm t-dim">Quality Score</span>
-                    <span className="text-sm font-medium t-primary">{metrics.qualityScore}%</span>
-                  </div>
-                  <StatusBar tone="brand" />
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        <div className="card-surface panel panel-body">
-          <h3 className="text-lg font-semibold t-primary mb-4">
-            Top Priorities
-          </h3>
-          <div className="space-y-3">
-            {isLoading ? (
-              <div className="t-dim">Loading priorities...</div>
-            ) : (
-              <>
-                {urgentProjects.map(project => (
-                  <div key={project.id} className="prio-row">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium t-primary">{project.title}</p>
-                        <p className="text-sm t-dim">Priority: {project.priority === 'critical' ? 'CRITICAL' : 'High'}</p>
-                      </div>
-                      <StatusPill tone={project.priority === 'critical' ? 'err' : 'warn'}>
-                        {project.priority === 'critical' ? 'CRITICAL' : 'High Priority'}
-                      </StatusPill>
+      {/* Top Priorities - Expanded */}
+      <div className="card-surface panel panel-body">
+        <h3 className="text-lg font-semibold t-primary mb-4">
+          Top Priorities
+        </h3>
+        <div className="space-y-3">
+          {isLoading ? (
+            <div className="t-dim">Loading priorities...</div>
+          ) : (
+            <>
+              {urgentProjects.map(project => (
+                <div key={project.id} className="prio-row">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium t-primary">{project.title}</p>
+                      <p className="text-sm t-dim">Priority: {project.priority === 'critical' ? 'CRITICAL' : 'High'}</p>
                     </div>
+                    <StatusPill tone={project.priority === 'critical' ? 'err' : 'warn'}>
+                      {project.priority === 'critical' ? 'CRITICAL' : 'High Priority'}
+                    </StatusPill>
                   </div>
-                ))}
-                {recentShipments.map(shipment => (
-                  <div key={shipment.id} className="prio-row">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium t-primary">Shipment #{shipment.tracking_number || shipment.id.slice(-6)}</p>
-                        <p className="text-sm t-dim">Status: {shipment.status.replace('_', ' ')}</p>
-                      </div>
-                      <StatusPill tone="info">In Transit</StatusPill>
+                </div>
+              ))}
+              {recentShipments.map(shipment => (
+                <div key={shipment.id} className="prio-row">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium t-primary">Shipment #{shipment.tracking_number || shipment.id.slice(-6)}</p>
+                      <p className="text-sm t-dim">Status: {shipment.status.replace('_', ' ')}</p>
                     </div>
+                    <StatusPill tone="info">In Transit</StatusPill>
                   </div>
-                ))}
-                {qualityIssues.map(workOrder => (
-                  <div key={workOrder.id} className="prio-row">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium t-primary">{workOrder.title}</p>
-                        <p className="text-sm t-dim">Quality Review Required</p>
-                      </div>
-                      <StatusPill tone="err">Action Required</StatusPill>
+                </div>
+              ))}
+              {qualityIssues.map(workOrder => (
+                <div key={workOrder.id} className="prio-row">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium t-primary">{workOrder.title}</p>
+                      <p className="text-sm t-dim">Quality Review Required</p>
                     </div>
+                    <StatusPill tone="err">Action Required</StatusPill>
                   </div>
-                ))}
-                {urgentProjects.length === 0 && recentShipments.length === 0 && qualityIssues.length === 0 && (
-                  <div className="t-dim text-sm">No urgent priorities at the moment</div>
-                )}
-              </>
-            )}
-          </div>
+                </div>
+              ))}
+              {urgentProjects.length === 0 && recentShipments.length === 0 && qualityIssues.length === 0 && (
+                <div className="t-dim text-sm">No urgent priorities at the moment</div>
+              )}
+            </>
+          )}
         </div>
       </div>
     </div>
