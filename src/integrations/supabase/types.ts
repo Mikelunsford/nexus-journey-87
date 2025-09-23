@@ -1683,9 +1683,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_customer_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_user_org_id: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_user_role_bucket: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["role_bucket_enum"]
+      }
+      is_customer_owner: {
+        Args: { customer_id: string }
+        Returns: boolean
       }
       is_user_admin: {
         Args: Record<PropertyKey, never>
