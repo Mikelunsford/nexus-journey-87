@@ -75,16 +75,18 @@ export function TestButton({
       disabled={isGenerating}
       className={className}
     >
-      {isGenerating ? (
-        <Loader2 className="h-4 w-4 animate-spin" />
-      ) : (
-        <TestTube className="h-4 w-4" />
-      )}
-      {size !== 'sm' && (
-        <span className="ml-2">
-          {isGenerating ? 'Generating...' : 'Test'}
-        </span>
-      )}
+      <>
+        {isGenerating ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <TestTube className="h-4 w-4" />
+        )}
+        {size !== 'sm' && (
+          <span className="ml-2">
+            {isGenerating ? 'Generating...' : 'Test'}
+          </span>
+        )}
+      </>
     </Button>
   );
 }
