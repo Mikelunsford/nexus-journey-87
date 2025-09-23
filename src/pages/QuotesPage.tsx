@@ -2,8 +2,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
+import { useQuotes } from '@/hooks/useQuotes';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function QuotesPage() {
+  const [testSeedsEnabled] = useFeatureFlag('ui.enable_test_seeds');
+  const { quotes, loading, error } = useQuotes(testSeedsEnabled);
   const quickActions: QAItem[] = [
     {
       label: 'New Quote Request',
@@ -27,36 +31,39 @@ export default function QuotesPage() {
     },
   ];
 
-  // Mock quotes data
-  const quotes = [
-    {
-      id: '1',
-      title: 'Industrial Equipment Quote',
-      customer: 'ACME Manufacturing',
-      status: 'pending',
-      total: 15750.00,
-      created_at: '2024-01-15T10:00:00Z',
-      expires_at: '2024-02-15T10:00:00Z'
-    },
-    {
-      id: '2', 
-      title: 'Bulk Materials Order',
-      customer: 'Steelworks Corp',
-      status: 'approved',
-      total: 28900.00,
-      created_at: '2024-01-10T14:30:00Z',
-      expires_at: '2024-02-10T14:30:00Z'
-    }
-  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'pending': return 'text-yellow-600';
+      case 'draft': return 'text-gray-600';
+      case 'submitted': return 'text-yellow-600';
       case 'approved': return 'text-green-600';
       case 'declined': return 'text-red-600';
+      case 'expired': return 'text-red-400';
       default: return 'text-gray-600';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold t-primary">Quotes</h1>
+          <p className="t-dim mt-2">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold t-primary">Quotes</h1>
+          <p className="t-dim mt-2 text-red-500">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -92,7 +99,7 @@ export default function QuotesPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Pending</p>
-              <p className="text-2xl font-bold t-primary">{quotes.filter(q => q.status === 'pending').length}</p>
+              <p className="text-2xl font-bold t-primary">{quotes.filter(q => q.status === 'draft').length}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,9 +150,9 @@ export default function QuotesPage() {
             {quotes.map((quote) => (
               <div key={quote.id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors">
                 <div className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <h4 className="font-medium t-primary">{quote.title}</h4>
-                    <p className="text-sm t-dim">Customer: {quote.customer}</p>
+                 <div className="flex-1">
+                    <h4 className="font-medium t-primary">Quote #{quote.id.slice(0, 8)}{(quote as any).is_test ? ' (Test)' : ''}</h4>
+                    <p className="text-sm t-dim">Customer: {quote.customers?.name || 'Unknown'}</p>
                     <p className="text-sm t-dim">Created: {new Date(quote.created_at).toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
@@ -153,9 +160,11 @@ export default function QuotesPage() {
                     <p className={`text-sm font-medium ${getStatusColor(quote.status)}`}>
                       {quote.status.charAt(0).toUpperCase() + quote.status.slice(1)}
                     </p>
-                    <p className="text-xs t-dim">
-                      Expires: {new Date(quote.expires_at).toLocaleDateString()}
-                    </p>
+                    {quote.expires_at && (
+                      <p className="text-xs t-dim">
+                        Expires: {new Date(quote.expires_at).toLocaleDateString()}
+                      </p>
+                    )}
                   </div>
                   <div className="ml-4">
                     <Button variant="ghost" size="sm">View</Button>

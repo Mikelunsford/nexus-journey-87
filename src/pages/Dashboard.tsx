@@ -3,6 +3,8 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useCustomers } from '@/hooks/useCustomers';
 import { useProjects } from '@/hooks/useProjects';
+import { useQuotes } from '@/hooks/useQuotes';
+import { useShipments } from '@/hooks/useShipments';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { StatusBar } from '@/components/ui/StatusBar';
 import { StatusPill } from '@/components/ui/StatusPill';
@@ -14,6 +16,8 @@ export default function Dashboard() {
   const { profile } = useAuth();
   const { customers } = useCustomers();
   const { projects } = useProjects();
+  const { quotes } = useQuotes();
+  const { shipments } = useShipments();
   const [brandV1Enabled] = useFeatureFlag('ui.brand_v1');
   const { generateTestEntity } = useTestActions();
 
@@ -61,9 +65,9 @@ export default function Dashboard() {
   ];
 
   const activeProjects = projects.filter(p => ['in_progress', 'approved'].includes(p.status));
-  const pendingQuotes = 8; // Mock data for now
-  const activeShipments = 12; // Mock data for now  
-  const teamMembers = 47; // Mock data for now
+  const pendingQuotes = quotes.filter(q => q.status === 'draft').length;
+  const activeShipments = shipments.filter(s => ['shipped', 'in_transit'].includes(s.status)).length;  
+  const teamMembers = 47; // TODO: Create useTeamMembers hook
 
   return (
     <div className="space-y-8">

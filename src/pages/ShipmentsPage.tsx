@@ -2,8 +2,12 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
+import { useShipments } from '@/hooks/useShipments';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function ShipmentsPage() {
+  const [testSeedsEnabled] = useFeatureFlag('ui.enable_test_seeds');
+  const { shipments, loading, error } = useShipments(testSeedsEnabled);
   const quickActions: QAItem[] = [
     {
       label: 'Track Shipment',
@@ -27,29 +31,6 @@ export default function ShipmentsPage() {
     },
   ];
 
-  // Mock shipments data
-  const shipments = [
-    {
-      id: '1',
-      tracking_number: 'TRK-2024-001',
-      carrier: 'FedEx',
-      status: 'in_transit',
-      origin: 'Memphis, TN',
-      destination: 'Little Rock, AR',
-      shipped_at: '2024-01-15T08:00:00Z',
-      estimated_delivery: '2024-01-17T17:00:00Z'
-    },
-    {
-      id: '2',
-      tracking_number: 'TRK-2024-002', 
-      carrier: 'UPS',
-      status: 'delivered',
-      origin: 'Atlanta, GA',
-      destination: 'Nashville, TN',
-      shipped_at: '2024-01-10T14:30:00Z',
-      delivered_at: '2024-01-12T16:45:00Z'
-    }
-  ];
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -64,12 +45,36 @@ export default function ShipmentsPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'created': return 'Created';
+      case 'shipped': return 'Shipped';
       case 'in_transit': return 'In Transit';
       case 'delivered': return 'Delivered';
       case 'delayed': return 'Delayed';
+      case 'cancelled': return 'Cancelled';
       default: return status;
     }
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold t-primary">Shipments</h1>
+          <p className="t-dim mt-2">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold t-primary">Shipments</h1>
+          <p className="t-dim mt-2 text-red-500">Error: {error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -158,19 +163,22 @@ export default function ShipmentsPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-2">
-                      <h4 className="font-medium t-primary">{shipment.tracking_number}</h4>
+                      <h4 className="font-medium t-primary">{shipment.tracking_number || `#${shipment.id.slice(0, 8)}`}{(shipment as any).is_test ? ' (Test)' : ''}</h4>
                       <span className={`text-sm font-medium ${getStatusColor(shipment.status)}`}>
                         {getStatusBadge(shipment.status)}
                       </span>
                     </div>
-                    <p className="text-sm t-dim">Carrier: {shipment.carrier}</p>
-                    <p className="text-sm t-dim">{shipment.origin} → {shipment.destination}</p>
+                    <p className="text-sm t-dim">Carrier: {shipment.carrier || 'Not assigned'}</p>
+                    <p className="text-sm t-dim">To: {shipment.address}</p>
+                    {shipment.projects?.customers?.name && (
+                      <p className="text-sm t-dim">Customer: {shipment.projects.customers.name}</p>
+                    )}
                     <p className="text-sm t-dim">
-                      Shipped: {new Date(shipment.shipped_at).toLocaleDateString()}
+                      Created: {new Date(shipment.created_at).toLocaleDateString()}
                     </p>
-                    {shipment.estimated_delivery && (
+                    {shipment.shipped_at && (
                       <p className="text-sm t-dim">
-                        Est. Delivery: {new Date(shipment.estimated_delivery).toLocaleDateString()}
+                        Shipped: {new Date(shipment.shipped_at).toLocaleDateString()}
                       </p>
                     )}
                     {shipment.delivered_at && (
