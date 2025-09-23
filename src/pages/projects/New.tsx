@@ -40,7 +40,7 @@ export default function New() {
 
         {/* Internal Quote Calculator */}
         <Card className="hover:shadow-md transition-shadow cursor-pointer">
-          <Link to="/projects/new-internal-quote">
+          <Link to="/projects/new-internal">
             <CardHeader className="pb-3">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-green-500/10 rounded-lg">

@@ -15,7 +15,7 @@ export default function ProjectsPage() {
     },
     {
       label: 'New Internal Quote',
-      to: '/projects/new-internal-quote',
+      to: '/projects/new-internal',
       icon: <Folder className="w-4 h-4" />,
       caption: 'Calculate project quote'
     },
