@@ -1,6 +1,5 @@
 // Core Types for Team1 Nexus
 import type { RoleBucket } from './rbac/roleBuckets';
-import type { Json } from '@/integrations/supabase/types';
 
 export type ID = string;
 export type Role = 'admin' | 'manager' | 'developer' | 'internal' | 'employee' | 'production' | 'shipping_receiving' | 'customer';
@@ -20,16 +19,9 @@ export interface DbCustomer {
   email?: string;
   phone?: string;
   address?: string;
-  owner_id?: string;
-  department_id?: string;
-  settings?: Json;
-  search_vector?: unknown;
-  version?: number;
   created_at: string;
   updated_at: string;
   deleted_at?: string;
-  created_by?: string;
-  updated_by?: string;
 }
 
 export interface DbProject {

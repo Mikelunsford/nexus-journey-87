@@ -1,40 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { CreateUserModal } from '@/components/admin/CreateUserModal';
-import { UserEditModal } from '@/components/admin/UserEditModal';
-import { UserDetailModal } from '@/components/admin/UserDetailModal';
-import { useUsers, User } from '@/hooks/useUsers';
-import { useInvitations } from '@/hooks/useInvitations';
 
 export default function UsersPage() {
-  const { users, loading, error, refreshUsers } = useUsers();
-  const { invitations } = useInvitations();
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-
-  const handleViewUser = (user: User) => {
-    setSelectedUser(user);
-    setIsDetailModalOpen(true);
-  };
-
-  const handleEditUser = (user: User) => {
-    setSelectedUser(user);
-    setIsEditModalOpen(true);
-  };
-
-  const handleCloseModals = () => {
-    setSelectedUser(null);
-    setIsEditModalOpen(false);
-    setIsDetailModalOpen(false);
-  };
-
-  const pendingInvitesCount = invitations.filter(inv => inv.status === 'pending').length;
-
   const quickActions: QAItem[] = [
     {
       label: 'Invite User',
@@ -78,6 +49,36 @@ export default function UsersPage() {
     },
   ];
 
+  const users = [
+    { 
+      id: 'USR-001', 
+      name: 'John Smith', 
+      email: 'john.smith@company.com', 
+      role: 'Admin', 
+      status: 'Active', 
+      lastLogin: '2024-01-15 10:30',
+      avatar: ''
+    },
+    { 
+      id: 'USR-002', 
+      name: 'Sarah Johnson', 
+      email: 'sarah.johnson@company.com', 
+      role: 'Manager', 
+      status: 'Active', 
+      lastLogin: '2024-01-14 16:45',
+      avatar: ''
+    },
+    { 
+      id: 'USR-003', 
+      name: 'Mike Chen', 
+      email: 'mike.chen@company.com', 
+      role: 'User', 
+      status: 'Inactive', 
+      lastLogin: '2024-01-10 09:15',
+      avatar: ''
+    },
+  ];
+
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
       case 'Active': return 'default';
@@ -89,12 +90,11 @@ export default function UsersPage() {
 
   const getRoleColor = (role: string) => {
     const colors: Record<string, string> = {
-      'admin': 'bg-red-500/10 text-red-700 dark:text-red-300',
-      'management': 'bg-blue-500/10 text-blue-700 dark:text-blue-300',
-      'operational': 'bg-green-500/10 text-green-700 dark:text-green-300',
-      'external': 'bg-gray-500/10 text-gray-700 dark:text-gray-300'
+      'Admin': 'panel text-primary',
+      'Manager': 'panel-muted text-primary',
+      'User': 'panel text-primary',
     };
-    return colors[role] || colors.external;
+    return colors[role] || 'panel-muted text-primary';
   };
 
   const getInitials = (name: string) => {
@@ -111,10 +111,7 @@ export default function UsersPage() {
 
       {/* Quick Actions */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold t-primary">Quick Actions</h2>
-          <CreateUserModal onUserCreated={refreshUsers} />
-        </div>
+        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
         <QuickActionsGrid items={quickActions} />
       </div>
 
@@ -124,7 +121,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Total Users</p>
-              <p className="text-2xl font-bold t-primary">{users.length}</p>
+              <p className="text-2xl font-bold t-primary">247</p>
             </div>
             <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 t1-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -138,7 +135,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Users</p>
-              <p className="text-2xl font-bold t-primary">{users.length}</p>
+              <p className="text-2xl font-bold t-primary">218</p>
             </div>
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +149,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Online Now</p>
-              <p className="text-2xl font-bold t-primary">{Math.floor(users.length * 0.65)}</p>
+              <p className="text-2xl font-bold t-primary">156</p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +163,7 @@ export default function UsersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Pending Invites</p>
-              <p className="text-2xl font-bold t-primary">{pendingInvitesCount}</p>
+              <p className="text-2xl font-bold t-primary">12</p>
             </div>
             <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -193,101 +190,41 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody>
-              {loading ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <div className="flex items-center justify-center space-x-2">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-                      <span className="text-muted-foreground">Loading users...</span>
+              {users.map((user) => (
+                <tr key={user.id} className="border-b hover:bg-muted/50">
+                  <td className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={user.avatar} alt={user.name} />
+                        <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-medium">{user.name}</span>
+                    </div>
+                  </td>
+                  <td className="p-4 text-muted-foreground">{user.email}</td>
+                  <td className="p-4">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role)}`}>
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="p-4">
+                    <Badge variant={getStatusVariant(user.status)}>
+                      {user.status}
+                    </Badge>
+                  </td>
+                  <td className="p-4 text-muted-foreground text-sm">{user.lastLogin}</td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-2">
+                      <Button variant="ghost" size="sm">View</Button>
+                      <Button variant="ghost" size="sm">Edit</Button>
                     </div>
                   </td>
                 </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <div className="space-y-3">
-                      <p className="text-destructive">Error loading users: {error}</p>
-                      <Button variant="outline" size="sm" onClick={refreshUsers}>
-                        Try Again
-                      </Button>
-                    </div>
-                  </td>
-                </tr>
-              ) : users.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="p-8 text-center">
-                    <div className="space-y-3">
-                      <p className="text-muted-foreground">No users found in your organization</p>
-                      <p className="text-sm text-muted-foreground">Invite users to get started</p>
-                    </div>
-                  </td>
-                </tr>
-              ) : (
-                users.map((user) => (
-                  <tr key={user.id} className="border-b hover:bg-muted/50">
-                    <td className="p-4">
-                      <div className="flex items-center space-x-3">
-                        <Avatar className="h-8 w-8">
-                          <AvatarImage src={user.avatar_url} alt={user.name} />
-                          <AvatarFallback>{getInitials(user.name)}</AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium">{user.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-4 text-muted-foreground">{user.email}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getRoleColor(user.role_bucket)}`}>
-                        {user.role_bucket}
-                      </span>
-                    </td>
-                    <td className="p-4">
-                      <Badge variant="default">Active</Badge>
-                    </td>
-                    <td className="p-4 text-muted-foreground text-sm">
-                      {user.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : 'Never'}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleViewUser(user)}
-                        >
-                          View
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => handleEditUser(user)}
-                        >
-                          Edit
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         </div>
       </div>
-
-      {/* Modals */}
-      <UserDetailModal
-        user={selectedUser}
-        isOpen={isDetailModalOpen}
-        onClose={handleCloseModals}
-      />
-      
-      <UserEditModal
-        user={selectedUser}
-        isOpen={isEditModalOpen}
-        onClose={handleCloseModals}
-        onUserUpdated={() => {
-          refreshUsers();
-          handleCloseModals();
-        }}
-      />
     </div>
   );
 }

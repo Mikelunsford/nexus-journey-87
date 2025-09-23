@@ -318,7 +318,6 @@ export type Database = {
           entity_id: string
           entity_type: string
           id: string
-          is_test: boolean | null
           metadata: Json | null
           mime_type: string
           name: string
@@ -343,7 +342,6 @@ export type Database = {
           entity_id: string
           entity_type: string
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           mime_type: string
           name: string
@@ -368,7 +366,6 @@ export type Database = {
           entity_id?: string
           entity_type?: string
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           mime_type?: string
           name?: string
@@ -662,7 +659,6 @@ export type Database = {
           department_id: string | null
           from_email: string
           id: string
-          is_test: boolean | null
           org_id: string
           owner_id: string | null
           project_id: string | null
@@ -688,7 +684,6 @@ export type Database = {
           department_id?: string | null
           from_email: string
           id?: string
-          is_test?: boolean | null
           org_id: string
           owner_id?: string | null
           project_id?: string | null
@@ -714,7 +709,6 @@ export type Database = {
           department_id?: string | null
           from_email?: string
           id?: string
-          is_test?: boolean | null
           org_id?: string
           owner_id?: string | null
           project_id?: string | null
@@ -1005,7 +999,6 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
-          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1029,7 +1022,6 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1053,7 +1045,6 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null
@@ -1128,7 +1119,6 @@ export type Database = {
           department_id: string | null
           expires_at: string | null
           id: string
-          is_test: boolean | null
           line_items: Json | null
           notes: string | null
           org_id: string
@@ -1148,7 +1138,6 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
-          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id: string
@@ -1168,7 +1157,6 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
-          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id?: string
@@ -1235,7 +1223,6 @@ export type Database = {
           delivered_at: string | null
           department_id: string | null
           id: string
-          is_test: boolean | null
           items: Json | null
           metadata: Json | null
           org_id: string
@@ -1257,7 +1244,6 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
-          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id: string
@@ -1279,7 +1265,6 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
-          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id?: string
@@ -1520,54 +1505,6 @@ export type Database = {
           },
         ]
       }
-      user_invitations: {
-        Row: {
-          created_at: string
-          department_id: string | null
-          email: string
-          expires_at: string
-          id: string
-          invited_by: string
-          name: string | null
-          org_id: string
-          role_bucket: Database["public"]["Enums"]["role_bucket_enum"]
-          status: string
-          token: string
-          updated_at: string
-          version: number
-        }
-        Insert: {
-          created_at?: string
-          department_id?: string | null
-          email: string
-          expires_at?: string
-          id?: string
-          invited_by: string
-          name?: string | null
-          org_id: string
-          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
-          status?: string
-          token: string
-          updated_at?: string
-          version?: number
-        }
-        Update: {
-          created_at?: string
-          department_id?: string | null
-          email?: string
-          expires_at?: string
-          id?: string
-          invited_by?: string
-          name?: string | null
-          org_id?: string
-          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
-          status?: string
-          token?: string
-          updated_at?: string
-          version?: number
-        }
-        Relationships: []
-      }
       work_orders: {
         Row: {
           actual_hours: number | null
@@ -1581,7 +1518,6 @@ export type Database = {
           due_date: string | null
           estimated_hours: number | null
           id: string
-          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1606,7 +1542,6 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1631,7 +1566,6 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
-          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null
@@ -1701,26 +1635,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      get_user_customer_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_user_org_id: {
-        Args: Record<PropertyKey, never>
-        Returns: string
-      }
-      get_user_role_bucket: {
-        Args: Record<PropertyKey, never>
-        Returns: Database["public"]["Enums"]["role_bucket_enum"]
-      }
-      is_customer_owner: {
-        Args: { customer_id: string }
-        Returns: boolean
-      }
-      is_user_admin: {
-        Args: Record<PropertyKey, never>
-        Returns: boolean
-      }
+      [_ in never]: never
     }
     Enums: {
       approval_status_enum: "pending" | "approved" | "rejected"

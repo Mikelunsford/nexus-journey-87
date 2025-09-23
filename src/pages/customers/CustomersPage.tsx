@@ -2,14 +2,10 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCustomers } from '@/hooks/useCustomers';
-import { useUsers } from '@/hooks/useUsers';
-import { useNavigate } from 'react-router-dom';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 
 export default function CustomersPage() {
   const { customers, loading, error } = useCustomers();
-  const { users } = useUsers();
-  const navigate = useNavigate();
   const quickActions: QAItem[] = [
     {
       label: 'Add New Customer',
@@ -59,11 +55,6 @@ export default function CustomersPage() {
     const now = new Date();
     return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
   });
-
-  const getUserName = (userId: string) => {
-    const user = users.find(u => u.id === userId);
-    return user ? user.name : 'Unknown User';
-  };
 
   return (
     <div className="space-y-8">
@@ -162,7 +153,6 @@ export default function CustomersPage() {
                   <th className="text-left p-4 font-semibold">Name</th>
                   <th className="text-left p-4 font-semibold">Email</th>
                   <th className="text-left p-4 font-semibold">Phone</th>
-                  <th className="text-left p-4 font-semibold">Owner</th>
                   <th className="text-left p-4 font-semibold">Created</th>
                   <th className="text-left p-4 font-semibold">Actions</th>
                 </tr>
@@ -174,27 +164,12 @@ export default function CustomersPage() {
                     <td className="p-4 text-muted-foreground">{customer.email || 'N/A'}</td>
                     <td className="p-4 text-muted-foreground">{customer.phone || 'N/A'}</td>
                     <td className="p-4 text-muted-foreground">
-                      {customer.owner_id ? getUserName(customer.owner_id) : 'Unassigned'}
-                    </td>
-                    <td className="p-4 text-muted-foreground">
                       {new Date(customer.created_at).toLocaleDateString()}
                     </td>
                     <td className="p-4">
                       <div className="flex items-center space-x-2">
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => navigate(`/dashboard/customers/${customer.id}`)}
-                        >
-                          View
-                        </Button>
-                        <Button 
-                          variant="ghost" 
-                          size="sm"
-                          onClick={() => navigate(`/dashboard/customers/${customer.id}/edit`)}
-                        >
-                          Edit
-                        </Button>
+                        <Button variant="ghost" size="sm">View</Button>
+                        <Button variant="ghost" size="sm">Edit</Button>
                       </div>
                     </td>
                   </tr>

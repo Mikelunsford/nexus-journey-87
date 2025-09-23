@@ -7,14 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useNavigate } from 'react-router-dom';
-import { useCustomers } from '@/hooks/useCustomers';
-import { toast } from '@/hooks/use-toast';
-import { UserSelect } from '@/components/ui/UserSelect';
 
 export default function CustomersNewPage() {
   const navigate = useNavigate();
-  const { createCustomer } = useCustomers();
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     companyName: '',
     contactName: '',
@@ -31,65 +26,21 @@ export default function CustomersNewPage() {
     notes: '',
     marketingEmails: false,
     newsletter: false,
-    ownerId: undefined as string | undefined,
   });
 
-  const handleInputChange = (field: string, value: string | boolean | undefined) => {
+  const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => ({
       ...prev,
       [field]: value
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (isSubmitting) return;
-    
-    setIsSubmitting(true);
-    
-    try {
-      // Combine address fields
-      const fullAddress = [
-        formData.address,
-        formData.city,
-        formData.state,
-        formData.zipCode,
-        formData.country
-      ].filter(Boolean).join(', ');
-
-      // Map form data to DbCustomer structure
-      const customerData = {
-        name: formData.companyName,
-        email: formData.email,
-        phone: formData.phone || null,
-        address: fullAddress || null,
-        owner_id: formData.ownerId || null,
-        settings: {
-          contactName: formData.contactName,
-          industry: formData.industry,
-          employeeCount: formData.employeeCount,
-          website: formData.website,
-          notes: formData.notes,
-          marketingEmails: formData.marketingEmails,
-          newsletter: formData.newsletter,
-          addressDetails: {
-            street: formData.address,
-            city: formData.city,
-            state: formData.state,
-            zipCode: formData.zipCode,
-            country: formData.country
-          }
-        }
-      };
-
-      await createCustomer(customerData);
-      navigate('/dashboard/customers');
-    } catch (error) {
-      console.error('Failed to create customer:', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Handle form submission here
+    console.log('Form submitted:', formData);
+    // Navigate back to customers list
+    navigate('/dashboard/customers');
   };
 
   const handleCancel = () => {
@@ -274,21 +225,12 @@ export default function CustomersNewPage() {
           </CardContent>
         </Card>
 
-        {/* Assignment & Additional Information */}
+        {/* Additional Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Assignment & Additional Information</CardTitle>
+            <CardTitle>Additional Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="owner">Account Owner</Label>
-              <UserSelect
-                value={formData.ownerId}
-                onValueChange={(value) => handleInputChange('ownerId', value)}
-                placeholder="Select account owner"
-              />
-            </div>
-
             <div className="space-y-2">
               <Label htmlFor="notes">Notes</Label>
               <Textarea
@@ -329,8 +271,8 @@ export default function CustomersNewPage() {
           <Button type="button" variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? 'Creating...' : 'Create Customer'}
+          <Button type="submit">
+            Create Customer
           </Button>
         </div>
       </form>

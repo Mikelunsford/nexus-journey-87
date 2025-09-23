@@ -2,9 +2,6 @@ import React from "react";
 import { ulid } from "@/lib/ids";
 import PageSection from "@/components/layout/PageSection";
 import { EventV1, EventType } from "@/lib/events";
-import { AppDataExporter } from "@/lib/export/appDataExporter";
-import { SchemaExporter } from "@/lib/export/schemaExporter";
-import { toast } from "sonner";
 
 const targetsList = ["toInternal", "toProduction", "toSnR", "toCustomer"] as const;
 type Target = typeof targetsList[number];
@@ -47,57 +44,6 @@ export default function BridgePanel() {
     } catch {}
   };
 
-  const handleExportAppData = async () => {
-    console.log("🔄 Starting app data export...");
-    try {
-      toast.info("Generating comprehensive app bundle...");
-      console.log("📦 Loading AppBundleExporter...");
-      const { AppBundleExporter } = await import('@/lib/export/appBundleExporter');
-      console.log("✅ AppBundleExporter loaded, starting export...");
-      await AppBundleExporter.exportAppBundle();
-      console.log("✅ App bundle export completed!");
-      toast.success("App bundle exported successfully!");
-    } catch (error) {
-      console.error("❌ App bundle export failed:", error);
-      console.error("Error details:", error instanceof Error ? error.message : error);
-      toast.error("Failed to export app bundle");
-    }
-  };
-
-  const handleExportSchema = async () => {
-    console.log("🔄 Starting schema export...");
-    try {
-      toast.info("Generating comprehensive database bundle...");
-      console.log("📦 Loading DbBundleExporter...");
-      const { DbBundleExporter } = await import('@/lib/export/dbBundleExporter');
-      console.log("✅ DbBundleExporter loaded, starting export...");
-      await DbBundleExporter.exportDbBundle();
-      console.log("✅ Database bundle export completed!");
-      toast.success("Database bundle exported successfully!");
-    } catch (error) {
-      console.error("❌ Database bundle export failed:", error);
-      console.error("Error details:", error instanceof Error ? error.message : error);
-      toast.error("Failed to export database bundle");
-    }
-  };
-
-  const handleExportGitHub = async () => {
-    console.log("🔄 Starting GitHub export...");
-    try {
-      toast.info("Generating GitHub repository bundle...");
-      console.log("📦 Loading GitHubBundleExporter...");
-      const { GitHubBundleExporter } = await import('@/lib/export/githubBundleExporter');
-      console.log("✅ GitHubBundleExporter loaded, starting export...");
-      await GitHubBundleExporter.exportGitHubBundle();
-      console.log("✅ GitHub bundle export completed!");
-      toast.success("GitHub bundle exported successfully!");
-    } catch (error) {
-      console.error("❌ GitHub bundle export failed:", error);
-      console.error("Error details:", error instanceof Error ? error.message : error);
-      toast.error("Failed to export GitHub bundle");
-    }
-  };
-
   return (
     <PageSection title="Bridge Panel" subtitle="Dev event feed and simulator.">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -135,7 +81,7 @@ export default function BridgePanel() {
                  </button>
                ))}
             </div>
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="mt-3 flex gap-2">
               <button onClick={copyLast} className="qa-item px-3 py-2 text-sm">
                 Copy Last JSON
               </button>
@@ -149,29 +95,6 @@ export default function BridgePanel() {
               >
                 Clear
               </button>
-            </div>
-            <div className="mt-3">
-              <div className="text-xs t-dim mb-2">Export Tools</div>
-              <div className="flex flex-wrap gap-2">
-                <button 
-                  onClick={handleExportAppData} 
-                  className="qa-item px-3 py-2 text-sm"
-                >
-                  Export App Data
-                </button>
-                <button 
-                  onClick={handleExportSchema} 
-                  className="qa-item px-3 py-2 text-sm"
-                >
-                  Export DB Schema
-                </button>
-                <button 
-                  onClick={handleExportGitHub} 
-                  className="qa-item px-3 py-2 text-sm"
-                >
-                  Export GitHub Bundle
-                </button>
-              </div>
             </div>
           </div>
           <div className="space-y-4 p-4 rounded-lg border">
