@@ -9,25 +9,25 @@ export default function ProjectsPage() {
   const quickActions: QAItem[] = [
     {
       label: 'New Project',
-      to: '/dashboard/projects/new',
+      to: '/projects/new',
       icon: <Plus className="w-4 h-4" />,
       caption: 'Start a new project'
     },
     {
-      label: 'Project Templates',
-      to: '/dashboard/projects/templates',
+      label: 'New Internal Quote',
+      to: '/projects/new-internal-quote',
       icon: <Folder className="w-4 h-4" />,
-      caption: 'Use existing templates'
+      caption: 'Calculate project quote'
     },
     {
       label: 'Team Projects',
-      to: '/dashboard/projects/team',
+      to: '/projects/team',
       icon: <Users className="w-4 h-4" />,
       caption: 'Collaborative projects'
     },
     {
       label: 'Project Calendar',
-      to: '/dashboard/projects/calendar',
+      to: '/projects/calendar',
       icon: <Calendar className="w-4 h-4" />,
       caption: 'View project timeline'
     }
