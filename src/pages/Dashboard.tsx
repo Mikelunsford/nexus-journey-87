@@ -121,113 +121,113 @@ export default function Dashboard() {
       {/* KPIs Section - Now Clickable Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* Active Projects Card */}
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <Link to="/dashboard/projects?status=active">
+        <Card className="overflow-hidden">
+          <Link to="/dashboard/projects?status=active" className="block cursor-pointer hover:bg-muted/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
               <Building2 className={`h-4 w-4 ${brandV1Enabled ? 'text-brand-blue' : 'text-t1-blue'}`} />
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-2">
               <div className="text-2xl font-bold">{isLoading ? '...' : activeProjects}</div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  View all projects
-                  <ExternalLink className="inline ml-1 h-3 w-3" />
-                </p>
-                <div className="flex gap-1">
-                  <TestButton type="project" size="sm" />
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link to="/dashboard/projects/new">
-                      <Plus className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                View all projects
+                <ExternalLink className="inline ml-1 h-3 w-3" />
+              </p>
             </CardContent>
           </Link>
+          <CardContent className="pt-0 border-t">
+            <div className="flex gap-1 mt-2">
+              <TestButton type="project" size="sm" />
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/dashboard/projects/new">
+                  <Plus className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Pending Quotes Card */}
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <Link to="/dashboard/quotes?status=pending">
+        <Card className="overflow-hidden">
+          <Link to="/dashboard/quotes?status=pending" className="block cursor-pointer hover:bg-muted/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Pending Quotes</CardTitle>
               <FileText className={`h-4 w-4 ${brandV1Enabled ? 'text-brand-red' : 'text-t1-red'}`} />
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-2">
               <div className="text-2xl font-bold">{isLoading ? '...' : pendingQuotes}</div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  View all quotes
-                  <ExternalLink className="inline ml-1 h-3 w-3" />
-                </p>
-                <div className="flex gap-1">
-                  <TestButton type="quote" size="sm" />
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link to="/dashboard/quotes/new">
-                      <Plus className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                View all quotes
+                <ExternalLink className="inline ml-1 h-3 w-3" />
+              </p>
             </CardContent>
           </Link>
+          <CardContent className="pt-0 border-t">
+            <div className="flex gap-1 mt-2">
+              <TestButton type="quote" size="sm" />
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/dashboard/quotes/new">
+                  <Plus className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Active Shipments Card */}
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <Link to="/dashboard/shipments?status=active">
+        <Card className="overflow-hidden">
+          <Link to="/dashboard/shipments?status=active" className="block cursor-pointer hover:bg-muted/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Active Shipments</CardTitle>
               <Truck className="h-4 w-4 text-green-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-2">
               <div className="text-2xl font-bold">{isLoading ? '...' : activeShipments}</div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  View all shipments
-                  <ExternalLink className="inline ml-1 h-3 w-3" />
-                </p>
-                <div className="flex gap-1">
-                  <TestButton type="shipment" size="sm" />
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link to="/dashboard/shipments/new">
-                      <Plus className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                View all shipments
+                <ExternalLink className="inline ml-1 h-3 w-3" />
+              </p>
             </CardContent>
           </Link>
+          <CardContent className="pt-0 border-t">
+            <div className="flex gap-1 mt-2">
+              <TestButton type="shipment" size="sm" />
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/dashboard/shipments/new">
+                  <Plus className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
 
         {/* Team Members Card */}
-        <Card className="cursor-pointer hover:shadow-lg transition-shadow">
-          <Link to="/dashboard/team">
+        <Card className="overflow-hidden">
+          <Link to="/dashboard/team" className="block cursor-pointer hover:bg-muted/50 transition-colors">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Team Members</CardTitle>
               <Users className="h-4 w-4 text-purple-600" />
             </CardHeader>
-            <CardContent>
+            <CardContent className="pb-2">
               <div className="text-2xl font-bold">{isLoading ? '...' : teamMembers}</div>
-              <div className="flex items-center justify-between mt-2">
-                <p className="text-xs text-muted-foreground">
-                  Manage team
-                  <ExternalLink className="inline ml-1 h-3 w-3" />
-                </p>
-                <div className="flex gap-1">
-                  <Button size="sm" variant="outline">
-                    <span className="text-xs">Test Invite</span>
-                  </Button>
-                  <Button size="sm" variant="ghost" asChild>
-                    <Link to="/dashboard/team/invite">
-                      <Plus className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Manage team
+                <ExternalLink className="inline ml-1 h-3 w-3" />
+              </p>
             </CardContent>
           </Link>
+          <CardContent className="pt-0 border-t">
+            <div className="flex gap-1 mt-2">
+              <Button size="sm" variant="outline">
+                <span className="text-xs">Test Invite</span>
+              </Button>
+              <Button size="sm" variant="ghost" asChild>
+                <Link to="/dashboard/team/invite">
+                  <Plus className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </CardContent>
         </Card>
       </div>
 
