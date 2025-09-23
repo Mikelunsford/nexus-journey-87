@@ -104,6 +104,7 @@ const ProjectsNewPage = React.lazy(() => import('@/pages/projects/New'));
 const TemplatesPage = React.lazy(() => import('@/pages/projects/Templates'));
 const ProjectsTeamPage = React.lazy(() => import('@/pages/projects/Team'));
 const ProjectsCalendarPage = React.lazy(() => import('@/pages/projects/Calendar'));
+const ProjectChatPage = React.lazy(() => import('@/pages/projects/Chat'));
 
 // Messages pages
 const ComposePage = React.lazy(() => import('@/pages/messages/Compose'));
@@ -233,7 +234,8 @@ const router = createBrowserRouter([
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
-              <MessagesPage />
+              {/* Redirect legacy Messages to projects list for now; selection will lead to chat */}
+              <ProjectsPage />
             </Suspense>
           </RoleGate>
         ),
@@ -831,6 +833,16 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <ProjectsCalendarPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'projects/:id/chat',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ProjectChatPage />
             </Suspense>
           </RoleGate>
         ),
