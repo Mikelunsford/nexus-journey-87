@@ -1,5 +1,18 @@
 import type { User, Role } from '../types';
 
+// Import TeamMember type for the new adapter function
+interface TeamMember {
+  id: string;
+  email: string;
+  name: string | null;
+  created_at: string;
+  memberships?: {
+    role_bucket: string;
+    department_id: string | null;
+    expires_at: string | null;
+  }[];
+}
+
 export interface Employee {
   id: string;
   name: string;
@@ -34,20 +47,36 @@ const ROLE_COLORS: Record<Role, string> = {
   'customer': 'bg-pink-100 text-pink-800 dark:bg-pink-900/30 dark:text-pink-300'
 };
 
-export function transformUsersToEmployees(users: User[]): Employee[] {
-  // Filter out customers as they shouldn't appear in employee directory
-  return users
-    .filter(user => user.role !== 'customer')
-    .map(user => ({
-      id: user.id,
-      name: user.name || user.email.split('@')[0],
-      email: user.email,
-      role: user.role,
-      department: DEPARTMENT_MAP[user.role],
-      status: (Math.random() > 0.7 ? 'away' : Math.random() > 0.1 ? 'active' : 'inactive') as Employee['status'],
-      lastSeen: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      joinedAt: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString()
-    }))
+export function transformTeamMembersToEmployees(teamMembers: TeamMember[]): Employee[] {
+  // Convert team members to employees, using role_bucket for role mapping
+  return teamMembers
+    .filter(member => member.memberships && member.memberships.length > 0)
+    .map(member => {
+      const membership = member.memberships![0]; // Get primary membership
+      const roleBucket = membership.role_bucket as 'admin' | 'management' | 'operational' | 'external';
+      
+      // Map role_bucket to Role type
+      const roleMap: Record<string, Role> = {
+        'admin': 'admin',
+        'management': 'manager', 
+        'operational': 'employee',
+        'external': 'customer'
+      };
+
+      const role = roleMap[roleBucket] || 'employee';
+      
+      return {
+        id: member.id,
+        name: member.name || member.email.split('@')[0],
+        email: member.email,
+        role,
+        department: DEPARTMENT_MAP[role],
+        status: (Math.random() > 0.7 ? 'away' : Math.random() > 0.1 ? 'active' : 'inactive') as Employee['status'],
+        lastSeen: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+        joinedAt: member.created_at
+      };
+    })
+    .filter(emp => emp.role !== 'customer') // Filter out external/customer roles
     .sort((a, b) => a.name.localeCompare(b.name));
 }
 

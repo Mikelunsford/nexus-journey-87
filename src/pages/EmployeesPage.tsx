@@ -10,8 +10,9 @@ import { FilterBar } from '@/components/ui/FilterBar';
 import { SavedViews, SavedView } from '@/components/ui/SavedViews';
 import { StatusIndicator } from '@/components/ui/StatusIndicator';
 import { useUrlState } from '@/hooks/useUrlState';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
 import { 
-  transformUsersToEmployees, 
+  transformTeamMembersToEmployees, 
   getRoleColor, 
   getEmployeeInitials, 
   Employee 
@@ -39,8 +40,12 @@ const defaultState: EmployeesState = {
 export default function EmployeesPage() {
   const [state, updateState] = useUrlState(defaultState);
 
-  // TODO: Replace with real employee data
-  const employees: Employee[] = [];
+  // Use real team member data
+  const { teamMembers, loading, error } = useTeamMembers();
+  const employees: Employee[] = useMemo(() => 
+    transformTeamMembersToEmployees(teamMembers), 
+    [teamMembers]
+  );
 
   // Get unique values for filters
   const uniqueDepartments = useMemo(() => 
