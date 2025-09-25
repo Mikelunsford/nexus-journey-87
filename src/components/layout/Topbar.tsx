@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { NotificationBell } from '@/components/ui/NotificationBell';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { 
@@ -26,6 +27,7 @@ export function Topbar() {
       </div>
 
       <div className="flex items-center space-x-3">
+        <NotificationBell />
         <ThemeToggle />
         
         <DropdownMenu>

@@ -1,12 +1,18 @@
 export interface FeatureFlags {
   'ui.brand_v1': boolean;
   'ui.enable_test_seeds': boolean;
+  'performance.virtualization': boolean;
+  'performance.memoization': boolean;
+  'performance.lazy_loading': boolean;
 }
 
 // Default feature flag values
 const defaultFlags: FeatureFlags = {
   'ui.brand_v1': true, // Enable by default for development
   'ui.enable_test_seeds': true, // Enable by default for development, disable in production
+  'performance.virtualization': true, // Enable virtualization for large lists
+  'performance.memoization': true, // Enable memoization for expensive operations
+  'performance.lazy_loading': true, // Enable lazy loading for components
 };
 
 // Get feature flag from localStorage or use default

@@ -50,6 +50,15 @@ alter table public.chat_events enable row level security;
 -- Helper functions expected to exist in the project: get_user_org_id(), is_user_admin()
 -- If missing, you should create them according to your auth model.
 
+-- Create missing is_user_admin function
+CREATE OR REPLACE FUNCTION public.is_user_admin()
+RETURNS BOOLEAN
+LANGUAGE SQL STABLE SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT auth.has_role_in_org('admin');
+$$;
+
 -- Policies - chat_threads
 do $$ begin
   if not exists (select 1 from pg_policies where schemaname='public' and tablename='chat_threads' and policyname='chat_threads_select') then

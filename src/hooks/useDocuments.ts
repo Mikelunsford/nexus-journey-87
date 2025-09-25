@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
-
+import { getDocuments } from '@/services/documentService';
 import { Database } from '@/integrations/supabase/types';
 
 type DbDocument = Database['public']['Tables']['documents']['Row'];
@@ -13,31 +13,14 @@ export function useDocuments(includeTest = false) {
   const { user } = useAuth();
 
   const fetchDocuments = async () => {
-    if (!user) {
+    if (!user?.org_id) {
       setLoading(false);
       return;
     }
 
     try {
-      let query = supabase
-        .from('documents')
-        .select('*')
-        .eq('org_id', user.org_id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      // Filter out test data by default unless includeTest is true
-      if (!includeTest) {
-        query = query.or('is_test.is.null,is_test.eq.false');
-      }
-
-      const { data, error: queryError } = await query;
-
-      if (queryError) {
-        throw queryError;
-      }
-
-      setDocuments(data || []);
+      const data = await getDocuments(user.org_id, includeTest);
+      setDocuments(data);
       setError(null);
     } catch (err) {
       console.error('Error fetching documents:', err);
@@ -49,7 +32,7 @@ export function useDocuments(includeTest = false) {
 
   // Real-time subscription
   useEffect(() => {
-    if (!user) return;
+    if (!user || !user.org_id) return;
 
     const channel = supabase
       .channel('documents-changes')

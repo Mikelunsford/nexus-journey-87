@@ -93,11 +93,11 @@ const BillingPage = React.lazy(() => import('@/pages/settings/BillingPage'));
 // Analytics stub pages
 const ReportsPage = React.lazy(() => import('@/pages/analytics/ReportsPage'));
 const AnalyticsDashboardPage = React.lazy(() => import('@/pages/analytics/DashboardPage'));
-const ExportPage = React.lazy(() => import('@/pages/analytics/ExportPage'));
 const AnalyticsSettingsPage = React.lazy(() => import('@/pages/analytics/Settings'));
 const SchedulePage = React.lazy(() => import('@/pages/analytics/Schedule'));
 
 // Projects pages
+const ProjectDetailPage = React.lazy(() => import('@/pages/projects/ProjectDetailPage'));
 const NewInternalQuotePage = React.lazy(() => import('@/pages/projects/NewInternalQuote'));
 const NewProjectPage = React.lazy(() => import('@/pages/projects/NewProject'));
 const ProjectsNewPage = React.lazy(() => import('@/pages/projects/New'));
@@ -119,34 +119,25 @@ const ApiKeysPage = React.lazy(() => import('@/pages/settings/ApiKeys'));
 
 // Production pages (additional)
 const NewWOPage = React.lazy(() => import('@/pages/production/NewWO'));
-const CapacityPage = React.lazy(() => import('@/pages/production/Capacity'));
 const QualityPage = React.lazy(() => import('@/pages/production/Quality'));
 const MaintenancePage = React.lazy(() => import('@/pages/production/Maintenance'));
 
 // Shipping pages (additional)
-const NewShipmentPage = React.lazy(() => import('@/pages/shipping/NewShipment'));
 const TrackingPage = React.lazy(() => import('@/pages/shipping/Tracking'));
-const RoutesPage = React.lazy(() => import('@/pages/shipping/Routes'));
 
 // Documents pages (additional)
-const UploadPage = React.lazy(() => import('@/pages/documents/Upload'));
 const NewFolderPage = React.lazy(() => import('@/pages/documents/NewFolder'));
-const DocumentsSearchPage = React.lazy(() => import('@/pages/documents/Search'));
-const DocumentsArchivePage = React.lazy(() => import('@/pages/documents/Archive'));
 
 // Customers pages (additional)
 const CustomerReportsPage = React.lazy(() => import('@/pages/customers/Reports'));
 
 // Carriers pages (additional)
-const CarriersNewPage = React.lazy(() => import('@/pages/carriers/New'));
 const RatesPage = React.lazy(() => import('@/pages/carriers/Rates'));
 const CoveragePage = React.lazy(() => import('@/pages/carriers/Coverage'));
 const CarrierReportsPage = React.lazy(() => import('@/pages/carriers/Reports'));
 
 // Accounting pages (additional)
-const NewInvoicePage = React.lazy(() => import('@/pages/accounting/NewInvoice'));
 const NewPaymentPage = React.lazy(() => import('@/pages/accounting/NewPayment'));
-const AccountingReportsPage = React.lazy(() => import('@/pages/accounting/Reports'));
 const TaxPage = React.lazy(() => import('@/pages/accounting/Tax'));
 
 // Admin Users pages
@@ -210,6 +201,16 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: 'projects/:id',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <ProjectDetailPage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
         path: 'tasks',
         element: (
           <RoleGate>
@@ -234,8 +235,7 @@ const router = createBrowserRouter([
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
-              {/* Redirect legacy Messages to projects list for now; selection will lead to chat */}
-              <ProjectsPage />
+              <MessagesPage />
             </Suspense>
           </RoleGate>
         ),
@@ -900,16 +900,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'analytics/export',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <ExportPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
         path: 'analytics/settings',
         element: (
           <RoleGate>
@@ -925,6 +915,16 @@ const router = createBrowserRouter([
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <SchedulePage />
+            </Suspense>
+          </RoleGate>
+        ),
+      },
+      {
+        path: 'analytics/export',
+        element: (
+          <RoleGate>
+            <Suspense fallback={<PageLoader />}>
+              <AnalyticsDashboardPage />
             </Suspense>
           </RoleGate>
         ),
@@ -960,23 +960,13 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
-      // Production routes (additional)
+      // Additional production routes
       {
         path: 'production/new',
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <NewWOPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'production/capacity',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <CapacityPage />
             </Suspense>
           </RoleGate>
         ),
@@ -992,7 +982,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'production/maintenance',
+        path: 'production/maintenance-schedule',
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
@@ -1001,17 +991,7 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
-      // Shipping routes (additional)
-      {
-        path: 'shipping/new',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <NewShipmentPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
+      // Additional shipping routes
       {
         path: 'shipping/tracking',
         element: (
@@ -1022,53 +1002,13 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
-      {
-        path: 'shipping/routes',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <RoutesPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      // Documents routes (additional)
-      {
-        path: 'documents/upload',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <UploadPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
+      // Additional documents routes
       {
         path: 'documents/folders/new',
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <NewFolderPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'documents/search',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <DocumentsSearchPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'documents/archive',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <DocumentsArchivePage />
             </Suspense>
           </RoleGate>
         ),
@@ -1084,17 +1024,7 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
-      // Carriers routes (additional)
-      {
-        path: 'carriers/new',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <CarriersNewPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
+      // Additional carriers routes
       {
         path: 'carriers/rates',
         element: (
@@ -1125,33 +1055,13 @@ const router = createBrowserRouter([
           </RoleGate>
         ),
       },
-      // Accounting routes (additional)
-      {
-        path: 'accounting/invoices/new',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <NewInvoicePage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
+      // Additional accounting routes
       {
         path: 'accounting/payments/new',
         element: (
           <RoleGate>
             <Suspense fallback={<PageLoader />}>
               <NewPaymentPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
-        path: 'accounting/reports',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <AccountingReportsPage />
             </Suspense>
           </RoleGate>
         ),
@@ -1249,16 +1159,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: 'analytics/export',
-        element: (
-          <RoleGate>
-            <Suspense fallback={<PageLoader />}>
-              <ExportPage />
-            </Suspense>
-          </RoleGate>
-        ),
-      },
-      {
         path: 'settings',
         element: (
           <RoleGate>
@@ -1302,8 +1202,13 @@ const router = createBrowserRouter([
 
 // Extract all route paths for development route checking
 if (process.env.NODE_ENV === 'development') {
-  const extractPaths = (routes: any[], basePath = ''): string[] => {
-    let paths: string[] = [];
+  interface RouteConfig {
+    path?: string;
+    children?: RouteConfig[];
+  }
+  
+  const extractPaths = (routes: RouteConfig[], basePath = ''): string[] => {
+    const paths: string[] = [];
     routes.forEach(route => {
       const currentPath = basePath + (route.path === '*' ? '' : route.path || '');
       if (currentPath && route.path !== '*') {
@@ -1316,8 +1221,14 @@ if (process.env.NODE_ENV === 'development') {
     return paths;
   };
   
-  const allRoutePaths = extractPaths(router.routes);
-  (window as any).__APP_ROUTES__ = allRoutePaths;
+  const allRoutePaths = extractPaths(router.routes as RouteConfig[]);
+  (window as unknown as { __APP_ROUTES__?: string[] }).__APP_ROUTES__ = allRoutePaths;
+  
+  // Check for duplicate routes
+  const duplicateRoutes = allRoutePaths.filter((path, index) => allRoutePaths.indexOf(path) !== index);
+  if (duplicateRoutes.length > 0) {
+    console.warn('Duplicate routes detected:', duplicateRoutes);
+  }
 }
 
 export function AppRouter() {

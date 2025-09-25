@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useCustomers } from '@/hooks/useCustomers';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
+import { ListSkeleton } from '@/components/ui/SkeletonComponents';
+import { VirtualizedTable } from '@/components/ui/VirtualizedTable';
+import { useFeatureFlag } from '@/hooks/useFeatureFlag';
 
 export default function CustomersPage() {
   const { customers, loading, error } = useCustomers();
-  const quickActions: QAItem[] = [
+  const quickActions: QAItem[] = useMemo(() => [
     {
       label: 'Add New Customer',
       to: '/dashboard/customers/new',
@@ -47,14 +50,67 @@ export default function CustomersPage() {
         </svg>
       ),
     },
-  ];
+  ], []);
 
-  const activeCustomers = customers.filter(c => !c.deleted_at);
-  const newThisMonth = customers.filter(c => {
-    const createdDate = new Date(c.created_at);
-    const now = new Date();
-    return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
-  });
+  const customerStats = useMemo(() => {
+    const activeCustomers = customers.filter(c => !c.deleted_at);
+    const newThisMonth = customers.filter(c => {
+      const createdDate = new Date(c.created_at);
+      const now = new Date();
+      return createdDate.getMonth() === now.getMonth() && createdDate.getFullYear() === now.getFullYear();
+    });
+    return { activeCustomers, newThisMonth };
+  }, [customers]);
+
+  // Define table columns for virtualized table
+  const tableColumns = useMemo(() => [
+    {
+      key: 'name',
+      label: 'Name',
+      width: 200,
+      render: (customer: any) => (
+        <div className="font-medium">{customer.name || 'N/A'}</div>
+      ),
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      width: 250,
+      render: (customer: any) => (
+        <div className="text-sm text-muted-foreground">{customer.email || 'N/A'}</div>
+      ),
+    },
+    {
+      key: 'phone',
+      label: 'Phone',
+      width: 150,
+      render: (customer: any) => (
+        <div className="text-sm">{customer.phone || 'N/A'}</div>
+      ),
+    },
+    {
+      key: 'created_at',
+      label: 'Created',
+      width: 120,
+      render: (customer: any) => (
+        <div className="text-sm text-muted-foreground">
+          {new Date(customer.created_at).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      width: 100,
+      render: (customer: any) => (
+        <div className="flex space-x-2">
+          <Button variant="outline" size="sm">
+            Edit
+          </Button>
+        </div>
+      ),
+    },
+  ], []);
 
   return (
     <div className="space-y-8">
@@ -90,7 +146,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">Active Customers</p>
-              <p className="text-2xl font-bold t-primary">{activeCustomers.length}</p>
+                <p className="text-2xl font-bold t-primary">{customerStats.activeCustomers.length}</p>
             </div>
             <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -104,7 +160,7 @@ export default function CustomersPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm t-dim">New This Month</p>
-              <p className="text-2xl font-bold t-primary">{newThisMonth.length}</p>
+                <p className="text-2xl font-bold t-primary">{customerStats.newThisMonth.length}</p>
             </div>
             <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
               <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -133,10 +189,7 @@ export default function CustomersPage() {
       <div className="card-surface panel panel-body">
         <h3 className="text-lg font-semibold t-primary mb-4">All Customers</h3>
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-primary"></div>
-            <p className="ml-2 text-muted-foreground">Loading customers...</p>
-          </div>
+          <ListSkeleton items={5} />
         ) : error ? (
           <div className="text-center py-8">
             <p className="text-destructive">{error}</p>
@@ -146,37 +199,37 @@ export default function CustomersPage() {
             <p className="text-muted-foreground">No customers found</p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b">
-                  <th className="text-left p-4 font-semibold">Name</th>
-                  <th className="text-left p-4 font-semibold">Email</th>
-                  <th className="text-left p-4 font-semibold">Phone</th>
-                  <th className="text-left p-4 font-semibold">Created</th>
-                  <th className="text-left p-4 font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {customers.map((customer) => (
-                  <tr key={customer.id} className="border-b hover:bg-muted/50">
-                    <td className="p-4 font-medium">{customer.name}</td>
-                    <td className="p-4 text-muted-foreground">{customer.email || 'N/A'}</td>
-                    <td className="p-4 text-muted-foreground">{customer.phone || 'N/A'}</td>
-                    <td className="p-4 text-muted-foreground">
-                      {new Date(customer.created_at).toLocaleDateString()}
-                    </td>
-                    <td className="p-4">
-                      <div className="flex items-center space-x-2">
-                        <Button variant="ghost" size="sm">View</Button>
-                        <Button variant="ghost" size="sm">Edit</Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <VirtualizedTable
+            data={customers}
+            columns={tableColumns}
+            height={400}
+            fallbackComponent={({ data, columns }) => (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b">
+                      {columns.map((col) => (
+                        <th key={col.key} className="text-left p-4 font-semibold">
+                          {col.label}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {data.map((customer, index) => (
+                      <tr key={customer.id || index} className="border-b hover:bg-muted/50">
+                        {columns.map((col) => (
+                          <td key={col.key} className="p-4">
+                            {col.render(customer)}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          />
         )}
       </div>
     </div>

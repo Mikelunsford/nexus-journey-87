@@ -1,123 +1,184 @@
-import React, { useState } from 'react';
-import QuickActionsGrid, { QAItem } from '@/components/ui/QuickActionsGrid';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Plus, Search, Send, Inbox, SendIcon, Archive, Star, UserPlus } from 'lucide-react';
-import { useMessages } from '@/hooks/useMessages';
-import { getMessageStats, getInboxMessages, getSentMessages, getStarredMessages } from '@/services/messageService';
+import { Separator } from '@/components/ui/separator';
+import { 
+  Plus, 
+  Search, 
+  Send, 
+  Users, 
+  MessageSquare, 
+  Hash, 
+  Star,
+  MoreHorizontal,
+  Paperclip,
+  Smile,
+  Phone,
+  Video,
+  Settings
+} from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
-import { useEffect, useState as useStateHook } from 'react';
+import { chatService, subscribeToMessages, ChatMessage, ChatThread } from '@/services/chatService';
+import { supabase } from '@/integrations/supabase/client';
 
 export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [includeTest, setIncludeTest] = useState(false);
-  const [messageStats, setMessageStats] = useState<any>(null);
-  const [inboxMessages, setInboxMessages] = useState<any[]>([]);
-  const [sentMessages, setSentMessages] = useState<any[]>([]);
-  const [starredMessages, setStarredMessages] = useState<any[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
+  const [channels, setChannels] = useState<ChatThread[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [useFallback, setUseFallback] = useState(false);
   const { user } = useAuth();
   const testSeedsEnabled = useFeatureFlag('ui.enable_test_seeds');
-  const { messages } = useMessages(includeTest);
 
-  // Fetch live message data
+  // Fetch chat channels/threads
   useEffect(() => {
-    const fetchMessageData = async () => {
+    const fetchChannels = async () => {
       if (!user?.org_id) return;
 
       try {
         setLoading(true);
-        const [stats, inbox, sent, starred] = await Promise.all([
-          getMessageStats(user.org_id),
-          getInboxMessages(user.org_id),
-          getSentMessages(user.org_id),
-          getStarredMessages(user.org_id)
-        ]);
+        setError(null);
+        
+        const { data, error } = await supabase
+          .from('chat_threads')
+          .select('*')
+          .eq('org_id', user.org_id)
+          .order('created_at', { ascending: false });
 
-        setMessageStats(stats);
-        setInboxMessages(inbox);
-        setSentMessages(sent);
-        setStarredMessages(starred);
+        if (error) {
+          console.error('Supabase error:', error);
+          // If it's a permission error or table doesn't exist, fall back to simple mode
+          if (error.message.includes('permission') || error.message.includes('policy') || error.message.includes('does not exist')) {
+            console.log('Chat system not available, using fallback mode');
+            setUseFallback(true);
+            setError(null);
+            return;
+          } else {
+            throw error;
+          }
+        }
+        
+        setChannels(data || []);
+        
+        // Select first channel if none selected
+        if (data && data.length > 0 && !selectedChannel) {
+          setSelectedChannel(data[0].id);
+        }
       } catch (error) {
-        console.error('Error fetching message data:', error);
+        console.error('Error fetching channels:', error);
+        setError('Failed to load chat channels. Check console for details.');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchMessageData();
-  }, [user?.org_id, includeTest]);
+    fetchChannels();
+  }, [user?.org_id, includeTest, selectedChannel]);
 
-  // Filter messages based on search
-  const filteredInboxMessages = inboxMessages.filter(message =>
-    message.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.body?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.from_email?.toLowerCase().includes(searchQuery.toLowerCase())
+  // Subscribe to messages for selected channel
+  useEffect(() => {
+    if (!selectedChannel) return;
+
+    const unsubscribe = subscribeToMessages(selectedChannel, ({ type, message }) => {
+      setMessages(prev => {
+        const withoutTemp = prev.filter(m => !(m.id.startsWith('temp_') && type === 'INSERT'));
+        const existingIdx = withoutTemp.findIndex(m => m.id === message.id);
+        if (existingIdx >= 0) {
+          const clone = withoutTemp.slice();
+          clone[existingIdx] = message;
+          return clone;
+        }
+        return [...withoutTemp, message];
+      });
+    });
+
+    return unsubscribe;
+  }, [selectedChannel]);
+
+  // Filter channels based on search
+  const filteredChannels = channels.filter(channel =>
+    channel.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    channel.project_id?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const filteredSentMessages = sentMessages.filter(message =>
-    message.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.body?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.to_emails?.some((email: string) => 
-      email.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-  );
+  // Send message function
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !selectedChannel) return;
 
-  const filteredStarredMessages = starredMessages.filter(message =>
-    message.subject?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    message.body?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+    try {
+      const tempId = `temp_${Date.now()}`;
+      const tempMessage: ChatMessage = {
+        id: tempId,
+        thread_id: selectedChannel,
+        sender_id: user?.id || '',
+        body: newMessage,
+        attachments: [],
+        created_at: new Date().toISOString(),
+        edited_at: null,
+        deleted_at: null
+      };
 
-  const quickActions: QAItem[] = [
-    {
-      label: 'Compose Message',
-      to: '/dashboard/messages/compose',
-      icon: <Plus className="w-4 h-4" />,
-      caption: 'Send a new message'
-    },
-    {
-      label: 'Team Chat',
-      to: '/dashboard/messages/team',
-      icon: <UserPlus className="w-4 h-4" />,
-      caption: 'Join team discussions'
-    },
-    {
-      label: 'Announcements',
-      to: '/dashboard/messages/announcements',
-      icon: <SendIcon className="w-4 h-4" />,
-      caption: 'Company updates'
-    },
-    {
-      label: 'Archived Messages',
-      to: '/dashboard/messages/archive',
-      icon: <Archive className="w-4 h-4" />,
-      caption: 'View archived conversations'
-    }
-  ];
+      // Add temp message immediately for optimistic UI
+      setMessages(prev => [...prev, tempMessage]);
+      setNewMessage('');
 
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'destructive';
-      case 'medium': return 'secondary';
-      case 'low': return 'outline';
-      default: return 'outline';
+      // Send to backend
+      await chatService.sendMessage(selectedChannel, newMessage);
+    } catch (error) {
+      console.error('Error sending message:', error);
+      // Remove temp message on error
+      setMessages(prev => prev.filter(m => m.id !== `temp_${Date.now()}`));
+      setError('Failed to send message');
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'delivered': return 'default';
-      case 'read': return 'secondary';
-      case 'sent': return 'outline';
-      default: return 'outline';
+  // Create new channel
+  const handleCreateChannel = async () => {
+    if (!user?.org_id) return;
+    
+    try {
+      const channelName = prompt('Enter channel name:');
+      if (!channelName) return;
+
+      // For now, create a dummy project ID for general channels
+      // In a real implementation, you'd want to create a general project or modify the schema
+      const dummyProjectId = '00000000-0000-0000-0000-000000000000';
+      
+      const { data, error } = await chatService.createThread(dummyProjectId, channelName, []);
+      
+      if (error) throw error;
+      
+      // Refresh channels list
+      const { data: updatedChannels, error: fetchError } = await supabase
+        .from('chat_threads')
+        .select('*')
+        .eq('org_id', user.org_id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false });
+
+      if (fetchError) throw fetchError;
+      setChannels(updatedChannels || []);
+      setSelectedChannel(data.thread_id);
+    } catch (error) {
+      console.error('Error creating channel:', error);
+      setError('Failed to create channel');
     }
+  };
+
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   const formatDate = (dateString: string) => {
@@ -132,275 +193,290 @@ export default function MessagesPage() {
     return date.toLocaleDateString();
   };
 
+  const selectedChannelData = channels.find(c => c.id === selectedChannel);
+
   if (loading) {
     return (
-      <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold t-primary">Messages</h1>
-          <p className="t-dim mt-2">Loading messages...</p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="kpi animate-pulse">
-              <div className="h-12 bg-gray-200 rounded"></div>
+      <div className="flex h-screen">
+        <div className="w-80 bg-gray-50 border-r p-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded"></div>
+            <div className="h-6 bg-gray-200 rounded"></div>
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 bg-gray-200 rounded"></div>
+              ))}
             </div>
-          ))}
+          </div>
+        </div>
+        <div className="flex-1 p-4">
+          <div className="animate-pulse space-y-4">
+            <div className="h-8 bg-gray-200 rounded"></div>
+            <div className="space-y-2">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback mode when chat system isn't available
+  if (useFallback) {
+    return (
+      <div className="flex h-screen bg-white">
+        {/* Left Sidebar - Simple Mode */}
+        <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
+          <div className="p-4 border-b border-gray-200">
+            <div className="flex items-center justify-between mb-4">
+              <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-sm text-blue-800">
+                <strong>Simple Mode:</strong> Chat system is being set up. Basic messaging available.
+              </p>
+            </div>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="space-y-4">
+              <div className="text-center py-8">
+                <MessageSquare className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+                <p className="text-sm text-gray-500">Chat channels will appear here</p>
+                <p className="text-xs text-gray-400">Once the chat system is configured</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Area - Simple Mode */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center max-w-md">
+            <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">Chat System Setup</h3>
+            <p className="text-gray-500 mb-4">
+              The advanced chat system is being configured. In the meantime, you can use the project-specific chat by navigating to a project.
+            </p>
+            <Button 
+              onClick={() => window.location.href = '/dashboard/projects'}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              Go to Projects
+            </Button>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Page Header */}
-      <div>
-        <h1 className="text-2xl md:text-3xl font-bold t-primary">Messages</h1>
-        <p className="t-dim mt-2">Internal communication and messaging</p>
-      </div>
-
-      {/* Quick Actions */}
-      <div>
-        <h2 className="text-xl font-semibold t-primary mb-4">Quick Actions</h2>
-        <QuickActionsGrid items={quickActions} />
-      </div>
-
-      {/* Live Message Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Unread</p>
-              <p className="text-2xl font-bold t-primary">{messageStats?.unread ?? 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-t1-blue/10 rounded-lg flex items-center justify-center">
-              <Inbox className="w-6 h-6 t1-blue" />
-            </div>
+    <div className="flex h-screen bg-white">
+      {/* Left Sidebar - Channels */}
+      <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
+        {/* Header */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center justify-between mb-4">
+            <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
+            <Button
+              size="sm"
+              onClick={handleCreateChannel}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              <Plus className="w-4 h-4" />
+            </Button>
           </div>
-        </div>
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Starred</p>
-              <p className="text-2xl font-bold t-primary">{messageStats?.starred ?? 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
-              <Star className="w-6 h-6 text-yellow-500" />
-            </div>
-          </div>
-        </div>
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Sent Today</p>
-              <p className="text-2xl font-bold t-primary">{messageStats?.sentToday ?? 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
-              <Send className="w-6 h-6 text-green-500" />
-            </div>
-          </div>
-        </div>
-        <div className="kpi">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm t-dim">Archived</p>
-              <p className="text-2xl font-bold t-primary">{messageStats?.archived ?? 0}</p>
-            </div>
-            <div className="w-12 h-12 bg-purple-500/10 rounded-lg flex items-center justify-center">
-              <Archive className="w-6 h-6 text-purple-500" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="space-y-6">
-        {/* Search and Filters */}
-        <div className="flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
+          
+          {/* Search */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
             <Input
-              placeholder="Search messages..."
+              placeholder="Search channels..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-white"
             />
           </div>
+
+          {/* Test Data Toggle */}
           {testSeedsEnabled && (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 mt-3">
               <Switch
                 id="include-test"
                 checked={includeTest}
                 onCheckedChange={setIncludeTest}
               />
-              <Label htmlFor="include-test">Include test data</Label>
+              <Label htmlFor="include-test" className="text-sm">Include test data</Label>
             </div>
           )}
         </div>
 
-        {/* Messages Tabs */}
-        <Tabs defaultValue="inbox" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="inbox" className="flex items-center gap-2">
-              <Inbox className="w-4 h-4" />
-              Inbox ({filteredInboxMessages.length})
-            </TabsTrigger>
-            <TabsTrigger value="sent" className="flex items-center gap-2">
-              <Send className="w-4 h-4" />
-              Sent ({filteredSentMessages.length})
-            </TabsTrigger>
-            <TabsTrigger value="starred" className="flex items-center gap-2">
-              <Star className="w-4 h-4" />
-              Starred ({filteredStarredMessages.length})
-            </TabsTrigger>
-          </TabsList>
+        {/* Channels List */}
+        <div className="flex-1 overflow-y-auto p-2">
+          <div className="space-y-1">
+            {filteredChannels.map((channel) => (
+              <button
+                key={channel.id}
+                onClick={() => setSelectedChannel(channel.id)}
+                className={`w-full text-left p-3 rounded-lg transition-colors ${
+                  selectedChannel === channel.id
+                    ? 'bg-blue-100 text-blue-900 border border-blue-200'
+                    : 'hover:bg-gray-100 text-gray-700'
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                    channel.project_id ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {channel.project_id ? <Hash className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-medium truncate">
+                      {channel.title || 'General Chat'}
+                    </div>
+                    <div className="text-xs text-gray-500 truncate">
+                      {channel.project_id ? `Project ${channel.project_id}` : 'General discussion'}
+                    </div>
+                  </div>
+                  {channel.id === selectedChannel && (
+                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          {filteredChannels.length === 0 && (
+            <div className="text-center py-8 text-gray-500">
+              <MessageSquare className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+              <p className="text-sm">No channels found</p>
+              <p className="text-xs text-gray-400">Create your first channel to start chatting</p>
+            </div>
+          )}
+        </div>
+      </div>
 
-          <TabsContent value="inbox" className="space-y-4">
-            {filteredInboxMessages.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Inbox className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold t-primary mb-2">No messages found</h3>
-                  <p className="t-dim">
-                    {searchQuery ? 'Try adjusting your search terms.' : 'Your inbox is empty.'}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-2">
-                {filteredInboxMessages.map((message) => (
-                  <Card key={message.id} className={`hover:shadow-md transition-shadow cursor-pointer ${message.status === 'draft' ? 'border-l-4 border-l-blue-500' : ''}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarFallback>
-                            {message.from_email ? message.from_email.substring(0, 2).toUpperCase() : 'ME'}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className={`font-medium ${message.status === 'draft' ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                                From: {message.from_email}
-                              </h4>
-                              {message.data && (message.data as any).starred && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
-                              <Badge variant={getStatusColor(message.status)}>
-                                {message.status}
-                              </Badge>
-                            </div>
-                            <span className="text-sm text-muted-foreground">{formatDate(message.created_at)}</span>
-                          </div>
-                          
-                          <h5 className={`text-sm mb-1 ${message.status === 'draft' ? 'font-semibold text-foreground' : 'text-muted-foreground'}`}>
-                            {message.subject}
-                          </h5>
-                          
-                          <p className="text-sm text-muted-foreground truncate">
-                            {message.body?.substring(0, 120)}...
-                          </p>
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        {selectedChannel ? (
+          <>
+            {/* Chat Header */}
+            <div className="p-4 border-b border-gray-200 bg-white">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                    {selectedChannelData?.project_id ? <Hash className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+                  </div>
+                  <div>
+                    <h2 className="font-semibold text-gray-900">
+                      {selectedChannelData?.title || 'General Chat'}
+                    </h2>
+                    <p className="text-sm text-gray-500">
+                      {selectedChannelData?.project_id ? `Project ${selectedChannelData.project_id}` : 'General discussion'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="sm">
+                    <Phone className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Video className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm">
+                    <Settings className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+
+            {/* Messages */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                  {error}
+                </div>
+              )}
+              
+              {messages.length === 0 ? (
+                <div className="text-center py-12">
+                  <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">Start a conversation</h3>
+                  <p className="text-gray-500">Send a message to begin chatting in this channel</p>
+                </div>
+              ) : (
+                messages
+                  .sort((a, b) => a.created_at.localeCompare(b.created_at))
+                  .map((message) => (
+                    <div key={message.id} className="flex gap-3">
+                      <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarFallback className="text-xs">
+                          {message.sender_id.substring(0, 2).toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="font-medium text-sm text-gray-900">
+                            {message.sender_id === user?.id ? 'You' : 'User'}
+                          </span>
+                          <span className="text-xs text-gray-500">
+                            {formatTime(message.created_at)}
+                          </span>
+                        </div>
+                        <div className="text-sm text-gray-700 whitespace-pre-wrap break-words">
+                          {message.body}
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
+                    </div>
+                  ))
+              )}
+            </div>
 
-          <TabsContent value="sent" className="space-y-4">
-            {filteredSentMessages.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Send className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold t-primary mb-2">No sent messages</h3>
-                  <p className="t-dim">
-                    {searchQuery ? 'No sent messages match your search.' : 'You haven\'t sent any messages yet.'}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-2">
-                {filteredSentMessages.map((message) => (
-                  <Card key={message.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                    <CardContent className="p-4">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h4 className="font-medium text-foreground">
-                              To: {Array.isArray(message.to_emails) ? message.to_emails.join(', ') : message.to_emails}
-                            </h4>
-                            <Badge variant={getStatusColor(message.status)}>
-                              {message.status}
-                            </Badge>
-                          </div>
-                          
-                          <h5 className="text-sm font-medium text-foreground mb-1">
-                            {message.subject}
-                          </h5>
-                          
-                          <p className="text-sm text-muted-foreground truncate">
-                            {message.body?.substring(0, 120)}...
-                          </p>
-                        </div>
-                        
-                        <span className="text-sm text-muted-foreground">
-                          {formatDate(message.sent_at || message.created_at)}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="starred" className="space-y-4">
-            {filteredStarredMessages.length === 0 ? (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <Star className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <h3 className="text-lg font-semibold t-primary mb-2">No starred messages</h3>
-                  <p className="t-dim">
-                    {searchQuery ? 'No starred messages match your search.' : 'You haven\'t starred any messages yet.'}
-                  </p>
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="space-y-2">
-                {filteredStarredMessages.map((message) => (
-                  <Card key={message.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                    <CardContent className="p-4">
-                      <div className="flex items-start gap-3">
-                        <Avatar className="w-10 h-10">
-                          <AvatarFallback>
-                            {message.from_email ? message.from_email.substring(0, 2).toUpperCase() : 'ME'}
-                          </AvatarFallback>
-                        </Avatar>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center justify-between mb-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-medium text-foreground">From: {message.from_email}</h4>
-                              <Star className="w-4 h-4 text-yellow-500 fill-current" />
-                            </div>
-                            <span className="text-sm text-muted-foreground">{formatDate(message.created_at)}</span>
-                          </div>
-                          
-                          <h5 className="text-sm font-medium text-foreground mb-1">
-                            {message.subject}
-                          </h5>
-                          
-                          <p className="text-sm text-muted-foreground truncate">
-                            {message.body?.substring(0, 120)}...
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+            {/* Message Input */}
+            <div className="p-4 border-t border-gray-200 bg-white">
+              <form onSubmit={handleSendMessage} className="flex gap-3">
+                <div className="flex-1 relative">
+                  <Input
+                    value={newMessage}
+                    onChange={(e) => setNewMessage(e.target.value)}
+                    placeholder="Type a message..."
+                    className="pr-20"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleSendMessage(e);
+                      }
+                    }}
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex gap-1">
+                    <Button type="button" variant="ghost" size="sm" className="p-1">
+                      <Paperclip className="w-4 h-4" />
+                    </Button>
+                    <Button type="button" variant="ghost" size="sm" className="p-1">
+                      <Smile className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+                <Button 
+                  type="submit" 
+                  disabled={!newMessage.trim()}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Send className="w-4 h-4" />
+                </Button>
+              </form>
+            </div>
+          </>
+        ) : (
+          <div className="flex-1 flex items-center justify-center">
+            <div className="text-center">
+              <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Select a channel</h3>
+              <p className="text-gray-500">Choose a channel from the sidebar to start chatting</p>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

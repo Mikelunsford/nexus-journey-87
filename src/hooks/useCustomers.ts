@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
 import { toast } from '@/hooks/use-toast';
+import { 
+  getCustomers,
+  createCustomer as createCustomerService,
+  updateCustomer as updateCustomerService,
+  deleteCustomer as deleteCustomerService
+} from '@/services/customerService';
 import type { DbCustomer } from '@/lib/types';
 
 export function useCustomers() {
@@ -20,18 +25,14 @@ export function useCustomers() {
   }, [profile?.org_id]);
 
   const fetchCustomers = async () => {
+    if (!profile?.org_id) return;
+
     try {
       setLoading(true);
       setError(null);
 
-      const { data, error: fetchError } = await supabase
-        .from('customers')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (fetchError) throw fetchError;
-
-      setCustomers(data || []);
+      const data = await getCustomers(profile.org_id);
+      setCustomers(data);
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to fetch customers';
       setError(errorMessage);
@@ -51,17 +52,7 @@ export function useCustomers() {
     }
 
     try {
-      const { data, error: createError } = await supabase
-        .from('customers')
-        .insert({
-          ...customerData,
-          org_id: profile.org_id,
-        })
-        .select()
-        .single();
-
-      if (createError) throw createError;
-
+      const data = await createCustomerService(profile.org_id, customerData);
       setCustomers(prev => [data, ...prev]);
       toast({
         title: 'Success',
@@ -81,16 +72,12 @@ export function useCustomers() {
   };
 
   const updateCustomer = async (id: string, updates: Partial<DbCustomer>) => {
+    if (!profile?.org_id) {
+      throw new Error('Organization not found');
+    }
+
     try {
-      const { data, error: updateError } = await supabase
-        .from('customers')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (updateError) throw updateError;
-
+      const data = await updateCustomerService(profile.org_id, id, updates);
       setCustomers(prev => prev.map(customer => 
         customer.id === id ? data : customer
       ));
@@ -113,14 +100,12 @@ export function useCustomers() {
   };
 
   const deleteCustomer = async (id: string) => {
+    if (!profile?.org_id) {
+      throw new Error('Organization not found');
+    }
+
     try {
-      const { error: deleteError } = await supabase
-        .from('customers')
-        .update({ deleted_at: new Date().toISOString() })
-        .eq('id', id);
-
-      if (deleteError) throw deleteError;
-
+      await deleteCustomerService(profile.org_id, id);
       setCustomers(prev => prev.filter(customer => customer.id !== id));
       toast({
         title: 'Success',

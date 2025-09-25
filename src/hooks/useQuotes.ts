@@ -1,7 +1,10 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
-
+import { 
+  getQuotes,
+  createQuote as createQuoteService,
+  updateQuote as updateQuoteService
+} from '@/services/quoteService';
 import { Database } from '@/integrations/supabase/types';
 
 type DbQuote = Database['public']['Tables']['quotes']['Row'];
@@ -21,34 +24,14 @@ export function useQuotes(includeTest = false) {
   const { user, effectiveRole } = useAuth();
 
   const fetchQuotes = async () => {
-    if (!user) {
+    if (!user?.org_id) {
       setLoading(false);
       return;
     }
 
     try {
-      let query = supabase
-        .from('quotes')
-        .select(`
-          *,
-          customers (
-            name
-          )
-        `)
-        .order('created_at', { ascending: false });
-
-      // Filter out test data by default unless includeTest is true
-      if (!includeTest) {
-        query = query.or('is_test.is.null,is_test.eq.false');
-      }
-
-      const { data, error: queryError } = await query;
-
-      if (queryError) {
-        throw queryError;
-      }
-
-      setQuotes(data || []);
+      const data = await getQuotes(user.org_id, includeTest);
+      setQuotes(data);
       setError(null);
     } catch (err) {
       console.error('Error fetching quotes:', err);
@@ -59,22 +42,12 @@ export function useQuotes(includeTest = false) {
   };
 
   const createQuote = async (quoteData: QuoteInsert) => {
+    if (!user?.org_id) {
+      return { data: null, error: new Error('Organization not found') };
+    }
+
     try {
-      const { data, error: insertError } = await supabase
-        .from('quotes')
-        .insert(quoteData)
-        .select(`
-          *,
-          customers (
-            name
-          )
-        `)
-        .single();
-
-      if (insertError) {
-        throw insertError;
-      }
-
+      const data = await createQuoteService(user.org_id, quoteData);
       setQuotes(prev => [data, ...prev]);
       return { data, error: null };
     } catch (err) {
@@ -84,23 +57,12 @@ export function useQuotes(includeTest = false) {
   };
 
   const updateQuote = async (id: string, updates: QuoteUpdate) => {
+    if (!user?.org_id) {
+      return { data: null, error: new Error('Organization not found') };
+    }
+
     try {
-      const { data, error: updateError } = await supabase
-        .from('quotes')
-        .update(updates)
-        .eq('id', id)
-        .select(`
-          *,
-          customers (
-            name
-          )
-        `)
-        .single();
-
-      if (updateError) {
-        throw updateError;
-      }
-
+      const data = await updateQuoteService(user.org_id, id, updates);
       setQuotes(prev => prev.map(quote => 
         quote.id === id ? data : quote
       ));

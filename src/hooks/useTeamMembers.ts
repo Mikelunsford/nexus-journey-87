@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
-
+import { getTeamMembers } from '@/services/teamMemberService';
 import { Database } from '@/integrations/supabase/types';
 
 type DbProfile = Database['public']['Tables']['profiles']['Row'];
@@ -22,33 +22,14 @@ export function useTeamMembers(includeTest = false) {
   const { user } = useAuth();
 
   const fetchTeamMembers = async () => {
-    if (!user) {
+    if (!user?.org_id) {
       setLoading(false);
       return;
     }
 
     try {
-      let query = supabase
-        .from('profiles')
-        .select(`
-          *,
-          memberships (
-            role_bucket,
-            department_id,
-            expires_at
-          )
-        `)
-        .eq('org_id', user.org_id)
-        .is('deleted_at', null)
-        .order('name', { ascending: true });
-
-      const { data, error: queryError } = await query;
-
-      if (queryError) {
-        throw queryError;
-      }
-
-      setTeamMembers(data || []);
+      const data = await getTeamMembers(user.org_id, includeTest);
+      setTeamMembers(data);
       setError(null);
     } catch (err) {
       console.error('Error fetching team members:', err);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/auth/AuthProvider';
-
+import { getInboxMessages, getMessageStats } from '@/services/messageService';
 import { Database } from '@/integrations/supabase/types';
 
 type DbMessage = Database['public']['Tables']['messages']['Row'];
@@ -13,31 +13,14 @@ export function useMessages(includeTest = false) {
   const { user } = useAuth();
 
   const fetchMessages = async () => {
-    if (!user) {
+    if (!user?.org_id) {
       setLoading(false);
       return;
     }
 
     try {
-      let query = supabase
-        .from('messages')
-        .select('*')
-        .eq('org_id', user.org_id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      // Filter out test data by default unless includeTest is true
-      if (!includeTest) {
-        query = query.or('is_test.is.null,is_test.eq.false');
-      }
-
-      const { data, error: queryError } = await query;
-
-      if (queryError) {
-        throw queryError;
-      }
-
-      setMessages(data || []);
+      const data = await getInboxMessages(user.org_id);
+      setMessages(data);
       setError(null);
     } catch (err) {
       console.error('Error fetching messages:', err);
@@ -77,7 +60,7 @@ export function useMessages(includeTest = false) {
   }, [user, includeTest]);
 
   // Helper functions for message statistics
-  const getMessageStats = () => {
+  const getMessageStatsLocal = () => {
     const today = new Date().toISOString().split('T')[0];
     
     return {
@@ -96,7 +79,7 @@ export function useMessages(includeTest = false) {
     messages,
     loading,
     error,
-    getMessageStats,
+    getMessageStats: getMessageStatsLocal,
     refetch: fetchMessages
   };
 }

@@ -1,0 +1,220 @@
+Component_Type,Component_Name,File_Path,Dependencies,Data_Flow,Database_Tables,RLS_Policies,Role_Requirements,Description
+Application,App,src/App.tsx,"QueryClient,ThemeProvider,AuthProvider,TooltipProvider,Toaster,Sonner,AppRouter",Global State Management,N/A,N/A,N/A,Main application entry point with providers
+Router,AppRouter,src/app/router.tsx,"React Router,ProtectedRoute,RoleGate,AppShell",Route Management,N/A,N/A,N/A,Main routing configuration with lazy loading
+Auth,AuthProvider,src/components/auth/AuthProvider.tsx,"useSupabaseAuth,useProfile",Authentication State,profiles,memberships,profile_org_isolation,All authenticated users,Authentication context provider
+Auth,ProtectedRoute,src/app/guards/ProtectedRoute.tsx,"useAuth,Navigate",Route Protection,N/A,N/A,N/A,Protects routes requiring authentication
+Auth,RoleGate,src/app/guards/RoleGate.tsx,"useAuth,canView",Role-based Access Control,N/A,N/A,Role-based,Enforces role-based access to routes
+Database,Database Schema,src/integrations/supabase/types.ts,N/A,Type Definitions,All Tables,All Policies,N/A,Generated TypeScript types from Supabase schema
+Database,Supabase Client,src/integrations/supabase/client.ts,"@supabase/supabase-js",Database Connection,N/A,N/A,N/A,Supabase client configuration
+Service,CustomerService,src/services/customerService.ts,"supabase,Database types",Customer CRUD Operations,customers,customers_org_isolation,operational,CRUD operations for customer management
+Service,ProjectService,src/services/projectService.ts,"supabase,Database types",Project CRUD Operations,projects,customers,projects_org_access,operational,CRUD operations for project management
+Service,ChatService,src/services/chatService.ts,"supabase",Real-time Chat,chat_threads,chat_participants,chat_messages,chat_threads_select,operational,Real-time chat functionality with file attachments
+Service,DashboardService,src/services/dashboardService.ts,"supabase",Dashboard Analytics,All Tables,All Policies,operational,Dashboard metrics and analytics
+Service,DocumentService,src/services/documentService.ts,"supabase",Document Management,documents,documents_org_access,operational,Document upload and management
+Service,LabelService,src/services/labelService.ts,"supabase",Label Management,labels,labels_org_access,management,Label creation and assignment
+Service,MessageService,src/services/messageService.ts,"supabase",Message Management,messages,messages_org_access,operational,Email and message management
+Service,NotificationService,src/services/notificationService.ts,"supabase",Notification System,notifications,notifications_user_access,external,User notification management
+Service,QuoteService,src/services/quoteService.ts,"supabase",Quote Management,quotes,quotes_org_access,operational,Quote creation and management
+Service,ShipmentService,src/services/shipmentService.ts,"supabase",Shipment Management,shipments,shipments_org_access,operational,Shipment tracking and management
+Service,TeamMemberService,src/services/teamMemberService.ts,"supabase",Team Management,profiles,memberships,profile_org_isolation,management,Team member management
+Hook,useCustomers,src/hooks/useCustomers.ts,"useAuth,supabase,toast",Customer State Management,customers,customers_org_isolation,operational,React hook for customer operations
+Hook,useProjects,src/hooks/useProjects.ts,"useAuth,supabase,toast",Project State Management,projects,customers,projects_org_access,operational,React hook for project operations
+Hook,useChat,src/hooks/useChat.ts,"chatService,supabase",Chat State Management,chat_threads,chat_participants,chat_messages,chat_threads_select,operational,React hook for chat functionality
+Hook,useDocuments,src/hooks/useDocuments.ts,"useAuth,supabase",Document State Management,documents,documents_org_access,operational,React hook for document operations
+Hook,useFeatureFlag,src/hooks/useFeatureFlag.ts,"useAuth,supabase",Feature Flag Management,feature_flags,feature_flags_admin,admin,React hook for feature flag management
+Hook,useLabels,src/hooks/useLabels.ts,"useAuth,supabase",Label State Management,labels,labels_org_access,management,React hook for label operations
+Hook,useMessages,src/hooks/useMessages.ts,"useAuth,supabase",Message State Management,messages,messages_org_access,operational,React hook for message operations
+Hook,useNotifications,src/hooks/useNotifications.ts,"useAuth,supabase",Notification State Management,notifications,notifications_user_access,external,React hook for notification operations
+Hook,useProfile,src/hooks/useProfile.ts,"useSupabaseAuth,supabase",Profile State Management,profiles,memberships,profile_org_isolation,external,React hook for user profile operations
+Hook,useQuotes,src/hooks/useQuotes.ts,"useAuth,supabase",Quote State Management,quotes,quotes_org_access,operational,React hook for quote operations
+Hook,useShipments,src/hooks/useShipments.ts,"useAuth,supabase",Shipment State Management,shipments,shipments_org_access,operational,React hook for shipment operations
+Hook,useSupabaseAuth,src/hooks/useSupabaseAuth.ts,"supabase",Authentication State,N/A,N/A,N/A,React hook for Supabase authentication
+Hook,useTeamMembers,src/hooks/useTeamMembers.ts,"useAuth,supabase",Team Member State Management,profiles,memberships,profile_org_isolation,management,React hook for team member operations
+Hook,useTestActions,src/hooks/useTestActions.ts,"useAuth,supabase",Testing Utilities,All Tables,All Policies,admin,React hook for testing operations
+Hook,useUrlState,src/hooks/useUrlState.ts,N/A,URL State Management,N/A,N/A,N/A,React hook for URL state management
+Layout,AppShell,src/components/layout/AppShell.tsx,"Sidebar,Topbar,Outlet",Main Layout,N/A,N/A,N/A,Main application shell with navigation
+Layout,Sidebar,src/components/layout/Sidebar.tsx,"Navigation Menu",Navigation,N/A,N/A,N/A,Application sidebar navigation
+Layout,Topbar,src/components/layout/Topbar.tsx,"User Menu,Notifications",Top Navigation,N/A,N/A,N/A,Top navigation bar
+Layout,PageSection,src/components/layout/PageSection.tsx,N/A,Page Layout,N/A,N/A,N/A,Page section wrapper component
+Page,Dashboard,src/pages/Dashboard.tsx,"useAuth,useProjects,useCustomers",Dashboard View,projects,customers,projects_org_access,external,Main dashboard page
+Page,AuthPage,src/pages/AuthPage.tsx,"useAuth",Authentication,profiles,memberships,profile_org_isolation,N/A,Authentication page
+Page,ProjectsPage,src/pages/ProjectsPage.tsx,"useProjects,useCustomers",Project Management,projects,customers,projects_org_access,operational,Project listing and management
+Page,CustomersPage,src/pages/customers/CustomersPage.tsx,"useCustomers",Customer Management,customers,customers_org_isolation,operational,Customer listing and management
+Page,QuotesPage,src/pages/QuotesPage.tsx,"useQuotes",Quote Management,quotes,quotes_org_access,operational,Quote listing and management
+Page,ShipmentsPage,src/pages/ShipmentsPage.tsx,"useShipments",Shipment Management,shipments,shipments_org_access,operational,Shipment listing and management
+Page,DocumentsPage,src/pages/DocumentsPage.tsx,"useDocuments",Document Management,documents,documents_org_access,operational,Document listing and management
+Page,MessagesPage,src/pages/MessagesPage.tsx,"useMessages",Message Management,messages,messages_org_access,operational,Message listing and management
+Page,ProductionPage,src/pages/ProductionPage.tsx,"useAuth",Production Management,work_orders,work_orders_org_access,operational,Production work order management
+Page,ShippingPage,src/pages/ShippingPage.tsx,"useAuth",Shipping Management,shipments,carrier_appointments,shipments_org_access,operational,Shipping and carrier management
+Page,CarriersPage,src/pages/CarriersPage.tsx,"useAuth",Carrier Management,carrier_appointments,carrier_appointments_org_access,operational,Carrier appointment management
+Page,AccountingPage,src/pages/AccountingPage.tsx,"useAuth",Accounting Management,invoices,payments,invoices_org_access,management,Accounting and financial management
+Page,AnalyticsPage,src/pages/AnalyticsPage.tsx,"useAuth",Analytics Dashboard,All Tables,All Policies,management,Analytics and reporting dashboard
+Page,SettingsPage,src/pages/SettingsPage.tsx,"useAuth",Settings Management,profiles,organizations,profile_org_isolation,external,User and organization settings
+Page,EmployeesPage,src/pages/EmployeesPage.tsx,"useTeamMembers",Employee Management,profiles,memberships,profile_org_isolation,management,Employee management
+Page,TasksPage,src/pages/TasksPage.tsx,"useAuth",Task Management,work_orders,work_orders_org_access,operational,Task and work order management
+Page,UsersPage,src/pages/admin/UsersPage.tsx,"useTeamMembers",User Administration,profiles,memberships,profile_org_isolation,management,User administration
+Page,OrganizationsPage,src/pages/admin/OrganizationsPage.tsx,"useAuth",Organization Administration,organizations,org_members_only,admin,Organization administration
+Database_Table,organizations,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,N/A,Core Tenancy,organizations,org_members_only,admin,Root tenant organization table
+Database_Table,departments,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Organizational Units,departments,dept_org_isolation,operational,Department hierarchy within organizations
+Database_Table,teams,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,departments,Team Management,teams,team_org_isolation,operational,Teams within departments
+Database_Table,profiles,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,User Profiles,profiles,profile_org_isolation,external,User profile information
+Database_Table,memberships,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"profiles,organizations,departments,teams",Role Management,memberships,membership_org_isolation,admin,User-organization-role relationships
+Database_Table,customers,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Customer Management,customers,customers_org_isolation,operational,Customer information and relationships
+Database_Table,projects,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"customers,organizations",Project Management,projects,projects_org_access,operational,Project information and tracking
+Database_Table,quotes,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"customers,projects,organizations",Quote Management,quotes,quotes_org_access,operational,Quote creation and management
+Database_Table,work_orders,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"projects,organizations",Work Order Management,work_orders,work_orders_org_access,operational,Production work orders
+Database_Table,messages,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"customers,projects,organizations",Message Management,messages,messages_org_access,operational,Email and system messages
+Database_Table,documents,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Document Management,documents,documents_org_access,operational,Document storage and metadata
+Database_Table,shipments,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"projects,organizations",Shipment Management,shipments,shipments_org_access,operational,Shipment tracking and delivery
+Database_Table,carrier_appointments,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Carrier Management,carrier_appointments,carrier_appointments_org_access,operational,Carrier pickup appointments
+Database_Table,labels,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Label Management,labels,labels_org_access,management,Label definitions and assignments
+Database_Table,notifications,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"profiles,organizations",Notification System,notifications,notifications_user_access,external,User notifications
+Database_Table,audit_log,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,N/A,Audit Trail,audit_log,audit_admin_read,admin,Immutable audit trail
+Database_Table,feature_flags,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Feature Management,feature_flags,feature_flags_admin,admin,Feature flag management
+Database_Table,time_entries,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"profiles,projects,work_orders,organizations",Time Tracking,time_entries,time_entries_org_access,operational,Time entry tracking
+Database_Table,invoices,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"customers,projects,organizations",Invoice Management,invoices,invoices_org_access,management,Invoice creation and management
+Database_Table,payments,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,"invoices,customers,organizations",Payment Management,payments,payments_org_access,management,Payment tracking
+Database_Table,chat_threads,supabase/migrations/20250923133500_chat.sql,"projects,organizations",Chat System,chat_threads,chat_threads_select,operational,Project-scoped chat threads
+Database_Table,chat_participants,supabase/migrations/20250923133500_chat.sql,"chat_threads,profiles",Chat Participants,chat_participants,chat_participants_select,operational,Chat thread participants
+Database_Table,chat_messages,supabase/migrations/20250923133500_chat.sql,"chat_threads,profiles",Chat Messages,chat_messages,chat_messages_rw,operational,Chat messages with attachments
+Database_Table,chat_events,supabase/migrations/20250923133500_chat.sql,"chat_threads,profiles",Chat Events,chat_events,chat_events_rw,operational,Chat events (typing, join, leave)
+RLS_Policy,org_members_only,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,organizations,Organization Access,organizations,org_members_only,admin,Only members can see their organization
+RLS_Policy,dept_org_isolation,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,departments,Department Isolation,departments,dept_org_isolation,operational,Department isolation by organization
+RLS_Policy,team_org_isolation,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,teams,Team Isolation,teams,team_org_isolation,operational,Team isolation by organization
+RLS_Policy,profile_org_isolation,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,profiles,Profile Access,profiles,profile_org_isolation,external,Profile access within organization
+RLS_Policy,membership_org_isolation,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,memberships,Membership Access,memberships,membership_org_isolation,admin,Membership access within organization
+RLS_Policy,customers_org_isolation,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,customers,Customer Access,customers,customers_org_isolation,operational,Customer access within organization
+RLS_Policy,projects_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,projects,Project Access,projects,projects_org_access,operational,Project access with ownership checks
+RLS_Policy,quotes_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,quotes,Quote Access,quotes,quotes_org_access,operational,Quote access with ownership checks
+RLS_Policy,work_orders_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,work_orders,Work Order Access,work_orders,work_orders_org_access,operational,Work order access with assignment checks
+RLS_Policy,messages_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,messages,Message Access,messages,messages_org_access,operational,Message access with ownership checks
+RLS_Policy,documents_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,documents,Document Access,documents,documents_org_access,operational,Document access with ownership checks
+RLS_Policy,shipments_org_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,shipments,Shipment Access,shipments,shipments_org_access,operational,Shipment access with ownership checks
+RLS_Policy,notifications_user_access,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,notifications,Notification Access,notifications,notifications_user_access,external,Notification access by user
+RLS_Policy,audit_admin_read,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,audit_log,Audit Access,audit_log,audit_admin_read,admin,Audit log access for admins only
+RLS_Policy,feature_flags_admin,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,feature_flags,Feature Flag Access,feature_flags,feature_flags_admin,admin,Feature flag access for admins only
+RLS_Policy,chat_threads_select,supabase/migrations/20250923133500_chat.sql,chat_threads,Chat Thread Access,chat_threads,chat_threads_select,operational,Chat thread access for participants
+RLS_Policy,chat_participants_select,supabase/migrations/20250923133500_chat.sql,chat_participants,Chat Participant Access,chat_participants,chat_participants_select,operational,Chat participant access
+RLS_Policy,chat_messages_rw,supabase/migrations/20250923133500_chat.sql,chat_messages,Chat Message Access,chat_messages,chat_messages_rw,operational,Chat message read/write access
+RLS_Policy,chat_events_rw,supabase/migrations/20250923133500_chat.sql,chat_events,Chat Event Access,chat_events,chat_events_rw,operational,Chat event read/write access
+RPC,chat_thread_create,supabase/migrations/20250923133500_chat.sql,"chat_threads,chat_participants",Chat Thread Creation,chat_threads,chat_participants,chat_threads_select,operational,Create chat thread with participants
+RPC,chat_participant_add,supabase/migrations/20250923133500_chat.sql,chat_participants,Chat Participant Addition,chat_participants,chat_participants_select,operational,Add participant to chat thread
+RPC,chat_message_send,supabase/migrations/20250923133500_chat.sql,chat_messages,Chat Message Sending,chat_messages,chat_messages_rw,operational,Send message to chat thread
+RPC,chat_mark_read,supabase/migrations/20250923133500_chat.sql,chat_participants,Chat Read Status,chat_participants,chat_participants_select,operational,Mark chat thread as read
+RPC,chat_files_sign,supabase/migrations/20250923133500_chat.sql,storage,Chat File Signing,storage,chat_upload_auth,operational,Generate signed URLs for chat attachments
+Function,auth.get_user_org_id,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,N/A,User Organization,profiles,memberships,profile_org_isolation,external,Get user's organization ID from JWT
+Function,auth.has_role_in_org,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,memberships,Role Checking,memberships,membership_org_isolation,external,Check if user has specific role in organization
+Function,auth.can_manage,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,memberships,Management Check,memberships,membership_org_isolation,management,Check if user can manage (admin or management)
+Function,auth.owns_or_manages,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,memberships,Ownership Check,memberships,membership_org_isolation,operational,Check if user owns or can manage record
+Function,update_updated_at_column,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,N/A,Timestamp Management,All Tables,All Policies,N/A,Automatic timestamp and version management
+Function,audit_trigger,supabase/migrations/20250922183929_4031b182-50e4-4881-baf2-e159c7a8dc39.sql,audit_log,Audit Trail,audit_log,audit_admin_read,admin,Automatic audit trail creation
+Library,RBAC,src/lib/rbac.ts,"roleBuckets",Access Control,N/A,N/A,Role-based,Role-based access control logic
+Library,RoleBuckets,src/lib/rbac/roleBuckets.ts,N/A,Role Hierarchy,N/A,N/A,Role-based,Role bucket definitions and hierarchy
+Library,Types,src/lib/types.ts,N/A,Type Definitions,N/A,N/A,N/A,Core application type definitions
+Library,Utils,src/lib/utils.ts,N/A,Utility Functions,N/A,N/A,N/A,Common utility functions
+Library,Storage,src/lib/storage.ts,N/A,Storage Management,N/A,N/A,N/A,File storage utilities
+Library,FeatureFlags,src/lib/featureFlags.ts,feature_flags,Feature Management,feature_flags,feature_flags_admin,admin,Feature flag management utilities
+Library,Events,src/lib/events.ts,N/A,Event System,N/A,N/A,N/A,Event system for application communication
+Library,IDs,src/lib/ids.ts,N/A,ID Generation,N/A,N/A,N/A,ID generation utilities
+Library,Accounting,src/lib/accounting/arAging.ts,N/A,AR Aging,All Tables,All Policies,management,Accounts receivable aging calculations
+Library,Accounting,src/lib/accounting/invoiceStates.ts,N/A,Invoice States,invoices,invoices_org_access,management,Invoice state management
+Library,Accounting,src/lib/accounting/paymentTracking.ts,N/A,Payment Tracking,payments,payments_org_access,management,Payment tracking utilities
+Library,Accounting,src/lib/accounting/reminderEngine.ts,N/A,Reminder Engine,All Tables,All Policies,management,Automated reminder system
+Library,Analytics,src/lib/analytics/metricDefinitions.ts,N/A,Metric Definitions,All Tables,All Policies,management,Analytics metric definitions
+Library,Analytics,src/lib/analytics/metricsCalculator.ts,N/A,Metrics Calculation,All Tables,All Policies,management,Analytics calculations
+Library,Analytics,src/lib/analytics/operationalKPIs.ts,N/A,Operational KPIs,All Tables,All Policies,management,Operational key performance indicators
+Library,Analytics,src/lib/analytics/utilizationMetrics.ts,N/A,Utilization Metrics,All Tables,All Policies,management,Resource utilization metrics
+Library,Export,src/lib/export/csvExporter.ts,N/A,CSV Export,All Tables,All Policies,operational,CSV export functionality
+Library,Export,src/lib/export/reportExporter.ts,N/A,Report Export,All Tables,All Policies,management,Report export functionality
+Library,Import,src/lib/import/csvParser.ts,N/A,CSV Import,All Tables,All Policies,operational,CSV import functionality
+Library,Import,src/lib/import/dryRunEngine.ts,N/A,Dry Run Engine,All Tables,All Policies,operational,Dry run import validation
+Library,Import,src/lib/import/rollbackManager.ts,N/A,Rollback Manager,All Tables,All Policies,admin,Import rollback functionality
+Library,RBAC,src/lib/rbac/auditLogger.ts,audit_log,Audit Logging,audit_log,audit_admin_read,admin,Audit logging utilities
+Library,RBAC,src/lib/rbac/groupAssignments.ts,memberships,Group Assignments,memberships,membership_org_isolation,management,Group assignment utilities
+Library,RBAC,src/lib/rbac/permissions.ts,N/A,Permissions,All Tables,All Policies,Role-based,Permission management utilities
+Library,RBAC,src/lib/rbac/roleBuckets.ts,N/A,Role Buckets,N/A,N/A,Role-based,Role bucket management
+Library,Adapters,src/lib/adapters/employeesAdapter.ts,profiles,Employee Adapter,profiles,profile_org_isolation,management,Employee data adapter
+Library,Adapters,src/lib/adapters/tasksAdapter.ts,work_orders,Task Adapter,work_orders,work_orders_org_access,operational,Task data adapter
+Library,Admin,src/lib/admin/departments.ts,departments,Department Management,departments,dept_org_isolation,management,Department management utilities
+UI_Component,Button,src/components/ui/button.tsx,N/A,Button Component,N/A,N/A,N/A,Reusable button component
+UI_Component,Card,src/components/ui/card.tsx,N/A,Card Component,N/A,N/A,N/A,Reusable card component
+UI_Component,Dialog,src/components/ui/dialog.tsx,N/A,Dialog Component,N/A,N/A,N/A,Reusable dialog component
+UI_Component,Form,src/components/ui/form.tsx,N/A,Form Component,N/A,N/A,N/A,Reusable form component
+UI_Component,Input,src/components/ui/input.tsx,N/A,Input Component,N/A,N/A,N/A,Reusable input component
+UI_Component,Table,src/components/ui/table.tsx,N/A,Table Component,N/A,N/A,N/A,Reusable table component
+UI_Component,Toast,src/components/ui/toast.tsx,N/A,Toast Component,N/A,N/A,N/A,Reusable toast notification component
+UI_Component,Select,src/components/ui/select.tsx,N/A,Select Component,N/A,N/A,N/A,Reusable select component
+UI_Component,Checkbox,src/components/ui/checkbox.tsx,N/A,Checkbox Component,N/A,N/A,N/A,Reusable checkbox component
+UI_Component,RadioGroup,src/components/ui/radio-group.tsx,N/A,Radio Group Component,N/A,N/A,N/A,Reusable radio group component
+UI_Component,Switch,src/components/ui/switch.tsx,N/A,Switch Component,N/A,N/A,N/A,Reusable switch component
+UI_Component,Slider,src/components/ui/slider.tsx,N/A,Slider Component,N/A,N/A,N/A,Reusable slider component
+UI_Component,Progress,src/components/ui/progress.tsx,N/A,Progress Component,N/A,N/A,N/A,Reusable progress component
+UI_Component,Badge,src/components/ui/badge.tsx,N/A,Badge Component,N/A,N/A,N/A,Reusable badge component
+UI_Component,Avatar,src/components/ui/avatar.tsx,N/A,Avatar Component,N/A,N/A,N/A,Reusable avatar component
+UI_Component,Tooltip,src/components/ui/tooltip.tsx,N/A,Tooltip Component,N/A,N/A,N/A,Reusable tooltip component
+UI_Component,Popover,src/components/ui/popover.tsx,N/A,Popover Component,N/A,N/A,N/A,Reusable popover component
+UI_Component,DropdownMenu,src/components/ui/dropdown-menu.tsx,N/A,Dropdown Menu Component,N/A,N/A,N/A,Reusable dropdown menu component
+UI_Component,ContextMenu,src/components/ui/context-menu.tsx,N/A,Context Menu Component,N/A,N/A,N/A,Reusable context menu component
+UI_Component,NavigationMenu,src/components/ui/navigation-menu.tsx,N/A,Navigation Menu Component,N/A,N/A,N/A,Reusable navigation menu component
+UI_Component,Tabs,src/components/ui/tabs.tsx,N/A,Tabs Component,N/A,N/A,N/A,Reusable tabs component
+UI_Component,Accordion,src/components/ui/accordion.tsx,N/A,Accordion Component,N/A,N/A,N/A,Reusable accordion component
+UI_Component,Collapsible,src/components/ui/collapsible.tsx,N/A,Collapsible Component,N/A,N/A,N/A,Reusable collapsible component
+UI_Component,Alert,src/components/ui/alert.tsx,N/A,Alert Component,N/A,N/A,N/A,Reusable alert component
+UI_Component,AlertDialog,src/components/ui/alert-dialog.tsx,N/A,Alert Dialog Component,N/A,N/A,N/A,Reusable alert dialog component
+UI_Component,Calendar,src/components/ui/calendar.tsx,N/A,Calendar Component,N/A,N/A,N/A,Reusable calendar component
+UI_Component,Carousel,src/components/ui/carousel.tsx,N/A,Carousel Component,N/A,N/A,N/A,Reusable carousel component
+UI_Component,Chart,src/components/ui/chart.tsx,N/A,Chart Component,N/A,N/A,N/A,Reusable chart component
+UI_Component,Command,src/components/ui/command.tsx,N/A,Command Component,N/A,N/A,N/A,Reusable command component
+UI_Component,Drawer,src/components/ui/drawer.tsx,N/A,Drawer Component,N/A,N/A,N/A,Reusable drawer component
+UI_Component,HoverCard,src/components/ui/hover-card.tsx,N/A,Hover Card Component,N/A,N/A,N/A,Reusable hover card component
+UI_Component,Menubar,src/components/ui/menubar.tsx,N/A,Menubar Component,N/A,N/A,N/A,Reusable menubar component
+UI_Component,Pagination,src/components/ui/pagination.tsx,N/A,Pagination Component,N/A,N/A,N/A,Reusable pagination component
+UI_Component,ScrollArea,src/components/ui/scroll-area.tsx,N/A,Scroll Area Component,N/A,N/A,N/A,Reusable scroll area component
+UI_Component,Separator,src/components/ui/separator.tsx,N/A,Separator Component,N/A,N/A,N/A,Reusable separator component
+UI_Component,Sheet,src/components/ui/sheet.tsx,N/A,Sheet Component,N/A,N/A,N/A,Reusable sheet component
+UI_Component,Sidebar,src/components/ui/sidebar.tsx,N/A,Sidebar Component,N/A,N/A,N/A,Reusable sidebar component
+UI_Component,Skeleton,src/components/ui/skeleton.tsx,N/A,Skeleton Component,N/A,N/A,N/A,Reusable skeleton component
+UI_Component,Textarea,src/components/ui/textarea.tsx,N/A,Textarea Component,N/A,N/A,N/A,Reusable textarea component
+UI_Component,Toggle,src/components/ui/toggle.tsx,N/A,Toggle Component,N/A,N/A,N/A,Reusable toggle component
+UI_Component,ToggleGroup,src/components/ui/toggle-group.tsx,N/A,Toggle Group Component,N/A,N/A,N/A,Reusable toggle group component
+UI_Component,AspectRatio,src/components/ui/aspect-ratio.tsx,N/A,Aspect Ratio Component,N/A,N/A,N/A,Reusable aspect ratio component
+UI_Component,Breadcrumb,src/components/ui/breadcrumb.tsx,N/A,Breadcrumb Component,N/A,N/A,N/A,Reusable breadcrumb component
+UI_Component,InputOTP,src/components/ui/input-otp.tsx,N/A,Input OTP Component,N/A,N/A,N/A,Reusable OTP input component
+UI_Component,Label,src/components/ui/label.tsx,N/A,Label Component,N/A,N/A,N/A,Reusable label component
+UI_Component,Resizable,src/components/ui/resizable.tsx,N/A,Resizable Component,N/A,N/A,N/A,Reusable resizable component
+UI_Component,Sonner,src/components/ui/sonner.tsx,N/A,Sonner Component,N/A,N/A,N/A,Reusable sonner toast component
+UI_Component,Toaster,src/components/ui/toaster.tsx,N/A,Toaster Component,N/A,N/A,N/A,Reusable toaster component
+UI_Component,UseToast,src/components/ui/use-toast.ts,N/A,Use Toast Hook,N/A,N/A,N/A,Reusable toast hook
+UI_Component,ColumnSelector,src/components/ui/ColumnSelector.tsx,N/A,Column Selector Component,N/A,N/A,N/A,Custom column selector component
+UI_Component,EmptyState,src/components/ui/EmptyState.tsx,N/A,Empty State Component,N/A,N/A,N/A,Custom empty state component
+UI_Component,ExportDialog,src/components/ui/ExportDialog.tsx,N/A,Export Dialog Component,N/A,N/A,N/A,Custom export dialog component
+UI_Component,FilterBar,src/components/ui/FilterBar.tsx,N/A,Filter Bar Component,N/A,N/A,N/A,Custom filter bar component
+UI_Component,FormHelp,src/components/ui/FormHelp.tsx,N/A,Form Help Component,N/A,N/A,N/A,Custom form help component
+UI_Component,LabelForm,src/components/ui/LabelForm.tsx,N/A,Label Form Component,N/A,N/A,N/A,Custom label form component
+UI_Component,LabelsTable,src/components/ui/LabelsTable.tsx,N/A,Labels Table Component,N/A,N/A,N/A,Custom labels table component
+UI_Component,LazyWrapper,src/components/ui/LazyWrapper.tsx,N/A,Lazy Wrapper Component,N/A,N/A,N/A,Custom lazy wrapper component
+UI_Component,MemoizedComponent,src/components/ui/MemoizedComponent.tsx,N/A,Memoized Component,N/A,N/A,N/A,Custom memoized component
+UI_Component,NotificationBell,src/components/ui/NotificationBell.tsx,N/A,Notification Bell Component,N/A,N/A,N/A,Custom notification bell component
+UI_Component,PathCard,src/components/ui/PathCard.tsx,N/A,Path Card Component,N/A,N/A,N/A,Custom path card component
+UI_Component,PerformanceMonitor,src/components/ui/PerformanceMonitor.tsx,N/A,Performance Monitor Component,N/A,N/A,N/A,Custom performance monitor component
+UI_Component,QuickActionsGrid,src/components/ui/QuickActionsGrid.tsx,N/A,Quick Actions Grid Component,N/A,N/A,N/A,Custom quick actions grid component
+UI_Component,QuickActionsList,src/components/ui/QuickActionsList.tsx,N/A,Quick Actions List Component,N/A,N/A,N/A,Custom quick actions list component
+UI_Component,SavedViews,src/components/ui/SavedViews.tsx,N/A,Saved Views Component,N/A,N/A,N/A,Custom saved views component
+UI_Component,SearchInput,src/components/ui/SearchInput.tsx,N/A,Search Input Component,N/A,N/A,N/A,Custom search input component
+UI_Component,SkeletonComponents,src/components/ui/SkeletonComponents.tsx,N/A,Skeleton Components,N/A,N/A,N/A,Custom skeleton components
+UI_Component,StatusBar,src/components/ui/StatusBar.tsx,N/A,Status Bar Component,N/A,N/A,N/A,Custom status bar component
+UI_Component,StatusIndicator,src/components/ui/StatusIndicator.tsx,N/A,Status Indicator Component,N/A,N/A,N/A,Custom status indicator component
+UI_Component,StatusPill,src/components/ui/StatusPill.tsx,N/A,Status Pill Component,N/A,N/A,N/A,Custom status pill component
+UI_Component,TestToolsPanel,src/components/ui/TestToolsPanel.tsx,N/A,Test Tools Panel Component,N/A,N/A,N/A,Custom test tools panel component
+UI_Component,ThemeToggle,src/components/ui/ThemeToggle.tsx,N/A,Theme Toggle Component,N/A,N/A,N/A,Custom theme toggle component
+UI_Component,VirtualizedTable,src/components/ui/VirtualizedTable.tsx,N/A,Virtualized Table Component,N/A,N/A,N/A,Custom virtualized table component
+Chart,ThroughputChart,src/components/charts/ThroughputChart.tsx,N/A,Throughput Visualization,N/A,N/A,N/A,Throughput chart component
+Dev,ApiTester,src/components/dev/ApiTester.tsx,N/A,API Testing,N/A,N/A,admin,API testing component
+Dev,CacheControl,src/components/dev/CacheControl.tsx,N/A,Cache Management,N/A,N/A,admin,Cache control component
+Dev,EnvViewer,src/components/dev/EnvViewer.tsx,N/A,Environment Viewer,N/A,N/A,admin,Environment variable viewer
+Dev,LogsPanel,src/components/dev/LogsPanel.tsx,N/A,Logs Panel,N/A,N/A,admin,Logs panel component
+Dev,RouteValidator,src/components/dev/RouteValidator.tsx,N/A,Route Validation,N/A,N/A,admin,Route validation component
+Dev,SchemaViewer,src/components/dev/SchemaViewer.tsx,N/A,Schema Viewer,N/A,N/A,admin,Database schema viewer
+Dev,SeedScenarios,src/components/dev/SeedScenarios.tsx,N/A,Seed Scenarios,N/A,N/A,admin,Database seeding scenarios
+Dev,BridgePanel,src/pages/dev/BridgePanel.tsx,N/A,Development Bridge,N/A,N/A,admin,Development bridge panel
+Dev,DevToolsPage,src/pages/dev/DevToolsPage.tsx,N/A,Development Tools,N/A,N/A,admin,Development tools page

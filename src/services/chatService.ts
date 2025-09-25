@@ -61,6 +61,91 @@ export const chatService = {
     if (error) throw error;
     return data as { path: string; url: string; expires: string }[];
   },
+
+  async getThreads(orgId: string, projectId?: string) {
+    let query = supabase
+      .from('chat_threads')
+      .select(`
+        *,
+        chat_participants (
+          user_id,
+          role
+        )
+      `)
+      .eq('org_id', orgId)
+      .order('created_at', { ascending: false });
+
+    if (projectId) {
+      query = query.eq('project_id', projectId);
+    }
+
+    const { data, error } = await query;
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getMessages(threadId: string, limit = 50) {
+    const { data, error } = await supabase
+      .from('chat_messages')
+      .select('*')
+      .eq('thread_id', threadId)
+      .is('deleted_at', null)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error) throw error;
+    return (data || []).reverse();
+  },
+
+  async getParticipants(threadId: string) {
+    const { data, error } = await supabase
+      .from('chat_participants')
+      .select(`
+        *,
+        profiles (
+          id,
+          name,
+          email
+        )
+      `)
+      .eq('thread_id', threadId);
+
+    if (error) throw error;
+    return data || [];
+  },
+
+  async removeParticipant(threadId: string, userId: string) {
+    const { error } = await supabase
+      .from('chat_participants')
+      .delete()
+      .eq('thread_id', threadId)
+      .eq('user_id', userId);
+
+    if (error) throw error;
+    return { success: true };
+  },
+
+  async updateThread(threadId: string, updates: { title?: string }) {
+    const { data, error } = await supabase
+      .from('chat_threads')
+      .update(updates)
+      .eq('id', threadId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  },
+
+  async deleteThread(threadId: string) {
+    const { error } = await supabase
+      .from('chat_threads')
+      .update({ deleted_at: new Date().toISOString() })
+      .eq('id', threadId);
+
+    if (error) throw error;
+    return { success: true };
+  },
 };
 
 export function subscribeToMessages(threadId: string, onChange: (payload: { type: 'INSERT' | 'UPDATE'; message: ChatMessage }) => void) {
