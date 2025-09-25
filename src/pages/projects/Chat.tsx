@@ -25,15 +25,15 @@ export default function ProjectChatPage() {
   const { id: projectId } = useParams();
   const { user } = useAuth();
   const { 
-    threads, 
-    selectedThread, 
+    rooms: threads, 
+    selectedRoom: selectedThread, 
     messages, 
     loading, 
     error, 
     sendMessage, 
-    createThread, 
-    selectThread 
-  } = useChat(projectId);
+    createRoom: createThread, 
+    selectRoom: selectThread 
+  } = useChat();
   
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -44,7 +44,7 @@ export default function ProjectChatPage() {
 
     setSending(true);
     try {
-      await sendMessage(selectedThread.id, newMessage.trim());
+      await sendMessage(newMessage.trim());
       setNewMessage('');
     } catch (error) {
       // Error handling is done in the hook
@@ -202,7 +202,7 @@ export default function ProjectChatPage() {
                             {formatTime(message.created_at)}
                           </span>
                         </div>
-                        <p className="text-sm">{message.body}</p>
+                        <p className="text-sm">{message.content}</p>
                       </div>
                     </div>
                   ))

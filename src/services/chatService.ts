@@ -1,164 +1,219 @@
 import { supabase } from '@/integrations/supabase/client';
+import { Database } from '@/integrations/supabase/types';
 
-export type ChatAttachment = {
-  path: string;
-  name: string;
-  size: number;
-  mime: string;
-};
+type ChatRoom = Database['public']['Tables']['chat_rooms']['Row'];
+type ChatMessage = Database['public']['Tables']['chat_messages']['Row'];
+type ChatRoomMember = Database['public']['Tables']['chat_room_members']['Row'];
 
-export type ChatMessage = {
-  id: string;
-  thread_id: string;
-  sender_id: string;
-  body: string;
-  attachments: ChatAttachment[];
-  created_at: string;
-  edited_at: string | null;
-  deleted_at: string | null;
-};
+export interface ChatRoomWithMembers extends ChatRoom {
+  member_count?: number;
+  unread_count?: number;
+  last_message?: Partial<ChatMessage>;
+}
 
-export type ChatThread = {
-  id: string;
-  org_id: string;
-  project_id: string;
-  title: string | null;
-  created_by: string;
-  created_at: string;
-};
+export interface ChatMessageWithSender extends ChatMessage {
+  sender_name?: string;
+  sender_avatar?: string;
+}
 
-export const chatService = {
-  async createThread(projectId: string, title: string, participants: { user_id: string; role: 'customer' | 'team' }[]) {
-    const { data, error } = await supabase.rpc('chat_thread_create', {
-      project_id: projectId,
-      title,
-      participants,
-    } as any);
-    if (error) throw error;
-    return data as { thread_id: string };
-  },
-
-  async addParticipant(threadId: string, userId: string, role: 'customer' | 'team') {
-    const { error } = await supabase.rpc('chat_participant_add', { thread_id: threadId, user_id: userId, role } as any);
-    if (error) throw error;
-    return { ok: true } as const;
-  },
-
-  async sendMessage(threadId: string, body: string, attachments: ChatAttachment[] = []) {
-    const { data, error } = await supabase.rpc('chat_message_send', { thread_id: threadId, body, attachments } as any);
-    if (error) throw error;
-    return data as { message_id: string };
-  },
-
-  async markRead(threadId: string) {
-    const { error } = await supabase.rpc('chat_mark_read', { thread_id: threadId } as any);
-    if (error) throw error;
-    return { ok: true } as const;
-  },
-
-  async signFiles(paths: string[]) {
-    const { data, error } = await supabase.rpc('chat_files_sign', { paths } as any);
-    if (error) throw error;
-    return data as { path: string; url: string; expires: string }[];
-  },
-
-  async getThreads(orgId: string, projectId?: string) {
-    let query = supabase
-      .from('chat_threads')
+// Chat Rooms Service
+export const chatRoomsService = {
+  // Get all rooms for current user's org
+  async getRooms(orgId: string): Promise<ChatRoomWithMembers[]> {
+    const { data, error } = await supabase
+      .from('chat_rooms')
       .select(`
         *,
-        chat_participants (
-          user_id,
-          role
+        chat_room_members!inner(user_id),
+        chat_messages(
+          id,
+          content,
+          created_at,
+          sender_id
         )
       `)
       .eq('org_id', orgId)
-      .order('created_at', { ascending: false });
+      .is('deleted_at', null)
+      .order('updated_at', { ascending: false });
 
-    if (projectId) {
-      query = query.eq('project_id', projectId);
-    }
-
-    const { data, error } = await query;
     if (error) throw error;
-    return data || [];
+
+    return data?.map(room => ({
+      ...room,
+      member_count: room.chat_room_members?.length || 0,
+      last_message: room.chat_messages?.[0] || undefined,
+      unread_count: 0 // TODO: Calculate based on last_read_at
+    })) || [];
   },
 
-  async getMessages(threadId: string, limit = 50) {
+  // Create a new room
+  async createRoom(orgId: string, name: string, description?: string, isPrivate = false): Promise<ChatRoom> {
+    const { data, error } = await supabase
+      .from('chat_rooms')
+      .insert({
+        org_id: orgId,
+        name,
+        description,
+        is_private: isPrivate,
+        type: 'channel'
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Add creator as room owner
+    await this.addMember(data.id, data.created_by!, 'owner');
+
+    return data;
+  },
+
+  // Add member to room
+  async addMember(roomId: string, userId: string, role: 'owner' | 'admin' | 'member' = 'member'): Promise<void> {
+    const { error } = await supabase
+      .from('chat_room_members')
+      .insert({
+        room_id: roomId,
+        user_id: userId,
+        role
+      });
+
+    if (error) throw error;
+  },
+
+  // Join a public room
+  async joinRoom(roomId: string): Promise<void> {
+    const { error } = await supabase
+      .from('chat_room_members')
+      .insert({
+        room_id: roomId,
+        user_id: (await supabase.auth.getUser()).data.user?.id!,
+        role: 'member'
+      });
+
+    if (error) throw error;
+  }
+};
+
+// Chat Messages Service
+export const chatMessagesService = {
+  // Get messages for a room
+  async getMessages(roomId: string, limit = 50): Promise<ChatMessageWithSender[]> {
     const { data, error } = await supabase
       .from('chat_messages')
-      .select('*')
-      .eq('thread_id', threadId)
+      .select(`
+        *,
+        profiles!chat_messages_sender_id_fkey(name, avatar_url)
+      `)
+      .eq('room_id', roomId)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;
-    return (data || []).reverse();
+
+    return data?.map(msg => ({
+      ...msg,
+      sender_name: (msg.profiles as any)?.name || 'Unknown User',
+      sender_avatar: (msg.profiles as any)?.avatar_url
+    })) || [];
   },
 
-  async getParticipants(threadId: string) {
+  // Send a message
+  async sendMessage(roomId: string, content: string, messageType: 'text' | 'file' | 'image' = 'text'): Promise<ChatMessage> {
     const { data, error } = await supabase
-      .from('chat_participants')
-      .select(`
-        *,
-        profiles (
-          id,
-          name,
-          email
-        )
-      `)
-      .eq('thread_id', threadId);
-
-    if (error) throw error;
-    return data || [];
-  },
-
-  async removeParticipant(threadId: string, userId: string) {
-    const { error } = await supabase
-      .from('chat_participants')
-      .delete()
-      .eq('thread_id', threadId)
-      .eq('user_id', userId);
-
-    if (error) throw error;
-    return { success: true };
-  },
-
-  async updateThread(threadId: string, updates: { title?: string }) {
-    const { data, error } = await supabase
-      .from('chat_threads')
-      .update(updates)
-      .eq('id', threadId)
+      .from('chat_messages')
+      .insert({
+        room_id: roomId,
+        sender_id: (await supabase.auth.getUser()).data.user?.id!,
+        content,
+        message_type: messageType
+      })
       .select()
       .single();
 
     if (error) throw error;
+
+    // Update room's updated_at timestamp
+    await supabase
+      .from('chat_rooms')
+      .update({ updated_at: new Date().toISOString() })
+      .eq('id', roomId);
+
     return data;
   },
 
-  async deleteThread(threadId: string) {
+  // Edit a message
+  async editMessage(messageId: string, content: string): Promise<void> {
     const { error } = await supabase
-      .from('chat_threads')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', threadId);
+      .from('chat_messages')
+      .update({
+        content,
+        edited_at: new Date().toISOString()
+      })
+      .eq('id', messageId);
 
     if (error) throw error;
-    return { success: true };
   },
+
+  // Delete a message
+  async deleteMessage(messageId: string): Promise<void> {
+    const { error } = await supabase
+      .from('chat_messages')
+      .update({
+        deleted_at: new Date().toISOString()
+      })
+      .eq('id', messageId);
+
+    if (error) throw error;
+  }
 };
 
-export function subscribeToMessages(threadId: string, onChange: (payload: { type: 'INSERT' | 'UPDATE'; message: ChatMessage }) => void) {
+// Real-time subscriptions
+export const subscribeToRoom = (roomId: string, callback: (message: ChatMessage) => void) => {
   const channel = supabase
-    .channel(`chat_messages_${threadId}`)
-    .on('postgres_changes', { event: '*', schema: 'public', table: 'chat_messages', filter: `thread_id=eq.${threadId}` }, (payload: any) => {
-      const type = payload.eventType as 'INSERT' | 'UPDATE';
-      onChange({ type, message: payload.new as ChatMessage });
-    })
+    .channel(`room_${roomId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'chat_messages',
+        filter: `room_id=eq.${roomId}`
+      },
+      (payload) => {
+        if (payload.eventType === 'INSERT') {
+          callback(payload.new as ChatMessage);
+        }
+      }
+    )
     .subscribe();
+
   return () => {
     supabase.removeChannel(channel);
   };
-}
+};
 
+export const subscribeToRooms = (orgId: string, callback: (room: ChatRoom) => void) => {
+  const channel = supabase
+    .channel(`org_rooms_${orgId}`)
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'chat_rooms',
+        filter: `org_id=eq.${orgId}`
+      },
+      (payload) => {
+        if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+          callback(payload.new as ChatRoom);
+        }
+      }
+    )
+    .subscribe();
 
+  return () => {
+    supabase.removeChannel(channel);
+  };
+};

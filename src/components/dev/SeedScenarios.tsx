@@ -186,8 +186,8 @@ export default function SeedScenarios() {
                   Remove all test data from the database
                 </p>
               </div>
-              <Button
-                variant="destructive"
+            <Button 
+              variant="danger"
                 size="sm"
                 onClick={handleClearData}
                 disabled={loading !== null}

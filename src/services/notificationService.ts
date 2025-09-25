@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Database } from '@/integrations/supabase/types';
 
-type DbNotification = Database['public']['Tables']['notifications']['Row'];
+export type DbNotification = Database['public']['Tables']['notifications']['Row'];
 type NotificationInsert = Database['public']['Tables']['notifications']['Insert'];
 
 export interface NotificationData {

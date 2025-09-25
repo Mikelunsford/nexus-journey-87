@@ -1,38 +1,45 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
-import { chatService, subscribeToMessages, ChatMessage, ChatThread } from '@/services/chatService';
+import { 
+  chatRoomsService, 
+  chatMessagesService, 
+  subscribeToRoom, 
+  subscribeToRooms,
+  ChatRoomWithMembers,
+  ChatMessageWithSender
+} from '@/services/chatService';
 import { toast } from '@/hooks/use-toast';
 
-export function useChat(projectId?: string) {
+export function useChat() {
   const { user } = useAuth();
-  const [threads, setThreads] = useState<ChatThread[]>([]);
-  const [selectedThread, setSelectedThread] = useState<ChatThread | null>(null);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [rooms, setRooms] = useState<ChatRoomWithMembers[]>([]);
+  const [selectedRoom, setSelectedRoom] = useState<ChatRoomWithMembers | null>(null);
+  const [messages, setMessages] = useState<ChatMessageWithSender[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch threads
-  const fetchThreads = useCallback(async () => {
+  // Fetch rooms
+  const fetchRooms = useCallback(async () => {
     if (!user?.org_id) return;
 
     try {
       setLoading(true);
       setError(null);
-      const data = await chatService.getThreads(user.org_id, projectId);
-      setThreads(data);
+      const data = await chatRoomsService.getRooms(user.org_id);
+      setRooms(data);
     } catch (err) {
-      console.error('Error fetching chat threads:', err);
-      setError('Failed to fetch chat threads');
+      console.error('Error fetching chat rooms:', err);
+      setError('Failed to fetch chat rooms');
     } finally {
       setLoading(false);
     }
-  }, [user?.org_id, projectId]);
+  }, [user?.org_id]);
 
-  // Fetch messages for a thread
-  const fetchMessages = useCallback(async (threadId: string) => {
+  // Fetch messages for a room
+  const fetchMessages = useCallback(async (roomId: string) => {
     try {
-      const data = await chatService.getMessages(threadId);
-      setMessages(data);
+      const data = await chatMessagesService.getMessages(roomId);
+      setMessages(data.reverse()); // Reverse to show oldest first
     } catch (err) {
       console.error('Error fetching messages:', err);
       setError('Failed to fetch messages');
@@ -40,9 +47,12 @@ export function useChat(projectId?: string) {
   }, []);
 
   // Send a message
-  const sendMessage = useCallback(async (threadId: string, body: string, attachments: any[] = []) => {
+  const sendMessage = useCallback(async (content: string) => {
+    if (!selectedRoom || !content.trim()) return;
+
     try {
-      await chatService.sendMessage(threadId, body, attachments);
+      await chatMessagesService.sendMessage(selectedRoom.id, content);
+      // Message will be added via real-time subscription
     } catch (err) {
       console.error('Error sending message:', err);
       toast({
@@ -50,100 +60,84 @@ export function useChat(projectId?: string) {
         description: 'Failed to send message',
         variant: 'destructive',
       });
-      throw err;
     }
-  }, []);
+  }, [selectedRoom]);
 
-  // Create a new thread
-  const createThread = useCallback(async (title: string, participants: { user_id: string; role: 'customer' | 'team' }[] = []) => {
-    if (!projectId) {
-      throw new Error('Project ID is required to create a thread');
-    }
+  // Create a new room
+  const createRoom = useCallback(async (name: string, description?: string, isPrivate = false) => {
+    if (!user?.org_id) return;
 
     try {
-      const result = await chatService.createThread(projectId, title, participants);
-      await fetchThreads(); // Refresh threads list
-      return result;
+      await chatRoomsService.createRoom(user.org_id, name, description, isPrivate);
+      await fetchRooms(); // Refresh rooms list
     } catch (err) {
-      console.error('Error creating thread:', err);
+      console.error('Error creating room:', err);
       toast({
         title: 'Error',
-        description: 'Failed to create thread',
+        description: 'Failed to create room',
         variant: 'destructive',
       });
-      throw err;
     }
-  }, [projectId, fetchThreads]);
+  }, [user?.org_id, fetchRooms]);
 
-  // Add participant to thread
-  const addParticipant = useCallback(async (threadId: string, userId: string, role: 'customer' | 'team') => {
+  // Join a room
+  const joinRoom = useCallback(async (roomId: string) => {
     try {
-      await chatService.addParticipant(threadId, userId, role);
-      await fetchThreads(); // Refresh threads list
+      await chatRoomsService.joinRoom(roomId);
+      await fetchRooms(); // Refresh rooms list
     } catch (err) {
-      console.error('Error adding participant:', err);
+      console.error('Error joining room:', err);
       toast({
         title: 'Error',
-        description: 'Failed to add participant',
+        description: 'Failed to join room',
         variant: 'destructive',
       });
-      throw err;
     }
-  }, [fetchThreads]);
+  }, [fetchRooms]);
 
-  // Mark thread as read
-  const markAsRead = useCallback(async (threadId: string) => {
-    try {
-      await chatService.markRead(threadId);
-    } catch (err) {
-      console.error('Error marking thread as read:', err);
-    }
-  }, []);
-
-  // Select a thread
-  const selectThread = useCallback(async (thread: ChatThread) => {
-    setSelectedThread(thread);
-    await fetchMessages(thread.id);
-    await markAsRead(thread.id);
-  }, [fetchMessages, markAsRead]);
+  // Select a room
+  const selectRoom = useCallback(async (room: ChatRoomWithMembers) => {
+    setSelectedRoom(room);
+    await fetchMessages(room.id);
+  }, [fetchMessages]);
 
   // Real-time message subscription
   useEffect(() => {
-    if (!selectedThread) return;
+    if (!selectedRoom) return;
 
-    const unsubscribe = subscribeToMessages(selectedThread.id, ({ type, message }) => {
-      setMessages(prev => {
-        const withoutTemp = prev.filter(m => !(m.id.startsWith('temp_') && type === 'INSERT'));
-        const existingIdx = withoutTemp.findIndex(m => m.id === message.id);
-        if (existingIdx >= 0) {
-          const clone = withoutTemp.slice();
-          clone[existingIdx] = message;
-          return clone;
-        }
-        return [...withoutTemp, message];
-      });
+    const unsubscribe = subscribeToRoom(selectedRoom.id, (message) => {
+      setMessages(prev => [...prev, message as ChatMessageWithSender]);
     });
 
     return unsubscribe;
-  }, [selectedThread]);
+  }, [selectedRoom]);
+
+  // Real-time rooms subscription
+  useEffect(() => {
+    if (!user?.org_id) return;
+
+    const unsubscribe = subscribeToRooms(user.org_id, () => {
+      fetchRooms(); // Refresh rooms when changes occur
+    });
+
+    return unsubscribe;
+  }, [user?.org_id, fetchRooms]);
 
   // Initial load
   useEffect(() => {
-    fetchThreads();
-  }, [fetchThreads]);
+    fetchRooms();
+  }, [fetchRooms]);
 
   return {
-    threads,
-    selectedThread,
+    rooms,
+    selectedRoom,
     messages,
     loading,
     error,
     sendMessage,
-    createThread,
-    addParticipant,
-    selectThread,
-    markAsRead,
-    refetchThreads: fetchThreads,
+    createRoom,
+    joinRoom,
+    selectRoom,
+    refetchRooms: fetchRooms,
   };
 }
-

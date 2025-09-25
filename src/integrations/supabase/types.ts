@@ -155,6 +155,149 @@ export type Database = {
           },
         ]
       }
+      chat_messages: {
+        Row: {
+          attachments: Json | null
+          content: string
+          created_at: string
+          deleted_at: string | null
+          edited_at: string | null
+          id: string
+          message_type: string
+          metadata: Json | null
+          reactions: Json | null
+          reply_to_id: string | null
+          room_id: string
+          sender_id: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json | null
+          content: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          reactions?: Json | null
+          reply_to_id?: string | null
+          room_id: string
+          sender_id: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json | null
+          content?: string
+          created_at?: string
+          deleted_at?: string | null
+          edited_at?: string | null
+          id?: string
+          message_type?: string
+          metadata?: Json | null
+          reactions?: Json | null
+          reply_to_id?: string | null
+          room_id?: string
+          sender_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_reply_to_id_fkey"
+            columns: ["reply_to_id"]
+            isOneToOne: false
+            referencedRelation: "chat_messages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_room_members: {
+        Row: {
+          id: string
+          is_muted: boolean | null
+          joined_at: string
+          last_read_at: string | null
+          role: string
+          room_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          last_read_at?: string | null
+          role?: string
+          room_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          is_muted?: boolean | null
+          joined_at?: string
+          last_read_at?: string | null
+          role?: string
+          room_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_room_members_room_id_fkey"
+            columns: ["room_id"]
+            isOneToOne: false
+            referencedRelation: "chat_rooms"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      chat_rooms: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          deleted_at: string | null
+          description: string | null
+          id: string
+          is_private: boolean | null
+          metadata: Json | null
+          name: string
+          org_id: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          metadata?: Json | null
+          name: string
+          org_id: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          deleted_at?: string | null
+          description?: string | null
+          id?: string
+          is_private?: boolean | null
+          metadata?: Json | null
+          name?: string
+          org_id?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       customers: {
         Row: {
           address: string | null
@@ -318,6 +461,7 @@ export type Database = {
           entity_id: string
           entity_type: string
           id: string
+          is_test: boolean | null
           metadata: Json | null
           mime_type: string
           name: string
@@ -342,6 +486,7 @@ export type Database = {
           entity_id: string
           entity_type: string
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           mime_type: string
           name: string
@@ -366,6 +511,7 @@ export type Database = {
           entity_id?: string
           entity_type?: string
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           mime_type?: string
           name?: string
@@ -659,6 +805,7 @@ export type Database = {
           department_id: string | null
           from_email: string
           id: string
+          is_test: boolean | null
           org_id: string
           owner_id: string | null
           project_id: string | null
@@ -684,6 +831,7 @@ export type Database = {
           department_id?: string | null
           from_email: string
           id?: string
+          is_test?: boolean | null
           org_id: string
           owner_id?: string | null
           project_id?: string | null
@@ -709,6 +857,7 @@ export type Database = {
           department_id?: string | null
           from_email?: string
           id?: string
+          is_test?: boolean | null
           org_id?: string
           owner_id?: string | null
           project_id?: string | null
@@ -999,6 +1148,7 @@ export type Database = {
           description: string | null
           due_date: string | null
           id: string
+          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1022,6 +1172,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1045,6 +1196,7 @@ export type Database = {
           description?: string | null
           due_date?: string | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null
@@ -1119,6 +1271,7 @@ export type Database = {
           department_id: string | null
           expires_at: string | null
           id: string
+          is_test: boolean | null
           line_items: Json | null
           notes: string | null
           org_id: string
@@ -1138,6 +1291,7 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
+          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id: string
@@ -1157,6 +1311,7 @@ export type Database = {
           department_id?: string | null
           expires_at?: string | null
           id?: string
+          is_test?: boolean | null
           line_items?: Json | null
           notes?: string | null
           org_id?: string
@@ -1223,6 +1378,7 @@ export type Database = {
           delivered_at: string | null
           department_id: string | null
           id: string
+          is_test: boolean | null
           items: Json | null
           metadata: Json | null
           org_id: string
@@ -1244,6 +1400,7 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
+          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id: string
@@ -1265,6 +1422,7 @@ export type Database = {
           delivered_at?: string | null
           department_id?: string | null
           id?: string
+          is_test?: boolean | null
           items?: Json | null
           metadata?: Json | null
           org_id?: string
@@ -1505,6 +1663,54 @@ export type Database = {
           },
         ]
       }
+      user_invitations: {
+        Row: {
+          created_at: string
+          department_id: string | null
+          email: string
+          expires_at: string
+          id: string
+          invited_by: string
+          name: string | null
+          org_id: string
+          role_bucket: Database["public"]["Enums"]["role_bucket_enum"]
+          status: string
+          token: string
+          updated_at: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          department_id?: string | null
+          email: string
+          expires_at?: string
+          id?: string
+          invited_by: string
+          name?: string | null
+          org_id: string
+          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
+          status?: string
+          token: string
+          updated_at?: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          department_id?: string | null
+          email?: string
+          expires_at?: string
+          id?: string
+          invited_by?: string
+          name?: string | null
+          org_id?: string
+          role_bucket?: Database["public"]["Enums"]["role_bucket_enum"]
+          status?: string
+          token?: string
+          updated_at?: string
+          version?: number
+        }
+        Relationships: []
+      }
       work_orders: {
         Row: {
           actual_hours: number | null
@@ -1518,6 +1724,7 @@ export type Database = {
           due_date: string | null
           estimated_hours: number | null
           id: string
+          is_test: boolean | null
           metadata: Json | null
           org_id: string
           owner_id: string | null
@@ -1542,6 +1749,7 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id: string
           owner_id?: string | null
@@ -1566,6 +1774,7 @@ export type Database = {
           due_date?: string | null
           estimated_hours?: number | null
           id?: string
+          is_test?: boolean | null
           metadata?: Json | null
           org_id?: string
           owner_id?: string | null
@@ -1635,7 +1844,26 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_customer_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_org_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_role_bucket: {
+        Args: Record<PropertyKey, never>
+        Returns: Database["public"]["Enums"]["role_bucket_enum"]
+      }
+      is_customer_owner: {
+        Args: { customer_id: string }
+        Returns: boolean
+      }
+      is_user_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
     }
     Enums: {
       approval_status_enum: "pending" | "approved" | "rejected"

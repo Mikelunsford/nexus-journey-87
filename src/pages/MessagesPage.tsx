@@ -1,179 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { 
   Plus, 
   Search, 
   Send, 
-  Users, 
-  MessageSquare, 
-  Hash, 
-  Star,
-  MoreHorizontal,
-  Paperclip,
+  Hash,
+  Users,
+  Settings,
   Smile,
-  Phone,
-  Video,
-  Settings
+  Paperclip,
+  MoreHorizontal,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { useChat } from '@/hooks/useChat';
 import { useFeatureFlag } from '@/hooks/useFeatureFlag';
-import { chatService, subscribeToMessages, ChatMessage, ChatThread } from '@/services/chatService';
-import { supabase } from '@/integrations/supabase/client';
 
 export default function MessagesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [includeTest, setIncludeTest] = useState(false);
-  const [selectedChannel, setSelectedChannel] = useState<string | null>(null);
-  const [channels, setChannels] = useState<ChatThread[]>([]);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [useFallback, setUseFallback] = useState(false);
+  const [newRoomName, setNewRoomName] = useState('');
+  const [showCreateRoom, setShowCreateRoom] = useState(false);
   const { user } = useAuth();
   const testSeedsEnabled = useFeatureFlag('ui.enable_test_seeds');
+  
+  const {
+    rooms,
+    selectedRoom, 
+    messages,
+    loading,
+    error,
+    sendMessage,
+    createRoom,
+    selectRoom
+  } = useChat();
 
-  // Fetch chat channels/threads
-  useEffect(() => {
-    const fetchChannels = async () => {
-      if (!user?.org_id) return;
-
-      try {
-        setLoading(true);
-        setError(null);
-        
-        const { data, error } = await supabase
-          .from('chat_threads')
-          .select('*')
-          .eq('org_id', user.org_id)
-          .order('created_at', { ascending: false });
-
-        if (error) {
-          console.error('Supabase error:', error);
-          // If it's a permission error or table doesn't exist, fall back to simple mode
-          if (error.message.includes('permission') || error.message.includes('policy') || error.message.includes('does not exist')) {
-            console.log('Chat system not available, using fallback mode');
-            setUseFallback(true);
-            setError(null);
-            return;
-          } else {
-            throw error;
-          }
-        }
-        
-        setChannels(data || []);
-        
-        // Select first channel if none selected
-        if (data && data.length > 0 && !selectedChannel) {
-          setSelectedChannel(data[0].id);
-        }
-      } catch (error) {
-        console.error('Error fetching channels:', error);
-        setError('Failed to load chat channels. Check console for details.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchChannels();
-  }, [user?.org_id, includeTest, selectedChannel]);
-
-  // Subscribe to messages for selected channel
-  useEffect(() => {
-    if (!selectedChannel) return;
-
-    const unsubscribe = subscribeToMessages(selectedChannel, ({ type, message }) => {
-      setMessages(prev => {
-        const withoutTemp = prev.filter(m => !(m.id.startsWith('temp_') && type === 'INSERT'));
-        const existingIdx = withoutTemp.findIndex(m => m.id === message.id);
-        if (existingIdx >= 0) {
-          const clone = withoutTemp.slice();
-          clone[existingIdx] = message;
-          return clone;
-        }
-        return [...withoutTemp, message];
-      });
-    });
-
-    return unsubscribe;
-  }, [selectedChannel]);
-
-  // Filter channels based on search
-  const filteredChannels = channels.filter(channel =>
-    channel.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    channel.project_id?.toLowerCase().includes(searchQuery.toLowerCase())
+  // Filter rooms based on search
+  const filteredRooms = rooms.filter(room =>
+    room.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Send message function
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !selectedChannel) return;
+    if (!newMessage.trim()) return;
 
-    try {
-      const tempId = `temp_${Date.now()}`;
-      const tempMessage: ChatMessage = {
-        id: tempId,
-        thread_id: selectedChannel,
-        sender_id: user?.id || '',
-        body: newMessage,
-        attachments: [],
-        created_at: new Date().toISOString(),
-        edited_at: null,
-        deleted_at: null
-      };
-
-      // Add temp message immediately for optimistic UI
-      setMessages(prev => [...prev, tempMessage]);
-      setNewMessage('');
-
-      // Send to backend
-      await chatService.sendMessage(selectedChannel, newMessage);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      // Remove temp message on error
-      setMessages(prev => prev.filter(m => m.id !== `temp_${Date.now()}`));
-      setError('Failed to send message');
-    }
+    await sendMessage(newMessage);
+    setNewMessage('');
   };
 
-  // Create new channel
-  const handleCreateChannel = async () => {
-    if (!user?.org_id) return;
-    
-    try {
-      const channelName = prompt('Enter channel name:');
-      if (!channelName) return;
+  // Create room function
+  const handleCreateRoom = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newRoomName.trim()) return;
 
-      // For now, create a dummy project ID for general channels
-      // In a real implementation, you'd want to create a general project or modify the schema
-      const dummyProjectId = '00000000-0000-0000-0000-000000000000';
-      
-      const { data, error } = await chatService.createThread(dummyProjectId, channelName, []);
-      
-      if (error) throw error;
-      
-      // Refresh channels list
-      const { data: updatedChannels, error: fetchError } = await supabase
-        .from('chat_threads')
-        .select('*')
-        .eq('org_id', user.org_id)
-        .is('deleted_at', null)
-        .order('created_at', { ascending: false });
-
-      if (fetchError) throw fetchError;
-      setChannels(updatedChannels || []);
-      setSelectedChannel(data.thread_id);
-    } catch (error) {
-      console.error('Error creating channel:', error);
-      setError('Failed to create channel');
-    }
+    await createRoom(newRoomName);
+    setNewRoomName('');
+    setShowCreateRoom(false);
   };
 
   const formatTime = (dateString: string) => {
@@ -193,78 +82,31 @@ export default function MessagesPage() {
     return date.toLocaleDateString();
   };
 
-  const selectedChannelData = channels.find(c => c.id === selectedChannel);
-
   if (loading) {
     return (
-      <div className="flex h-screen">
-        <div className="w-80 bg-gray-50 border-r p-4">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded"></div>
-            <div className="h-6 bg-gray-200 rounded"></div>
+      <div className="flex h-screen bg-background">
+        {/* Left Sidebar */}
+        <div className="w-80 bg-muted/30 border-r border-border">
+          <div className="p-4 space-y-4">
+            <div className="h-8 bg-muted rounded animate-pulse"></div>
+            <div className="h-6 bg-muted rounded animate-pulse"></div>
             <div className="space-y-2">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-12 bg-gray-200 rounded"></div>
+                <div key={i} className="h-12 bg-muted rounded animate-pulse"></div>
               ))}
             </div>
           </div>
         </div>
+        
+        {/* Main Area */}
         <div className="flex-1 p-4">
-          <div className="animate-pulse space-y-4">
-            <div className="h-8 bg-gray-200 rounded"></div>
+          <div className="space-y-4">
+            <div className="h-8 bg-muted rounded animate-pulse"></div>
             <div className="space-y-2">
               {[...Array(10)].map((_, i) => (
-                <div key={i} className="h-16 bg-gray-200 rounded"></div>
+                <div key={i} className="h-16 bg-muted rounded animate-pulse"></div>
               ))}
             </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Fallback mode when chat system isn't available
-  if (useFallback) {
-    return (
-      <div className="flex h-screen bg-white">
-        {/* Left Sidebar - Simple Mode */}
-        <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
-          <div className="p-4 border-b border-gray-200">
-            <div className="flex items-center justify-between mb-4">
-              <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
-            </div>
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-800">
-                <strong>Simple Mode:</strong> Chat system is being set up. Basic messaging available.
-              </p>
-            </div>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4">
-            <div className="space-y-4">
-              <div className="text-center py-8">
-                <MessageSquare className="w-12 h-12 mx-auto mb-2 text-gray-300" />
-                <p className="text-sm text-gray-500">Chat channels will appear here</p>
-                <p className="text-xs text-gray-400">Once the chat system is configured</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Area - Simple Mode */}
-        <div className="flex-1 flex items-center justify-center">
-          <div className="text-center max-w-md">
-            <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Chat System Setup</h3>
-            <p className="text-gray-500 mb-4">
-              The advanced chat system is being configured. In the meantime, you can use the project-specific chat by navigating to a project.
-            </p>
-            <Button 
-              onClick={() => window.location.href = '/dashboard/projects'}
-              className="bg-blue-600 hover:bg-blue-700"
-            >
-              Go to Projects
-            </Button>
           </div>
         </div>
       </div>
@@ -272,17 +114,17 @@ export default function MessagesPage() {
   }
 
   return (
-    <div className="flex h-screen bg-white">
-      {/* Left Sidebar - Channels */}
-      <div className="w-80 bg-gray-50 border-r border-gray-200 flex flex-col">
+    <div className="flex h-screen bg-background">
+      {/* Left Sidebar - Chat Rooms */}
+      <div className="w-80 bg-muted/30 border-r border-border flex flex-col">
         {/* Header */}
-        <div className="p-4 border-b border-gray-200">
+        <div className="p-4 border-b border-border">
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-semibold text-gray-900">Messages</h1>
+            <h1 className="text-xl font-bold text-foreground">Messages</h1>
             <Button
               size="sm"
-              onClick={handleCreateChannel}
-              className="bg-blue-600 hover:bg-blue-700"
+              onClick={() => setShowCreateRoom(true)}
+              className="bg-primary hover:bg-primary/90"
             >
               <Plus className="w-4 h-4" />
             </Button>
@@ -290,99 +132,113 @@ export default function MessagesPage() {
           
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
               placeholder="Search channels..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 bg-white"
+              className="pl-10 bg-background"
             />
           </div>
 
-          {/* Test Data Toggle */}
-          {testSeedsEnabled && (
-            <div className="flex items-center space-x-2 mt-3">
-              <Switch
-                id="include-test"
-                checked={includeTest}
-                onCheckedChange={setIncludeTest}
+          {/* Create Room Form */}
+          {showCreateRoom && (
+            <form onSubmit={handleCreateRoom} className="mt-4 space-y-2">
+              <Input
+                placeholder="Room name..."
+                value={newRoomName}
+                onChange={(e) => setNewRoomName(e.target.value)}
+                className="bg-background"
+                autoFocus
               />
-              <Label htmlFor="include-test" className="text-sm">Include test data</Label>
-            </div>
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" className="flex-1">
+                  Create
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setShowCreateRoom(false);
+                    setNewRoomName('');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
           )}
         </div>
 
-        {/* Channels List */}
-        <div className="flex-1 overflow-y-auto p-2">
+        {/* Rooms List */}
+        <ScrollArea className="flex-1 p-2">
           <div className="space-y-1">
-            {filteredChannels.map((channel) => (
+            {filteredRooms.map((room) => (
               <button
-                key={channel.id}
-                onClick={() => setSelectedChannel(channel.id)}
+                key={room.id}
+                onClick={() => selectRoom(room)}
                 className={`w-full text-left p-3 rounded-lg transition-colors ${
-                  selectedChannel === channel.id
-                    ? 'bg-blue-100 text-blue-900 border border-blue-200'
-                    : 'hover:bg-gray-100 text-gray-700'
+                  selectedRoom?.id === room.id
+                    ? 'bg-primary/20 text-primary border border-primary/30'
+                    : 'hover:bg-muted text-foreground'
                 }`}
               >
                 <div className="flex items-center gap-3">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    channel.project_id ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {channel.project_id ? <Hash className="w-4 h-4" /> : <MessageSquare className="w-4 h-4" />}
+                  <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
+                    <Hash className="w-4 h-4 text-muted-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium truncate">
-                      {channel.title || 'General Chat'}
+                      {room.name}
                     </div>
-                    <div className="text-xs text-gray-500 truncate">
-                      {channel.project_id ? `Project ${channel.project_id}` : 'General discussion'}
+                    <div className="text-xs text-muted-foreground truncate">
+                      {room.member_count} members
                     </div>
                   </div>
-                  {channel.id === selectedChannel && (
-                    <div className="w-2 h-2 bg-blue-600 rounded-full"></div>
+                  {room.unread_count && room.unread_count > 0 && (
+                    <Badge variant="secondary" className="bg-primary text-primary-foreground">
+                      {room.unread_count}
+                    </Badge>
                   )}
                 </div>
               </button>
             ))}
           </div>
           
-          {filteredChannels.length === 0 && (
-            <div className="text-center py-8 text-gray-500">
-              <MessageSquare className="w-12 h-12 mx-auto mb-2 text-gray-300" />
+          {filteredRooms.length === 0 && (
+            <div className="text-center py-8 text-muted-foreground">
+              <Hash className="w-12 h-12 mx-auto mb-2 text-muted-foreground/50" />
               <p className="text-sm">No channels found</p>
-              <p className="text-xs text-gray-400">Create your first channel to start chatting</p>
+              <p className="text-xs">Create your first channel to start chatting</p>
             </div>
           )}
-        </div>
+        </ScrollArea>
       </div>
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col">
-        {selectedChannel ? (
+        {selectedRoom ? (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-gray-200 bg-white">
+            <div className="p-4 border-b border-border bg-background">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                    {selectedChannelData?.project_id ? <Hash className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+                  <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+                    <Hash className="w-5 h-5 text-muted-foreground" />
                   </div>
                   <div>
-                    <h2 className="font-semibold text-gray-900">
-                      {selectedChannelData?.title || 'General Chat'}
+                    <h2 className="font-bold text-foreground">
+                      {selectedRoom.name}
                     </h2>
-                    <p className="text-sm text-gray-500">
-                      {selectedChannelData?.project_id ? `Project ${selectedChannelData.project_id}` : 'General discussion'}
+                    <p className="text-sm text-muted-foreground">
+                      {selectedRoom.member_count} members • {selectedRoom.description || 'No description'}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="sm">
-                    <Phone className="w-4 h-4" />
-                  </Button>
-                  <Button variant="ghost" size="sm">
-                    <Video className="w-4 h-4" />
+                    <Users className="w-4 h-4" />
                   </Button>
                   <Button variant="ghost" size="sm">
                     <Settings className="w-4 h-4" />
@@ -392,55 +248,60 @@ export default function MessagesPage() {
             </div>
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <ScrollArea className="flex-1 p-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-red-700 text-sm">
+                <div className="bg-destructive/15 border border-destructive/30 text-destructive rounded-lg p-3 mb-4 text-sm">
                   {error}
                 </div>
               )}
               
               {messages.length === 0 ? (
                 <div className="text-center py-12">
-                  <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Start a conversation</h3>
-                  <p className="text-gray-500">Send a message to begin chatting in this channel</p>
+                  <Hash className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
+                  <h3 className="text-lg font-medium text-foreground mb-2">Welcome to #{selectedRoom.name}</h3>
+                  <p className="text-muted-foreground">This is the beginning of your conversation in this channel</p>
                 </div>
               ) : (
-                messages
-                  .sort((a, b) => a.created_at.localeCompare(b.created_at))
-                  .map((message) => (
+                <div className="space-y-4">
+                  {messages.map((message) => (
                     <div key={message.id} className="flex gap-3">
                       <Avatar className="w-8 h-8 flex-shrink-0">
+                        <AvatarImage src={message.sender_avatar || undefined} />
                         <AvatarFallback className="text-xs">
-                          {message.sender_id.substring(0, 2).toUpperCase()}
+                          {message.sender_name?.substring(0, 2).toUpperCase() || 'UN'}
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="font-medium text-sm text-gray-900">
-                            {message.sender_id === user?.id ? 'You' : 'User'}
+                          <span className="font-medium text-sm text-foreground">
+                            {message.sender_name || 'Unknown User'}
                           </span>
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
                             {formatTime(message.created_at)}
                           </span>
+                          {message.edited_at && (
+                            <span className="text-xs text-muted-foreground">(edited)</span>
+                          )}
                         </div>
-                        <div className="text-sm text-gray-700 whitespace-pre-wrap break-words">
-                          {message.body}
+                        <div className="text-sm text-foreground whitespace-pre-wrap break-words">
+                          {message.content}
                         </div>
                       </div>
                     </div>
-                  ))
+                  ))}
+                </div>
               )}
-            </div>
+            </ScrollArea>
 
             {/* Message Input */}
-            <div className="p-4 border-t border-gray-200 bg-white">
+            <div className="p-4 border-t border-border bg-background">
               <form onSubmit={handleSendMessage} className="flex gap-3">
                 <div className="flex-1 relative">
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type a message..."
+                    placeholder={`Message #${selectedRoom.name}`}
                     className="pr-20"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
@@ -461,7 +322,7 @@ export default function MessagesPage() {
                 <Button 
                   type="submit" 
                   disabled={!newMessage.trim()}
-                  className="bg-blue-600 hover:bg-blue-700"
+                  className="bg-primary hover:bg-primary/90"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
@@ -471,9 +332,9 @@ export default function MessagesPage() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <MessageSquare className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Select a channel</h3>
-              <p className="text-gray-500">Choose a channel from the sidebar to start chatting</p>
+              <Hash className="w-16 h-16 mx-auto mb-4 text-muted-foreground/50" />
+              <h3 className="text-lg font-medium text-foreground mb-2">Select a channel</h3>
+              <p className="text-muted-foreground">Choose a channel from the sidebar to start chatting</p>
             </div>
           </div>
         )}
