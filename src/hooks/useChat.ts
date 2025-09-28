@@ -11,7 +11,7 @@ import {
 import { toast } from '@/hooks/use-toast';
 
 export function useChat() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [rooms, setRooms] = useState<ChatRoomWithMembers[]>([]);
   const [selectedRoom, setSelectedRoom] = useState<ChatRoomWithMembers | null>(null);
   const [messages, setMessages] = useState<ChatMessageWithSender[]>([]);
@@ -20,12 +20,15 @@ export function useChat() {
 
   // Fetch rooms
   const fetchRooms = useCallback(async () => {
-    if (!user?.org_id) return;
+    if (!profile?.org_id) {
+      setLoading(false);
+      return;
+    }
 
     try {
       setLoading(true);
       setError(null);
-      const data = await chatRoomsService.getRooms(user.org_id);
+      const data = await chatRoomsService.getRooms(profile.org_id);
       setRooms(data);
     } catch (err) {
       console.error('Error fetching chat rooms:', err);
@@ -33,7 +36,7 @@ export function useChat() {
     } finally {
       setLoading(false);
     }
-  }, [user?.org_id]);
+  }, [profile?.org_id]);
 
   // Fetch messages for a room
   const fetchMessages = useCallback(async (roomId: string) => {
@@ -65,20 +68,24 @@ export function useChat() {
 
   // Create a new room
   const createRoom = useCallback(async (name: string, description?: string, isPrivate = false) => {
-    if (!user?.org_id) return;
+    if (!profile?.org_id) return;
 
     try {
-      await chatRoomsService.createRoom(user.org_id, name, description, isPrivate);
+      await chatRoomsService.createRoom(profile.org_id, name, description, isPrivate);
       await fetchRooms(); // Refresh rooms list
+      toast({
+        title: 'Success',
+        description: 'Channel created successfully',
+      });
     } catch (err) {
       console.error('Error creating room:', err);
       toast({
         title: 'Error',
-        description: 'Failed to create room',
+        description: 'Failed to create channel',
         variant: 'destructive',
       });
     }
-  }, [user?.org_id, fetchRooms]);
+  }, [profile?.org_id, fetchRooms]);
 
   // Join a room
   const joinRoom = useCallback(async (roomId: string) => {
@@ -114,14 +121,14 @@ export function useChat() {
 
   // Real-time rooms subscription
   useEffect(() => {
-    if (!user?.org_id) return;
+    if (!profile?.org_id) return;
 
-    const unsubscribe = subscribeToRooms(user.org_id, () => {
+    const unsubscribe = subscribeToRooms(profile.org_id, () => {
       fetchRooms(); // Refresh rooms when changes occur
     });
 
     return unsubscribe;
-  }, [user?.org_id, fetchRooms]);
+  }, [profile?.org_id, fetchRooms]);
 
   // Initial load
   useEffect(() => {

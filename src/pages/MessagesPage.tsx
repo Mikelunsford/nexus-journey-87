@@ -27,7 +27,7 @@ export default function MessagesPage() {
   const [newMessage, setNewMessage] = useState('');
   const [newRoomName, setNewRoomName] = useState('');
   const [showCreateRoom, setShowCreateRoom] = useState(false);
-  const { user } = useAuth();
+  const { user, profile, loading: authLoading } = useAuth();
   const testSeedsEnabled = useFeatureFlag('ui.enable_test_seeds');
   
   const {
@@ -40,6 +40,38 @@ export default function MessagesPage() {
     createRoom,
     selectRoom
   } = useChat();
+
+  // Wait for authentication to complete
+  if (authLoading || !user || !profile) {
+    return (
+      <div className="flex h-screen bg-background">
+        {/* Left Sidebar */}
+        <div className="w-80 bg-muted/30 border-r border-border">
+          <div className="p-4 space-y-4">
+            <div className="h-8 bg-muted rounded animate-pulse"></div>
+            <div className="h-6 bg-muted rounded animate-pulse"></div>
+            <div className="space-y-2">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 bg-muted rounded animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Main Area */}
+        <div className="flex-1 p-4">
+          <div className="space-y-4">
+            <div className="h-8 bg-muted rounded animate-pulse"></div>
+            <div className="space-y-2">
+              {[...Array(10)].map((_, i) => (
+                <div key={i} className="h-16 bg-muted rounded animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Filter rooms based on search
   const filteredRooms = rooms.filter(room =>
@@ -206,11 +238,20 @@ export default function MessagesPage() {
             ))}
           </div>
           
-          {filteredRooms.length === 0 && (
+          {filteredRooms.length === 0 && !loading && (
             <div className="text-center py-8 text-muted-foreground">
               <Hash className="w-12 h-12 mx-auto mb-2 text-muted-foreground/50" />
               <p className="text-sm">No channels found</p>
               <p className="text-xs">Create your first channel to start chatting</p>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="mt-3"
+                onClick={() => setShowCreateRoom(true)}
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Create Channel
+              </Button>
             </div>
           )}
         </ScrollArea>
