@@ -32,7 +32,14 @@ export function useLabels(scope?: 'customer' | 'user' | 'org', includeTest = fal
       setError(null);
 
       const data = await getLabels(profile.org_id, scope, includeTest);
-      setLabels(data);
+      setLabels(data.map(label => ({
+        id: label.id,
+        scope: label.scope as 'customer' | 'user' | 'org',
+        name: label.name,
+        color: label.color,
+        slug: label.slug,
+        createdAt: label.created_at
+      })));
     } catch (err) {
       console.error('Error fetching labels:', err);
       setError('Failed to fetch labels');
@@ -48,7 +55,15 @@ export function useLabels(scope?: 'customer' | 'user' | 'org', includeTest = fal
 
     try {
       const data = await createLabelData(profile.org_id, labelData);
-      setLabels(prev => [data, ...prev]);
+      const mappedLabel = {
+        id: data.id,
+        scope: data.scope as 'customer' | 'user' | 'org',
+        name: data.name,
+        color: data.color,
+        slug: data.slug,
+        createdAt: data.created_at
+      };
+      setLabels(prev => [mappedLabel, ...prev]);
       toast({
         title: 'Success',
         description: 'Label created successfully',
@@ -72,8 +87,16 @@ export function useLabels(scope?: 'customer' | 'user' | 'org', includeTest = fal
 
     try {
       const data = await updateLabelData(profile.org_id, labelId, updates);
+      const mappedLabel = {
+        id: data.id,
+        scope: data.scope as 'customer' | 'user' | 'org',
+        name: data.name,
+        color: data.color,
+        slug: data.slug,
+        createdAt: data.created_at
+      };
       setLabels(prev => prev.map(label => 
-        label.id === labelId ? data : label
+        label.id === labelId ? mappedLabel : label
       ));
       toast({
         title: 'Success',

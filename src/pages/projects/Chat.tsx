@@ -135,7 +135,7 @@ export default function ProjectChatPage() {
                   <div className="flex items-center gap-2">
                     <Hash className="h-4 w-4" />
                     <span className="font-medium truncate">
-                      {thread.title || 'Untitled Thread'}
+                      {thread.name || 'Untitled Thread'}
                     </span>
                   </div>
                   <div className="text-xs opacity-70 mt-1">
@@ -159,7 +159,7 @@ export default function ProjectChatPage() {
                   <Hash className="h-5 w-5" />
                   <div>
                     <h3 className="font-semibold">
-                      {selectedThread.title || 'Untitled Thread'}
+                      {selectedThread.name || 'Untitled Thread'}
                     </h3>
                     <p className="text-sm text-muted-foreground">
                       Project {projectId}

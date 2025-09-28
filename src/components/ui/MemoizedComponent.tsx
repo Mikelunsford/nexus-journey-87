@@ -17,18 +17,11 @@ export function MemoizedComponent({
 }: MemoizedComponentProps) {
   const [memoizationEnabled] = useFeatureFlag('performance.memoization');
   
-  const MemoizedChild = React.useMemo(() => {
-    if (memoizationEnabled) {
-      return React.memo(children as React.ComponentType<any>);
-    }
-    return children;
-  }, [children, memoizationEnabled, ...dependencies]);
-
-  if (!memoizationEnabled && fallback) {
-    return <>{fallback}</>;
+  if (!memoizationEnabled) {
+    return <>{children}</>;
   }
 
-  return <>{MemoizedChild}</>;
+  return <>{children}</>;
 }
 
 /**

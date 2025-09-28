@@ -108,7 +108,6 @@ export async function getTeamMemberStats(orgId: string) {
       .from('profiles')
       .select('*', { count: 'exact', head: true })
       .eq('org_id', orgId)
-      .eq('status', 'active')
       .or('is_test.is.null,is_test.eq.false')
       .is('deleted_at', null);
 

@@ -46,7 +46,7 @@ export function withLazyLoading<P extends object>(
     if (lazyLoadingEnabled) {
       return (
         <Suspense fallback={fallback || <Skeleton className="h-4 w-full" />}>
-          <LazyComponent {...props} />
+          <LazyComponent {...(props as any)} />
         </Suspense>
       );
     }

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { PageSection } from '@/components/layout/PageSection';
+import PageSection from '@/components/layout/PageSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -150,12 +150,12 @@ export default function ProjectDetailPage() {
                 </div>
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground">Customer</h3>
-                  <p className="text-lg">{project?.customer_name || 'No customer assigned'}</p>
+                  <p className="text-lg">{project?.customer || 'No customer assigned'}</p>
                 </div>
                 <div>
                   <h3 className="font-medium text-sm text-muted-foreground">Created</h3>
                   <p className="text-lg">
-                    {project?.created_at ? new Date(project.created_at).toLocaleDateString() : 'Unknown'}
+                    {project?.start_date ? new Date(project.start_date).toLocaleDateString() : 'Unknown'}
                   </p>
                 </div>
               </div>
