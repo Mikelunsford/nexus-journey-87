@@ -22,3 +22,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Node.js installation files
+node-*.zip
+node-*/
+node-v*/
