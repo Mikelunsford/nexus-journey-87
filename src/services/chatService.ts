@@ -24,7 +24,7 @@ export const chatRoomsService = {
       .from('chat_rooms')
       .select(`
         *,
-        chat_room_members!inner(user_id),
+        chat_room_members(user_id),
         chat_messages(
           id,
           content,
@@ -48,6 +48,7 @@ export const chatRoomsService = {
 
   // Create a new room
   async createRoom(orgId: string, name: string, description?: string, isPrivate = false): Promise<ChatRoom> {
+    const userId = (await supabase.auth.getUser()).data.user?.id!;
     const { data, error } = await supabase
       .from('chat_rooms')
       .insert({
@@ -55,7 +56,8 @@ export const chatRoomsService = {
         name,
         description,
         is_private: isPrivate,
-        type: 'channel'
+        type: 'channel',
+        created_by: userId
       })
       .select()
       .single();

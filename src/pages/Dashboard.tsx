@@ -159,7 +159,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm t-dim">Active Projects</p>
-                <p className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.activeProjects}</p>
+                <div className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.activeProjects}</div>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-blue/10' : 'bg-t1-blue/10'}`}>
                 <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-blue' : 't1-blue'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -175,7 +175,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm t-dim">Pending Quotes</p>
-                <p className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.pendingQuotes}</p>
+                <div className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.pendingQuotes}</div>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-brand-red/10' : 'bg-t1-red/10'}`}>
                 <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-brand-red' : 'text-t1-red'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,7 +191,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm t-dim">Active Shipments</p>
-                <p className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.activeShipments}</p>
+                <div className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.activeShipments}</div>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-green-600/10 dark:bg-green-500/10' : 'bg-green-500/10'}`}>
                 <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-green-600 dark:text-green-500' : 'text-green-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +207,7 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm t-dim">Team Members</p>
-                <p className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.teamMembersCount}</p>
+                <div className="text-2xl font-bold t-primary">{loading ? <Skeleton className="h-8 w-16" /> : dashboardMetrics.teamMembersCount}</div>
               </div>
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${brandV1Enabled ? 'bg-purple-600/10 dark:bg-purple-500/10' : 'bg-purple-500/10'}`}>
                 <svg className={`w-6 h-6 ${brandV1Enabled ? 'text-purple-600 dark:text-purple-500' : 'text-purple-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
