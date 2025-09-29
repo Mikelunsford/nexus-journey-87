@@ -1867,6 +1867,22 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      room_belongs_to_user_org: {
+        Args: { _room_id: string }
+        Returns: boolean
+      }
+      room_is_private: {
+        Args: { _room_id: string }
+        Returns: boolean
+      }
+      user_has_room_role: {
+        Args: { _roles: string[]; _room_id: string }
+        Returns: boolean
+      }
+      user_is_member_of_room: {
+        Args: { _room_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       approval_status_enum: "pending" | "approved" | "rejected"
