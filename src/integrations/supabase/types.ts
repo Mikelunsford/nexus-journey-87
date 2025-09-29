@@ -307,6 +307,7 @@ export type Database = {
           department_id: string | null
           email: string | null
           id: string
+          is_test: boolean | null
           name: string
           org_id: string
           owner_id: string | null
@@ -325,6 +326,7 @@ export type Database = {
           department_id?: string | null
           email?: string | null
           id?: string
+          is_test?: boolean | null
           name: string
           org_id: string
           owner_id?: string | null
@@ -343,6 +345,7 @@ export type Database = {
           department_id?: string | null
           email?: string | null
           id?: string
+          is_test?: boolean | null
           name?: string
           org_id?: string
           owner_id?: string | null
