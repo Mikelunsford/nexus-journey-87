@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,7 +38,9 @@ export default function MessagesPage() {
     error,
     sendMessage,
     createRoom,
-    selectRoom
+    joinRoom,
+    selectRoom,
+    refetchRooms
   } = useChat();
 
   // Wait for authentication to complete
@@ -77,7 +79,7 @@ export default function MessagesPage() {
   const filteredRooms = rooms.filter(room =>
     room.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
-
+  const isMember = !!(selectedRoom as any)?.chat_room_members?.some?.((m: any) => m.user_id === user?.id);
   // Send message function
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -112,6 +114,18 @@ export default function MessagesPage() {
     if (diffDays === 2) return 'Yesterday';
     if (diffDays <= 7) return `${diffDays} days ago`;
     return date.toLocaleDateString();
+  };
+
+  const handleJoinRoom = async () => {
+    if (!selectedRoom) return;
+    try {
+      await joinRoom(selectedRoom.id);
+      // Try to pick up the refreshed room and reselect it
+      const updated = rooms.find((r) => r.id === selectedRoom.id);
+      if (updated) await selectRoom(updated);
+    } catch (e) {
+      // No-op; toasts handled in hook
+    }
   };
 
   if (loading) {
@@ -278,6 +292,11 @@ export default function MessagesPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
+                  {!isMember && (
+                    <Button size="sm" onClick={handleJoinRoom} className="bg-primary hover:bg-primary/90">
+                      Join
+                    </Button>
+                  )}
                   <Button variant="ghost" size="sm">
                     <Users className="w-4 h-4" />
                   </Button>
@@ -342,8 +361,9 @@ export default function MessagesPage() {
                   <Input
                     value={newMessage}
                     onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder={`Message #${selectedRoom.name}`}
+                    placeholder={isMember ? `Message #${selectedRoom.name}` : `Join the channel to start messaging`}
                     className="pr-20"
+                    disabled={!isMember}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -362,7 +382,7 @@ export default function MessagesPage() {
                 </div>
                 <Button 
                   type="submit" 
-                  disabled={!newMessage.trim()}
+                  disabled={!isMember || !newMessage.trim()}
                   className="bg-primary hover:bg-primary/90"
                 >
                   <Send className="w-4 h-4" />

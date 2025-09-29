@@ -40,8 +40,8 @@ export const chatRoomsService = {
 
     return data?.map(room => ({
       ...room,
-      member_count: room.chat_room_members?.length || 0,
-      last_message: room.chat_messages?.[0] || undefined,
+      member_count: (room as any).chat_room_members?.length || 0,
+      last_message: (room as any).chat_messages?.[0] || undefined,
       unread_count: 0 // TODO: Calculate based on last_read_at
     })) || [];
   },
