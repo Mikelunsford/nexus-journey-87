@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import QuickActionsGrid, { type QAItem } from '@/components/ui/QuickActionsGrid';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useTeamMembers } from '@/hooks/useTeamMembers';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function UsersPage() {
   const quickActions: QAItem[] = [
@@ -49,35 +51,22 @@ export default function UsersPage() {
     },
   ];
 
-  const users = [
-    { 
-      id: 'USR-001', 
-      name: 'John Smith', 
-      email: 'john.smith@company.com', 
-      role: 'Admin', 
-      status: 'Active', 
-      lastLogin: '2024-01-15 10:30',
-      avatar: ''
-    },
-    { 
-      id: 'USR-002', 
-      name: 'Sarah Johnson', 
-      email: 'sarah.johnson@company.com', 
-      role: 'Manager', 
-      status: 'Active', 
-      lastLogin: '2024-01-14 16:45',
-      avatar: ''
-    },
-    { 
-      id: 'USR-003', 
-      name: 'Mike Chen', 
-      email: 'mike.chen@company.com', 
-      role: 'User', 
-      status: 'Inactive', 
-      lastLogin: '2024-01-10 09:15',
-      avatar: ''
-    },
-  ];
+  const { teamMembers, loading } = useTeamMembers();
+
+  const users = teamMembers.map(member => {
+    const membership = member.memberships?.[0];
+    const roleBucket = membership?.role_bucket || 'operational';
+    
+    return {
+      id: member.id,
+      name: member.name || member.email,
+      email: member.email,
+      role: roleBucket.charAt(0).toUpperCase() + roleBucket.slice(1),
+      status: 'Active',
+      lastLogin: member.created_at ? new Date(member.created_at).toLocaleString() : 'Never',
+      avatar: member.avatar_url || ''
+    };
+  });
 
   const getStatusVariant = (status: string): "default" | "secondary" | "destructive" | "outline" => {
     switch (status) {
@@ -177,8 +166,15 @@ export default function UsersPage() {
       {/* Users Table */}
       <div className="card-surface panel panel-body">
         <h3 className="text-lg font-semibold t-primary mb-4">All Users</h3>
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        {loading ? (
+          <div className="space-y-4">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
             <thead>
               <tr className="border-b">
                 <th className="text-left p-4 font-semibold">User</th>
@@ -224,6 +220,7 @@ export default function UsersPage() {
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   );

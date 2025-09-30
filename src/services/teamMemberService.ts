@@ -9,12 +9,15 @@ export async function getTeamMembers(orgId: string, includeTest = false, limit =
     .from('profiles')
     .select(`
       *,
-      user_roles (
-        role
+      memberships!inner (
+        role_bucket,
+        department_id,
+        expires_at
       )
     `)
     .eq('org_id', orgId)
     .is('deleted_at', null)
+    .eq('memberships.deleted_at', null)
     .order('created_at', { ascending: false })
     .limit(limit);
 

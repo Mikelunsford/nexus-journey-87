@@ -136,6 +136,29 @@ serve(async (req: Request) => {
       }
     }
 
+    // Add user to the General chat room
+    const { data: generalRoom } = await supabaseAdmin
+      .from('chat_rooms')
+      .select('id')
+      .eq('org_id', membership.org_id)
+      .eq('name', 'General')
+      .single();
+
+    if (generalRoom) {
+      const { error: memberError } = await supabaseAdmin
+        .from('chat_room_members')
+        .insert({
+          room_id: generalRoom.id,
+          user_id: authData.user.id,
+          role: 'member',
+        });
+
+      if (memberError) {
+        console.error('Error adding user to General chat room:', memberError);
+        // Don't throw, this is not critical
+      }
+    }
+
     console.log('User created successfully');
 
     return new Response(
