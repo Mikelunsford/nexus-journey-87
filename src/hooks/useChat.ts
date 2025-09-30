@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/components/auth/AuthProvider';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   chatRoomsService, 
   chatMessagesService, 
@@ -112,8 +113,21 @@ export function useChat() {
   useEffect(() => {
     if (!selectedRoom) return;
 
-    const unsubscribe = subscribeToRoom(selectedRoom.id, (message) => {
-      setMessages(prev => [...prev, message as ChatMessageWithSender]);
+    const unsubscribe = subscribeToRoom(selectedRoom.id, async (message) => {
+      // Fetch sender info for the new message
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('name, avatar_url')
+        .eq('id', message.sender_id)
+        .single();
+      
+      const messageWithSender: ChatMessageWithSender = {
+        ...message,
+        sender_name: profile?.name || 'Unknown User',
+        sender_avatar: profile?.avatar_url || undefined
+      };
+      
+      setMessages(prev => [...prev, messageWithSender]);
     });
 
     return unsubscribe;

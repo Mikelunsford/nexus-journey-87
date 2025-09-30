@@ -101,24 +101,39 @@ export const chatRoomsService = {
 export const chatMessagesService = {
   // Get messages for a room
   async getMessages(roomId: string, limit = 50): Promise<ChatMessageWithSender[]> {
-    const { data, error } = await supabase
+    const { data: messages, error } = await supabase
       .from('chat_messages')
-      .select(`
-        *,
-        profiles!chat_messages_sender_id_fkey(name, avatar_url)
-      `)
+      .select('*')
       .eq('room_id', roomId)
       .is('deleted_at', null)
       .order('created_at', { ascending: false })
       .limit(limit);
 
     if (error) throw error;
+    if (!messages || messages.length === 0) return [];
 
-    return data?.map(msg => ({
-      ...msg,
-      sender_name: (msg.profiles as any)?.name || 'Unknown User',
-      sender_avatar: (msg.profiles as any)?.avatar_url
-    })) || [];
+    // Get unique sender IDs
+    const senderIds = [...new Set(messages.map(m => m.sender_id))];
+
+    // Fetch all sender profiles
+    const { data: profiles, error: profileError } = await supabase
+      .from('profiles')
+      .select('id, name, avatar_url')
+      .in('id', senderIds);
+
+    if (profileError) throw profileError;
+
+    // Create a map of profiles for quick lookup
+    const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+    return messages.map(msg => {
+      const profile = profileMap.get(msg.sender_id);
+      return {
+        ...msg,
+        sender_name: profile?.name || 'Unknown User',
+        sender_avatar: profile?.avatar_url || undefined
+      };
+    });
   },
 
   // Send a message
